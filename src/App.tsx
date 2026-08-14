@@ -15,7 +15,9 @@ import {
   FolderPlus,
   Printer,
   BookOpen,
-  Download
+  Download,
+  MessageCircle,
+  Share2
 } from 'lucide-react';
 import { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult } from './types';
 import { ToastProvider, useToast } from './context/ToastContext';
@@ -29,6 +31,7 @@ import { GameListItem } from './components/GameListItem';
 import { GameFormModal } from './components/GameFormModal';
 import { GameDetailModal } from './components/GameDetailModal';
 import { GameCatalogModal } from './components/GameCatalogModal';
+import { KakaoShareModal } from './components/KakaoShareModal';
 import { PlayCard } from './components/PlayCard';
 import { PlayRecordFormModal } from './components/PlayRecordFormModal';
 import { PlayDetailModal } from './components/PlayDetailModal';
@@ -75,6 +78,7 @@ const MainApp: React.FC = () => {
   // Modals Management
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
+  const [isKakaoShareOpen, setIsKakaoShareOpen] = useState(false);
   const [isGameFormOpen, setIsGameFormOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<UserGame | null>(null);
   const [viewingGame, setViewingGame] = useState<UserGame | null>(null);
@@ -275,6 +279,7 @@ const MainApp: React.FC = () => {
                   setIsGameFormOpen(true);
                 }}
                 onOpenCatalog={() => setIsCatalogModalOpen(true)}
+                onOpenKakaoShare={() => setIsKakaoShareOpen(true)}
                 onSelectGame={(game) => setViewingGame(game)}
                 onSelectPlay={(play) => setViewingPlay(play)}
                 onNavigateTab={(tab) => setActiveTab(tab)}
@@ -291,7 +296,35 @@ const MainApp: React.FC = () => {
                     <p className="text-xs text-[#636E72]">총 {games.length}개의 게임</p>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                    {/* Add Game Button */}
+                    <button
+                      id="games-add-game-btn"
+                      type="button"
+                      onClick={() => {
+                        setEditingGame(null);
+                        setIsGameFormOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#4834D4] hover:bg-[#3c2ab9] text-white rounded-2xl text-xs font-bold shadow-[0_4px_12px_rgba(72,52,212,0.25)] transition-all active:scale-95"
+                      title="새 보드게임 추가하기"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>게임 추가</span>
+                    </button>
+
+                    {/* KakaoTalk Share Button */}
+                    <button
+                      id="games-kakao-share-btn"
+                      type="button"
+                      onClick={() => setIsKakaoShareOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#FEE500] hover:bg-[#F5DC00] active:bg-[#E8CE00] text-[#191919] rounded-2xl text-xs font-black shadow-xs transition-all active:scale-95 border border-[#F5DC00]"
+                      title="소장 보드게임 목록 카카오톡 공유 (전체 / 4인이하 등 조건 선택)"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 fill-[#191919]" />
+                      <span className="hidden sm:inline">카카오톡 공유</span>
+                      <span className="sm:hidden">카톡 공유</span>
+                    </button>
+
                     {/* Catalog Print & PDF Export Button */}
                     <button
                       id="games-print-catalog-btn"
@@ -302,7 +335,7 @@ const MainApp: React.FC = () => {
                     >
                       <Download className="w-3.5 h-3.5 text-[#4834D4]" />
                       <span className="hidden sm:inline">PDF 도록 / 인쇄</span>
-                      <span className="sm:hidden">PDF 저장</span>
+                      <span className="sm:hidden">PDF</span>
                     </button>
 
                     <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-[#E9ECEF] shadow-sm">
@@ -374,6 +407,10 @@ const MainApp: React.FC = () => {
                           key={game.id}
                           game={game}
                           onClick={() => setViewingGame(game)}
+                          onDelete={(e) => {
+                            e.stopPropagation();
+                            setDeletingGame(game);
+                          }}
                         />
                       ))}
                     </div>
@@ -384,6 +421,10 @@ const MainApp: React.FC = () => {
                           key={game.id}
                           game={game}
                           onClick={() => setViewingGame(game)}
+                          onDelete={(e) => {
+                            e.stopPropagation();
+                            setDeletingGame(game);
+                          }}
                         />
                       ))}
                     </div>
@@ -528,6 +569,14 @@ const MainApp: React.FC = () => {
       />
 
       {/* --- ALL MODALS --- */}
+      {/* KakaoTalk Share Modal */}
+      <KakaoShareModal
+        isOpen={isKakaoShareOpen}
+        games={games}
+        ownerName={user?.nickname || '나'}
+        onClose={() => setIsKakaoShareOpen(false)}
+      />
+
       {/* Game Catalog & PDF Print Modal */}
       <GameCatalogModal
         isOpen={isCatalogModalOpen}

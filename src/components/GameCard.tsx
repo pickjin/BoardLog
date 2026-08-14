@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Clock, Flame, MapPin, CheckSquare } from 'lucide-react';
+import { Users, Clock, Flame, MapPin, CheckSquare, Trash2, Edit } from 'lucide-react';
 import { UserGame, GameOwnershipStatus } from '../types';
 
 export const getOwnershipBadgeColor = (status: GameOwnershipStatus): string => {
@@ -25,10 +25,12 @@ export const getOwnershipBadgeColor = (status: GameOwnershipStatus): string => {
 interface GameCardProps {
   game: UserGame;
   onClick: () => void;
+  onEdit?: (e: React.MouseEvent) => void;
+  onDelete?: (e: React.MouseEvent) => void;
   onQuickRecord?: (e: React.MouseEvent) => void;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({ game, onClick }) => {
+export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDelete }) => {
   return (
     <div
       id={`game-card-${game.id}`}
@@ -59,10 +61,23 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onClick }) => {
           </span>
         </div>
 
-        {/* Play count badge */}
-        <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-xs text-white px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1">
-          <CheckSquare className="w-3 h-3 text-amber-300" />
-          <span>{game.playCount || 0}회</span>
+        {/* Play count badge & Action overlay */}
+        <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
+          <div className="bg-black/60 backdrop-blur-xs text-white px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1">
+            <CheckSquare className="w-3 h-3 text-amber-300" />
+            <span>{game.playCount || 0}회</span>
+          </div>
+
+          {onDelete && (
+            <button
+              type="button"
+              title="게임 삭제"
+              onClick={onDelete}
+              className="w-6 h-6 rounded-full bg-black/60 hover:bg-[#EB4D4B] text-white flex items-center justify-center backdrop-blur-xs transition-colors shadow-xs"
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          )}
         </div>
 
         {/* Condition pill */}

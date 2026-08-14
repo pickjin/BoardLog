@@ -11,7 +11,9 @@ import {
   Save,
   HelpCircle,
   Tag,
-  AlertCircle
+  AlertCircle,
+  Calendar,
+  DollarSign
 } from 'lucide-react';
 import { UserGame, SeedGame, GameOwnershipStatus, GameCondition } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
@@ -469,6 +471,84 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                 </div>
               </div>
 
+              {/* Purchase Date & Storage Location */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-[#F8F9FA] rounded-2xl border border-[#E9ECEF]">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-bold text-[#1E272E] flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-[#4834D4]" />
+                      <span>구매 일시 (구매일자)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setPurchaseDate(formatDate())}
+                      className="text-[10px] text-[#4834D4] hover:underline font-bold"
+                    >
+                      오늘
+                    </button>
+                  </div>
+                  <input
+                    id="game-input-purchase-date"
+                    type="text"
+                    placeholder="YYYY.MM.DD"
+                    value={purchaseDate}
+                    onChange={(e) => setPurchaseDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-[#E9ECEF] rounded-2xl text-xs font-bold text-[#1E272E] focus:outline-hidden focus:border-[#4834D4] transition-colors"
+                  />
+                  {/* Quick date presets */}
+                  <div className="flex items-center gap-1 mt-1.5 overflow-x-auto pb-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setPurchaseDate(formatDate())}
+                      className="px-2 py-0.5 rounded-md text-[10px] bg-white border border-[#E9ECEF] hover:bg-[#F1F3F5] text-[#636E72] font-bold shrink-0"
+                    >
+                      오늘 ({formatDate()})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const d = new Date();
+                        d.setMonth(d.getMonth() - 1);
+                        const ym = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+                        setPurchaseDate(ym);
+                      }}
+                      className="px-2 py-0.5 rounded-md text-[10px] bg-white border border-[#E9ECEF] hover:bg-[#F1F3F5] text-[#636E72] font-medium shrink-0"
+                    >
+                      1달 전
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const d = new Date();
+                        d.setFullYear(d.getFullYear() - 1);
+                        const ym = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+                        setPurchaseDate(ym);
+                      }}
+                      className="px-2 py-0.5 rounded-md text-[10px] bg-white border border-[#E9ECEF] hover:bg-[#F1F3F5] text-[#636E72] font-medium shrink-0"
+                    >
+                      1년 전
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#1E272E] mb-1">
+                    보관 장소 (선택)
+                  </label>
+                  <input
+                    id="game-input-storage-location"
+                    type="text"
+                    placeholder="예: 거실 수납장 1열, 서재 책장"
+                    value={storageLocation}
+                    onChange={(e) => setStorageLocation(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-[#E9ECEF] rounded-2xl text-xs text-[#1E272E] focus:outline-hidden focus:border-[#4834D4] transition-colors"
+                  />
+                  <p className="text-[10px] text-[#A8ABAF] mt-1.5">
+                    어디에 보관되어 있는지 메모해두세요
+                  </p>
+                </div>
+              </div>
+
               {/* Genre tag chips */}
               <div>
                 <label className="block text-xs font-bold text-[#1E272E] mb-1 flex items-center gap-1">
@@ -550,19 +630,6 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
               {showAdvanced && (
                 <div className="space-y-4 pt-3 mt-1 bg-[#F8F9FA] p-4 rounded-2xl border border-[#E9ECEF] text-xs">
-                  {/* Storage Location */}
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#1E272E] mb-1">보관 장소</label>
-                    <input
-                      id="game-input-storage-location"
-                      type="text"
-                      placeholder="예: 거실 보드게임장 2단 왼쪽"
-                      value={storageLocation}
-                      onChange={(e) => setStorageLocation(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-[#E9ECEF] rounded-2xl text-xs text-[#1E272E]"
-                    />
-                  </div>
-
                   {/* Difficulty / Weight & Best Players */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>

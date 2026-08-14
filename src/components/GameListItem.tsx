@@ -1,14 +1,15 @@
 import React from 'react';
-import { Users, Clock, Flame, CheckSquare } from 'lucide-react';
+import { Users, Clock, Flame, CheckSquare, Trash2 } from 'lucide-react';
 import { UserGame } from '../types';
 import { getOwnershipBadgeColor } from './GameCard';
 
 interface GameListItemProps {
   game: UserGame;
   onClick: () => void;
+  onDelete?: (e: React.MouseEvent) => void;
 }
 
-export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick }) => {
+export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDelete }) => {
   return (
     <div
       id={`game-list-item-${game.id}`}
@@ -70,12 +71,23 @@ export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick }) => 
         )}
       </div>
 
-      {/* Right stats */}
-      <div className="text-right shrink-0">
+      {/* Right stats & Actions */}
+      <div className="text-right shrink-0 flex items-center gap-2">
         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#636E72] bg-[#F1F3F5] px-2.5 py-1 rounded-full border border-[#E9ECEF]">
           <CheckSquare className="w-3 h-3 text-[#4834D4]" />
           {game.playCount || 0}회
         </span>
+
+        {onDelete && (
+          <button
+            type="button"
+            title="게임 삭제"
+            onClick={onDelete}
+            className="w-7 h-7 rounded-full text-[#A8ABAF] hover:text-[#EB4D4B] hover:bg-[#FEEBEC] flex items-center justify-center transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );

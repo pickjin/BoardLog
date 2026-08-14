@@ -11,11 +11,15 @@ import {
   Edit,
   Trash2,
   PlusCircle,
-  HelpCircle
+  HelpCircle,
+  Calendar,
+  MessageCircle,
+  Share2
 } from 'lucide-react';
 import { UserGame } from '../types';
 import { formatWon } from '../utils/formatters';
 import { getOwnershipBadgeColor } from './GameCard';
+import { useToast } from '../context/ToastContext';
 
 interface GameDetailModalProps {
   game: UserGame | null;
@@ -34,7 +38,27 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
   onDelete,
   onStartPlay
 }) => {
+  const { showToast } = useToast();
   if (!isOpen || !game) return null;
+
+  const handleShareSingleGame = async () => {
+    const text = `🎲 [보드게임 추천] ${game.title}\n👥 인원: ${game.minPlayers}~${game.maxPlayers}인${game.bestPlayers ? ` (추천: ${game.bestPlayers})` : ''}\n⏱ 시간: ${game.playTime}분\n⭐ 난이도: ${game.weight?.toFixed(1) || '2.0'}/5.0\n🏷 장르: ${game.genre.join(', ')}\n${game.notes ? `💬 메모: ${game.notes}\n` : ''}\n👉 같이 플레이해요!`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: game.title,
+          text: text,
+          url: window.location.href
+        });
+        showToast('카카오톡 등으로 공유를 시작했습니다.', 'success');
+        return;
+      } catch (e: any) {
+        if (e.name === 'AbortError') return;
+      }
+    }
+    await navigator.clipboard.writeText(text);
+    showToast('게임 정보가 복사되었습니다! 카톡 채팅방에 붙여넣기(Ctrl+V)하세요.', 'success');
+  };
 
   return (
     <AnimatePresence>
@@ -61,6 +85,14 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
 
             {/* Top Close & Actions */}
             <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleShareSingleGame}
+                className="w-8 h-8 rounded-full bg-[#FEE500] text-[#191919] hover:bg-[#F5DC00] flex items-center justify-center backdrop-blur-xs transition-colors shadow-xs"
+                title="카카오톡으로 공유하기"
+              >
+                <MessageCircle className="w-4 h-4 fill-[#191919]" />
+              </button>
               <button
                 type="button"
                 onClick={() => onEdit(game)}
@@ -193,18 +225,25 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
               </div>
             )}
 
-            {/* Storage & Publisher */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            {/* Storage, Purchase Date & Publisher */}
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="p-3 bg-[#F8F9FA] rounded-2xl border border-[#E9ECEF]">
+                <span className="text-[10px] text-[#A8ABAF] block mb-0.5">구매일시</span>
+                <span className="font-bold text-[#1E272E] flex items-center gap-1 text-[11px]">
+                  <Calendar className="w-3 h-3 text-[#4834D4] shrink-0" />
+                  <span className="truncate">{game.purchaseDate || '미지정'}</span>
+                </span>
+              </div>
               <div className="p-3 bg-[#F8F9FA] rounded-2xl border border-[#E9ECEF]">
                 <span className="text-[10px] text-[#A8ABAF] block mb-0.5">보관 장소</span>
-                <span className="font-bold text-[#1E272E] flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-[#4834D4]" />
-                  {game.storageLocation || '미지정'}
+                <span className="font-bold text-[#1E272E] flex items-center gap-1 text-[11px]">
+                  <MapPin className="w-3 h-3 text-[#4834D4] shrink-0" />
+                  <span className="truncate">{game.storageLocation || '미지정'}</span>
                 </span>
               </div>
               <div className="p-3 bg-[#F8F9FA] rounded-2xl border border-[#E9ECEF]">
                 <span className="text-[10px] text-[#A8ABAF] block mb-0.5">제작사 / 유통사</span>
-                <span className="font-bold text-[#1E272E] truncate block">
+                <span className="font-bold text-[#1E272E] truncate block text-[11px]">
                   {game.publisher || '미입력'}
                 </span>
               </div>
@@ -254,6 +293,16 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
           {/* Bottom Action Footer */}
           <div className="p-4 border-t border-[#E9ECEF] bg-white flex items-center gap-2">
             <button
+              id="game-detail-delete-btn"
+              type="button"
+              onClick={() => onDelete(game)}
+              className="px-3.5 py-3 bg-[#FEEBEC] hover:bg-[#FCD7D7] text-[#EB4D4B] text-xs font-bold rounded-full transition-colors flex items-center justify-center gap-1 shrink-0"
+              title="게임 삭제"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>삭제</span>
+            </button>
+            <button
               type="button"
               onClick={() => onEdit(game)}
               className="flex-1 py-3 bg-[#F1F3F5] hover:bg-[#E9ECEF] text-[#2D3436] text-xs font-bold rounded-full transition-colors text-center"
@@ -267,7 +316,7 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
               className="flex-2 py-3 bg-[#4834D4] hover:bg-[#3c2ab9] active:bg-[#3c2ab9] text-white text-xs font-bold rounded-full shadow-[0_4px_14px_rgba(72,52,212,0.3)] transition-colors text-center flex items-center justify-center gap-1.5"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>플레이 기록 남기기</span>
+              <span>플레이 기록</span>
             </button>
           </div>
         </motion.div>

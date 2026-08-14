@@ -10,7 +10,8 @@ import {
   Sparkles,
   Printer,
   BookOpen,
-  Download
+  Download,
+  MessageCircle
 } from 'lucide-react';
 import { UserGame, PlayRecord } from '../types';
 import { PlayCard } from './PlayCard';
@@ -23,6 +24,7 @@ interface HomeDashboardProps {
   onOpenAddPlay: () => void;
   onOpenAddGame: () => void;
   onOpenCatalog?: () => void;
+  onOpenKakaoShare?: () => void;
   onSelectGame: (game: UserGame) => void;
   onSelectPlay: (play: PlayRecord) => void;
   onNavigateTab: (tab: 'games' | 'plays') => void;
@@ -34,6 +36,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenAddPlay,
   onOpenAddGame,
   onOpenCatalog,
+  onOpenKakaoShare,
   onSelectGame,
   onSelectPlay,
   onNavigateTab
@@ -83,6 +86,17 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <Layers className="w-3.5 h-3.5" />
               <span>게임 등록</span>
             </button>
+            {onOpenKakaoShare && (
+              <button
+                id="dashboard-open-kakao-cta"
+                type="button"
+                onClick={onOpenKakaoShare}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-[#FEE500] hover:bg-[#F5DC00] text-[#191919] rounded-full text-xs font-black transition-transform active:scale-95 shadow-xs"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-[#191919]" />
+                <span>카톡 목록 공유</span>
+              </button>
+            )}
             {onOpenCatalog && (
               <button
                 id="dashboard-open-catalog-cta"
