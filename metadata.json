@@ -1,0 +1,6 @@
+{
+  "name": "보드로그 (Board Log)",
+  "description": "모바일 우선 보드게임 관리 및 플레이 기록 웹앱",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

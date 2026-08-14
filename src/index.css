@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #F1F3F5;
+    color: #2D3436;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Dedicated Print Styles for Book Catalogue & PDF Export */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide all non-printable elements */
+  #navbar-header,
+  #bottom-nav-container,
+  .no-print,
+  button,
+  .modal-backdrop-blur {
+    display: none !important;
+  }
+
+  /* Expand the printable catalog to take full page width */
+  .printable-catalog-root {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  .printable-catalog-content {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+  }
+
+  /* Prevent awkward page cutoffs */
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .print-page-break {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* Table borders in print */
+  .print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .print-table th,
+  .print-table td {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 8px !important;
+  }
+
+  .print-table th {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+    font-weight: bold !important;
+  }
+}
