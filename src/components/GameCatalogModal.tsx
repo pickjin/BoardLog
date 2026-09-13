@@ -22,8 +22,8 @@ import {
   Filter,
   Loader2
 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { loadHtml2Canvas, loadJsPdf, ExportModuleLoadError } from '../utils/lazyModules';
+import { useIsMounted } from '../utils/useIsMounted';
 import { UserGame, GameOwnershipStatus } from '../types';
 import { formatWon, formatDate } from '../utils/formatters';
 import { getGameIndexKey, KOREAN_INDEX_KEYS } from '../utils/koreanIndex';
@@ -53,6 +53,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
   const [statusFilter, setStatusFilter] = useState<GameOwnershipStatus | '전체'>('전체');
   const [searchQuery, setSearchQuery] = useState('');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const isMounted = useIsMounted();
 
   // Toggles for print elements
   const [showImages, setShowImages] = useState(true);
@@ -128,6 +129,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
 
   // Real PDF file generation and direct download
   const handleSavePdf = async () => {
+    if (isGeneratingPdf) return;
     const targetElement = document.getElementById('printable-catalog-document');
     if (!targetElement) {
       window.print();
@@ -138,6 +140,8 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
     showToast('PDF 파일을 생성하고 있습니다. 잠시만 기다려주세요...', 'info');
 
     try {
+      const [html2canvas, jsPDF] = await Promise.all([loadHtml2Canvas(), loadJsPdf()]);
+
       // High quality canvas capture
       const canvas = await html2canvas(targetElement, {
         scale: 2,
@@ -175,13 +179,19 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
       const fileName = `${ownerName || '보드게임'}_서가_수록_목록_${dateStr}.pdf`;
       pdf.save(fileName);
 
+      if (!isMounted()) return;
       showToast(`"${fileName}" PDF 저장이 완료되었습니다!`, 'success');
     } catch (error) {
       console.error('PDF Generation Error:', error);
+      if (!isMounted()) return;
+      if (error instanceof ExportModuleLoadError) {
+        showToast('PDF 생성 모듈을 불러오지 못했습니다. 네트워크 상태를 확인한 뒤 다시 시도해주세요.', 'error');
+        return;
+      }
       showToast('직접 PDF 생성이 완료되지 않아 인쇄 창으로 전환합니다. "PDF로 저장"을 선택해주세요.', 'info');
       window.print();
     } finally {
-      setIsGeneratingPdf(false);
+      if (isMounted()) setIsGeneratingPdf(false);
     }
   };
 

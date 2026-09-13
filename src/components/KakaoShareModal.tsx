@@ -24,7 +24,8 @@ import {
   Image as ImageIcon,
   Send
 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { loadHtml2Canvas, ExportModuleLoadError } from '../utils/lazyModules';
+import { useIsMounted } from '../utils/useIsMounted';
 import { UserGame } from '../types';
 import { useToast } from '../context/ToastContext';
 
@@ -82,6 +83,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
   // States
   const [isCopied, setIsCopied] = useState(false);
   const [isExportingImage, setIsExportingImage] = useState(false);
+  const isMounted = useIsMounted();
   const [activeTab, setActiveTab] = useState<'settings' | 'preview'>('settings');
 
   // Extract all genres from user's games
@@ -304,9 +306,11 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
 
   // Export as Image Card
   const handleExportImageCard = async () => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isExportingImage) return;
     setIsExportingImage(true);
     try {
+      const html2canvas = await loadHtml2Canvas();
+      if (!cardRef.current) return;
       const canvas = await html2canvas(cardRef.current, {
         scale: 2,
         useCORS: true,
@@ -320,11 +324,19 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
       link.download = `boardgames_${ownerName || 'collection'}_${Date.now()}.png`;
       link.click();
 
+      if (!isMounted()) return;
       showToast('카카오톡 공유용 이미지 카드가 저장되었습니다.', 'success');
-    } catch {
-      showToast('이미지 카드 생성에 실패했습니다.', 'error');
+    } catch (error) {
+      console.error('Image Card Export Error:', error);
+      if (!isMounted()) return;
+      showToast(
+        error instanceof ExportModuleLoadError
+          ? '이미지 생성 모듈을 불러오지 못했습니다. 네트워크 상태를 확인한 뒤 다시 시도해주세요.'
+          : '이미지 카드 생성에 실패했습니다.',
+        'error'
+      );
     } finally {
-      setIsExportingImage(false);
+      if (isMounted()) setIsExportingImage(false);
     }
   };
 
