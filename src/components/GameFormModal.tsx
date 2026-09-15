@@ -18,6 +18,7 @@ import {
 import { UserGame, SeedGame, GameOwnershipStatus, GameCondition } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
 import { formatDate } from '../utils/formatters';
+import { applyImageFallback } from '../utils/imageFallback';
 
 interface GameFormModalProps {
   isOpen: boolean;
@@ -426,10 +427,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                       alt="미리보기"
                       referrerPolicy="no-referrer"
                       className="w-9 h-9 rounded-xl object-cover border border-[#E9ECEF] shrink-0"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-                      }}
+                      onError={applyImageFallback}
                     />
                   )}
                 </div>

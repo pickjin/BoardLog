@@ -20,6 +20,7 @@ import { UserGame } from '../types';
 import { formatWon } from '../utils/formatters';
 import { getOwnershipBadgeColor } from './GameCard';
 import { useToast } from '../context/ToastContext';
+import { applyImageFallback } from '../utils/imageFallback';
 
 interface GameDetailModalProps {
   game: UserGame | null;
@@ -76,10 +77,7 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
               alt={game.title}
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-              }}
+              onError={applyImageFallback}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Users, Clock, Flame, CheckSquare, Trash2 } from 'lucide-react';
 import { UserGame } from '../types';
 import { getOwnershipBadgeColor } from './GameCard';
+import { applyImageFallback } from '../utils/imageFallback';
 
 interface GameListItemProps {
   game: UserGame;
@@ -23,10 +24,7 @@ export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDel
           alt={game.title}
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-          }}
+          onError={applyImageFallback}
         />
       </div>
 

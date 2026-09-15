@@ -27,6 +27,7 @@ import {
 import html2canvas from 'html2canvas';
 import { UserGame } from '../types';
 import { useToast } from '../context/ToastContext';
+import { applyImageFallback } from '../utils/imageFallback';
 
 interface KakaoShareModalProps {
   isOpen: boolean;
@@ -642,10 +643,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                                   alt={game.title}
                                   referrerPolicy="no-referrer"
                                   className="w-10 h-10 rounded-lg object-cover bg-stone-100 shrink-0 border border-[#E9ECEF]"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src =
-                                      'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-                                  }}
+                                  onError={applyImageFallback}
                                 />
 
                                 <div className="min-w-0">
@@ -800,10 +798,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                                 alt={g.title}
                                 referrerPolicy="no-referrer"
                                 className="w-8 h-8 rounded-lg object-cover shrink-0"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src =
-                                    'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-                                }}
+                                onError={applyImageFallback}
                               />
                               <div className="min-w-0 flex-1">
                                 <div className="text-xs font-black text-[#191919] truncate">{g.title}</div>

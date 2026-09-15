@@ -2,6 +2,7 @@ import React from 'react';
 import { Trophy, Clock, Calendar, MapPin, Users, Star, Camera } from 'lucide-react';
 import { PlayRecord } from '../types';
 import { formatDuration } from '../utils/formatters';
+import { applyImageFallback } from '../utils/imageFallback';
 
 interface PlayCardProps {
   play: PlayRecord;
@@ -52,10 +53,7 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
             alt={play.gameTitle}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-            }}
+            onError={applyImageFallback}
           />
         </div>
 

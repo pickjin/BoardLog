@@ -43,6 +43,7 @@ import {
   formatDuration
 } from '../utils/formatters';
 import { compressImage, rotateDataUrl } from '../utils/imageCompressor';
+import { applyImageFallback } from '../utils/imageFallback';
 
 interface PlayRecordFormModalProps {
   isOpen: boolean;
@@ -566,10 +567,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                       alt={gameTitle}
                       referrerPolicy="no-referrer"
                       className="w-12 h-12 rounded-xl object-cover border border-[#E9ECEF] shrink-0 bg-white"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-                      }}
+                      onError={applyImageFallback}
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -708,10 +706,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                               alt={game.title}
                               referrerPolicy="no-referrer"
                               className="w-9 h-9 rounded-lg object-cover bg-stone-100 shrink-0 border border-[#E9ECEF]"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80';
-                              }}
+                              onError={applyImageFallback}
                             />
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
