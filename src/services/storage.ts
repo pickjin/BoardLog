@@ -179,6 +179,19 @@ class BoardLogStorage {
     });
   }
 
+  /**
+   * Both stores are keyed by record id alone, so a bare id lookup would reach any
+   * account's rows. Every by-id path goes through here to stay inside one owner.
+   */
+  private async idbReadOwned<T>(
+    storeName: string,
+    uid: string,
+    id: string
+  ): Promise<Stored<T> | null> {
+    const record = await this.idbReadOne<T>(storeName, id);
+    return record && record.userId === uid ? record : null;
+  }
+
   /** Resolves false when the store is simply unusable; rejects only when the device is out of space. */
   private async idbWrite(
     storeName: string,
@@ -572,7 +585,7 @@ class BoardLogStorage {
 
   async updateUserGame(uid: string, id: string, updates: Partial<UserGame>): Promise<UserGame> {
     if ((await this.resolveBackend(uid)) === 'idb') {
-      const existing = await this.idbReadOne<UserGame>(STORE_GAMES, id);
+      const existing = await this.idbReadOwned<UserGame>(STORE_GAMES, uid, id);
       if (!existing) {
         throw new Error('수정할 게임을 찾을 수 없습니다.');
       }
@@ -595,6 +608,9 @@ class BoardLogStorage {
 
   async deleteUserGame(uid: string, id: string): Promise<boolean> {
     if ((await this.resolveBackend(uid)) === 'idb') {
+      if (!(await this.idbReadOwned<UserGame>(STORE_GAMES, uid, id))) {
+        return true;
+      }
       if (await this.idbWrite(STORE_GAMES, (store) => store.delete(id))) {
         return true;
       }
@@ -668,7 +684,7 @@ class BoardLogStorage {
 
   async updateUserPlay(uid: string, id: string, updates: Partial<PlayRecord>): Promise<PlayRecord> {
     if ((await this.resolveBackend(uid)) === 'idb') {
-      const existing = await this.idbReadOne<PlayRecord>(STORE_PLAYS, id);
+      const existing = await this.idbReadOwned<PlayRecord>(STORE_PLAYS, uid, id);
       if (!existing) {
         throw new Error('수정할 플레이 기록을 찾을 수 없습니다.');
       }
@@ -695,6 +711,7 @@ class BoardLogStorage {
 
   async deleteUserPlay(uid: string, id: string): Promise<boolean> {
     const target = await this.getUserPlayById(uid, id);
+    if (!target) return true;
 
     let deleted = false;
     if ((await this.resolveBackend(uid)) === 'idb') {
@@ -705,7 +722,7 @@ class BoardLogStorage {
       this.lsSet(playsKey(uid), plays.filter((p) => p.id !== id));
     }
 
-    if (target?.gameId) {
+    if (target.gameId) {
       const game = await this.getUserGameById(uid, target.gameId);
       if (game && game.playCount > 0) {
         await this.updateUserGame(uid, game.id, { playCount: Math.max(0, game.playCount - 1) });
