@@ -46,6 +46,63 @@ const RESPONSE_SCHEMA = {
   required: ['detections']
 };
 
+/**
+ * The provider reports a bad key, a disabled API and an unavailable model all as one
+ * failed call, and each needs a different fix. The raw text stays in the log; only the
+ * classification is returned.
+ */
+function classifyProviderError(err: unknown): { status: number; error: string; reason: string } {
+  const text = (err instanceof Error ? err.message : String(err)).toLowerCase();
+
+  if (text.includes('api key not valid') || text.includes('api_key_invalid') || text.includes('invalid api key')) {
+    return {
+      status: 502,
+      reason: 'INVALID_KEY',
+      error: 'Gemini API 키가 올바르지 않습니다. 키를 다시 발급받아 등록해주세요.'
+    };
+  }
+  if (text.includes('permission_denied') || text.includes('has not been used') || text.includes('is disabled')) {
+    return {
+      status: 502,
+      reason: 'API_DISABLED',
+      error: '구글 프로젝트에서 Generative Language API가 켜져 있지 않습니다.'
+    };
+  }
+  if (text.includes('not_found') || text.includes('not found')) {
+    return {
+      status: 502,
+      reason: 'MODEL_NOT_FOUND',
+      error: `모델 "${MODEL}"을 쓸 수 없습니다. GEMINI_MODEL 환경변수로 다른 모델을 지정해주세요.`
+    };
+  }
+  if (text.includes('resource_exhausted') || text.includes('quota') || text.includes('rate limit')) {
+    return {
+      status: 429,
+      reason: 'RATE_LIMITED',
+      error: '사용 한도를 넘었습니다. 잠시 후 다시 시도해주세요.'
+    };
+  }
+  if (text.includes('location') || text.includes('region') || text.includes('user location')) {
+    return {
+      status: 502,
+      reason: 'REGION_BLOCKED',
+      error: '현재 지역에서는 이 모델을 쓸 수 없습니다.'
+    };
+  }
+  // The provider's HTTP status separates the remaining causes without echoing its text back.
+  const status = (err as { status?: unknown }).status;
+  const fromMessage = /\b(4\d{2}|5\d{2})\b/.exec(text);
+  const upstream = typeof status === 'number' ? String(status) : fromMessage?.[1];
+
+  return {
+    status: 502,
+    reason: upstream ? `UNKNOWN_${upstream}` : 'UNKNOWN',
+    error: upstream
+      ? `사진 인식에 실패했습니다. (구글 응답 코드 ${upstream})`
+      : '사진 인식에 실패했습니다. 잠시 후 다시 시도해주세요.'
+  };
+}
+
 interface IncomingImage {
   data: string;
   mimeType: string;
@@ -137,8 +194,8 @@ export default async function handler(req: HandlerRequest, res: HandlerResponse)
     const detections = Array.isArray(parsed.detections) ? parsed.detections : [];
     res.status(200).json({ detections });
   } catch (err) {
-    // The provider's error text can carry request details, so it stays in the server log.
     console.error('scan-games failed', err);
-    res.status(502).json({ error: '사진 인식에 실패했습니다. 잠시 후 다시 시도해주세요.' });
+    const { status, error, reason } = classifyProviderError(err);
+    res.status(status).json({ error, reason });
   }
 }
