@@ -29,6 +29,7 @@ import { HomeDashboard } from './components/HomeDashboard';
 import { GameCard } from './components/GameCard';
 import { GameListItem } from './components/GameListItem';
 import { GameFormModal } from './components/GameFormModal';
+import { GameScanModal } from './components/GameScanModal';
 import { GameDetailModal } from './components/GameDetailModal';
 import { GameCatalogModal } from './components/GameCatalogModal';
 import { KakaoShareModal } from './components/KakaoShareModal';
@@ -80,6 +81,7 @@ const MainApp: React.FC = () => {
   const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
   const [isKakaoShareOpen, setIsKakaoShareOpen] = useState(false);
   const [isGameFormOpen, setIsGameFormOpen] = useState(false);
+  const [isScanOpen, setIsScanOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<UserGame | null>(null);
   const [viewingGame, setViewingGame] = useState<UserGame | null>(null);
 
@@ -139,6 +141,24 @@ const MainApp: React.FC = () => {
     }
     setEditingGame(null);
     setIsGameFormOpen(false);
+  };
+
+  const handleRegisterScannedGames = async (
+    scanned: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>[]
+  ) => {
+    if (!user) return;
+    const created: UserGame[] = [];
+    try {
+      for (const game of scanned) {
+        created.push(await storage.addUserGame(user.uid, game));
+      }
+    } finally {
+      // Whatever was written before a failure is already saved, so reflect it either way.
+      if (created.length > 0) {
+        setGames((prev) => [...[...created].reverse(), ...prev]);
+      }
+    }
+    showToast(`${created.length}개 게임이 등록되었습니다.`, 'success');
   };
 
   const handleConfirmDeleteGame = async () => {
@@ -595,6 +615,19 @@ const MainApp: React.FC = () => {
           setEditingGame(null);
         }}
         onSave={handleSaveGame}
+        onOpenScan={() => {
+          setIsGameFormOpen(false);
+          setEditingGame(null);
+          setIsScanOpen(true);
+        }}
+      />
+
+      {/* Bulk Registration from Photos */}
+      <GameScanModal
+        isOpen={isScanOpen}
+        onClose={() => setIsScanOpen(false)}
+        existingGames={games}
+        onRegister={handleRegisterScannedGames}
       />
 
       {/* Game Details Modal */}

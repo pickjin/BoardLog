@@ -13,7 +13,8 @@ import {
   Tag,
   AlertCircle,
   Calendar,
-  DollarSign
+  DollarSign,
+  Camera
 } from 'lucide-react';
 import { UserGame, SeedGame, GameOwnershipStatus, GameCondition } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
@@ -26,6 +27,7 @@ interface GameFormModalProps {
   onSave: (gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   initialGame?: UserGame | null;
   defaultSearchQuery?: string;
+  onOpenScan?: () => void;
 }
 
 const OWNERSHIP_OPTIONS: GameOwnershipStatus[] = [
@@ -65,7 +67,8 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
   onClose,
   onSave,
   initialGame,
-  defaultSearchQuery = ''
+  defaultSearchQuery = '',
+  onOpenScan
 }) => {
   // Search state (when adding a new game)
   const [searchQuery, setSearchQuery] = useState(defaultSearchQuery);
@@ -278,6 +281,26 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
           {/* Body content with scroll */}
           <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5">
+            {/* Bulk path: one photo of a shelf instead of filling this form per game */}
+            {!initialGame && onOpenScan && (
+              <button
+                id="game-form-open-scan-btn"
+                type="button"
+                onClick={onOpenScan}
+                className="w-full p-3.5 bg-[#1E272E] hover:bg-[#2D3436] text-white rounded-2xl flex items-center gap-3 text-left transition-colors active:scale-[0.99]"
+              >
+                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                  <Camera className="w-4.5 h-4.5" />
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-xs font-bold">사진으로 여러 개 한 번에 등록</span>
+                  <span className="block text-[11px] text-white/70">
+                    책장을 찍으면 박스 제목을 읽어 목록으로 만들어 줍니다
+                  </span>
+                </div>
+              </button>
+            )}
+
             {/* Step 1: Seed Search Quick Fill (Only for new game) */}
             {!initialGame && (
               <div className="bg-[#4834D4]/5 border border-[#4834D4]/20 rounded-2xl p-4">
