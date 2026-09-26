@@ -1,6 +1,16 @@
 import { GoogleGenAI, Type } from '@google/genai';
 
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+/**
+ * Model ids retire while still appearing in the account's model list, so a single
+ * hardcoded id eventually stops working. GEMINI_MODEL wins when set; otherwise these
+ * are tried in order, starting with the alias that tracks the current flash release.
+ */
+const MODEL_CANDIDATES = (process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []).concat([
+  'gemini-flash-latest',
+  'gemini-3.5-flash',
+  'gemini-2.5-flash'
+]);
+const MODEL = MODEL_CANDIDATES[0];
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
@@ -72,7 +82,7 @@ function classifyProviderError(err: unknown): { status: number; error: string; r
     return {
       status: 502,
       reason: 'MODEL_NOT_FOUND',
-      error: `모델 "${MODEL}"을 쓸 수 없습니다. GEMINI_MODEL 환경변수로 다른 모델을 지정해주세요.`
+      error: `시도한 모델(${MODEL_CANDIDATES.join(', ')})을 모두 쓸 수 없습니다. 아래 목록에서 하나를 골라 GEMINI_MODEL 환경변수로 지정해주세요.`
     };
   }
   if (text.includes('resource_exhausted') || text.includes('quota') || text.includes('rate limit')) {
@@ -94,12 +104,14 @@ function classifyProviderError(err: unknown): { status: number; error: string; r
   const fromMessage = /\b(4\d{2}|5\d{2})\b/.exec(text);
   const upstream = typeof status === 'number' ? String(status) : fromMessage?.[1];
 
+  // Unclassified failures have no other route to whoever can fix them: the log is not
+  // reachable from the app. Truncated, and only on this branch.
+  const detail = (err instanceof Error ? err.message : String(err)).slice(0, 300);
+
   return {
     status: 502,
     reason: upstream ? `UNKNOWN_${upstream}` : 'UNKNOWN',
-    error: upstream
-      ? `사진 인식에 실패했습니다. (구글 응답 코드 ${upstream})`
-      : '사진 인식에 실패했습니다. 잠시 후 다시 시도해주세요.'
+    error: `사진 인식에 실패했습니다.${upstream ? ` (구글 응답 코드 ${upstream})` : ''}\n\n${detail}`
   };
 }
 
@@ -183,44 +195,54 @@ export default async function handler(req: HandlerRequest, res: HandlerResponse)
     return;
   }
 
-  try {
-    const ai = new GoogleGenAI({ apiKey });
-    const result = await ai.models.generateContent({
-      model: MODEL,
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: PROMPT },
-            ...images.map((image) => ({
-              inlineData: { mimeType: image.mimeType, data: image.data }
-            }))
-          ]
+  const ai = new GoogleGenAI({ apiKey });
+  const contents = [
+    {
+      role: 'user',
+      parts: [
+        { text: PROMPT },
+        ...images.map((image) => ({
+          inlineData: { mimeType: image.mimeType, data: image.data }
+        }))
+      ]
+    }
+  ];
+
+  let lastError: unknown = null;
+  for (const model of MODEL_CANDIDATES) {
+    try {
+      const result = await ai.models.generateContent({
+        model,
+        contents,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: RESPONSE_SCHEMA,
+          temperature: 0
         }
-      ],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: RESPONSE_SCHEMA,
-        temperature: 0
+      });
+
+      const text = result.text;
+      if (!text) {
+        res.status(502).json({ error: '사진에서 게임 이름을 읽지 못했습니다. 다시 시도해주세요.' });
+        return;
       }
-    });
 
-    const text = result.text;
-    if (!text) {
-      res.status(502).json({ error: '사진에서 게임 이름을 읽지 못했습니다. 다시 시도해주세요.' });
+      const parsed = JSON.parse(text) as { detections?: unknown };
+      const detections = Array.isArray(parsed.detections) ? parsed.detections : [];
+      res.status(200).json({ detections, model });
       return;
+    } catch (err) {
+      console.error(`scan-games failed on ${model}`, err);
+      lastError = err;
+      // Only a missing model is worth another id; a bad key or spent quota fails the same way every time.
+      if (classifyProviderError(err).reason !== 'MODEL_NOT_FOUND') break;
     }
-
-    const parsed = JSON.parse(text) as { detections?: unknown };
-    const detections = Array.isArray(parsed.detections) ? parsed.detections : [];
-    res.status(200).json({ detections });
-  } catch (err) {
-    console.error('scan-games failed', err);
-    const { status, error, reason } = classifyProviderError(err);
-    if (reason === 'MODEL_NOT_FOUND') {
-      res.status(status).json({ error, reason, available: await listUsableModels(apiKey) });
-      return;
-    }
-    res.status(status).json({ error, reason });
   }
+
+  const { status, error, reason } = classifyProviderError(lastError);
+  if (reason === 'MODEL_NOT_FOUND') {
+    res.status(status).json({ error, reason, available: await listUsableModels(apiKey) });
+    return;
+  }
+  res.status(status).json({ error, reason });
 }
