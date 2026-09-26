@@ -250,10 +250,23 @@ export default async function handler(req: HandlerRequest, res: HandlerResponse)
     }
   }
 
-  const { status, error, reason } = classifyProviderError(lastError);
-  if (reason === 'MODEL_NOT_FOUND') {
-    res.status(status).json({ error, reason, available: await listUsableModels(apiKey) });
+  const classified = classifyProviderError(lastError);
+  if (classified.reason === 'MODEL_NOT_FOUND') {
+    const available = await listUsableModels(apiKey);
+    // A candidate rejected as "not found" that still appears in the account's own
+    // listing was never actually missing: the provider is misbehaving under load, and
+    // swapping GEMINI_MODEL to another id already tried would fail the same way.
+    const stillListed = MODEL_CANDIDATES.some((model) => available.includes(model));
+    if (stillListed) {
+      res.status(503).json({
+        error: '지금 일시적으로 요청을 처리하지 못했습니다. 잠시 후 다시 시도해주세요.',
+        reason: 'PROVIDER_UNSTABLE',
+        available
+      });
+      return;
+    }
+    res.status(classified.status).json({ error: classified.error, reason: classified.reason, available });
     return;
   }
-  res.status(status).json({ error, reason });
+  res.status(classified.status).json({ error: classified.error, reason: classified.reason });
 }
