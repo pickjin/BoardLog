@@ -61,7 +61,7 @@ const RESPONSE_SCHEMA = {
  * failed call, and each needs a different fix. The raw text stays in the log; only the
  * classification is returned.
  */
-function classifyProviderError(err: unknown): { status: number; error: string; reason: string } {
+export function classifyProviderError(err: unknown): { status: number; error: string; reason: string } {
   const text = (err instanceof Error ? err.message : String(err)).toLowerCase();
 
   if (text.includes('api key not valid') || text.includes('api_key_invalid') || text.includes('invalid api key')) {
@@ -97,6 +97,15 @@ function classifyProviderError(err: unknown): { status: number; error: string; r
       status: 502,
       reason: 'REGION_BLOCKED',
       error: '현재 지역에서는 이 모델을 쓸 수 없습니다.'
+    };
+  }
+  // Google's own transient overload, distinct from a quota being spent: the message
+  // itself says a retry is expected to work, so no raw detail needs to reach the user.
+  if (text.includes('unavailable') || text.includes('overloaded') || text.includes('high demand')) {
+    return {
+      status: 503,
+      reason: 'MODEL_OVERLOADED',
+      error: '지금 사용자가 몰려 있습니다. 잠시 후 다시 시도해주세요.'
     };
   }
   // The provider's HTTP status separates the remaining causes without echoing its text back.
@@ -234,8 +243,10 @@ export default async function handler(req: HandlerRequest, res: HandlerResponse)
     } catch (err) {
       console.error(`scan-games failed on ${model}`, err);
       lastError = err;
-      // Only a missing model is worth another id; a bad key or spent quota fails the same way every time.
-      if (classifyProviderError(err).reason !== 'MODEL_NOT_FOUND') break;
+      const reason = classifyProviderError(err).reason;
+      // A missing or momentarily overloaded model might succeed on another id; a bad
+      // key or a spent quota fails the same way on every one, so stop immediately.
+      if (reason !== 'MODEL_NOT_FOUND' && reason !== 'MODEL_OVERLOADED') break;
     }
   }
 
