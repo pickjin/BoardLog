@@ -227,7 +227,9 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
               {error && (
                 <div className="flex items-start gap-2 p-3 bg-[#FDECEA] border border-[#F5C6C2] rounded-2xl">
                   <AlertCircle className="w-4 h-4 text-[#C0392B] shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-[#C0392B] leading-relaxed">{error}</p>
+                  <p className="text-[11px] text-[#C0392B] leading-relaxed whitespace-pre-line break-all">
+                    {error}
+                  </p>
                 </div>
               )}
 

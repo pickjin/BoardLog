@@ -64,7 +64,7 @@ export async function scanGamePhotos(
     body: JSON.stringify({ images })
   });
 
-  let payload: { detections?: unknown; error?: unknown; code?: unknown } = {};
+  let payload: { detections?: unknown; error?: unknown; code?: unknown; available?: unknown } = {};
   try {
     payload = await response.json();
   } catch {
@@ -73,8 +73,12 @@ export async function scanGamePhotos(
 
   if (!response.ok) {
     if (payload.code === 'NOT_CONFIGURED') throw new ScanNotConfiguredError();
+    const message = typeof payload.error === 'string' ? payload.error : '사진 인식에 실패했습니다.';
+    const available = Array.isArray(payload.available)
+      ? payload.available.filter((name): name is string => typeof name === 'string')
+      : [];
     throw new Error(
-      typeof payload.error === 'string' ? payload.error : '사진 인식에 실패했습니다.'
+      available.length > 0 ? `${message}\n\n쓸 수 있는 모델:\n${available.join('\n')}` : message
     );
   }
 

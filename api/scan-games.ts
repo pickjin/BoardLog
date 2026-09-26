@@ -103,6 +103,27 @@ function classifyProviderError(err: unknown): { status: number; error: string; r
   };
 }
 
+/**
+ * Model ids move over time, so a not-found answer is more useful with the list of ids
+ * this key can actually reach: one of them goes straight into GEMINI_MODEL.
+ */
+async function listUsableModels(apiKey: string): Promise<string[]> {
+  try {
+    const pager = await new GoogleGenAI({ apiKey }).models.list();
+    const names: string[] = [];
+    for await (const model of pager) {
+      const actions = model.supportedActions;
+      const usable = !actions || actions.length === 0 || actions.includes('generateContent');
+      if (model.name && usable) names.push(model.name.replace(/^models\//, ''));
+      if (names.length >= 40) break;
+    }
+    return names;
+  } catch (err) {
+    console.error('scan-games model listing failed', err);
+    return [];
+  }
+}
+
 interface IncomingImage {
   data: string;
   mimeType: string;
@@ -196,6 +217,10 @@ export default async function handler(req: HandlerRequest, res: HandlerResponse)
   } catch (err) {
     console.error('scan-games failed', err);
     const { status, error, reason } = classifyProviderError(err);
+    if (reason === 'MODEL_NOT_FOUND') {
+      res.status(status).json({ error, reason, available: await listUsableModels(apiKey) });
+      return;
+    }
     res.status(status).json({ error, reason });
   }
 }
