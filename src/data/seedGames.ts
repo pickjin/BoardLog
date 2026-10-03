@@ -4455,5 +4455,50 @@ export const SEED_GAMES: SeedGame[] = [
     weight: 3.30,
     publisher: '코리아보드게임즈',
     description: '공용 주사위에 의해 일꾼들의 가치가 매겨지며, 가문의 일원들을 탑에 배치하여 카드를 얻고 신앙과 자원을 관리하는 르네상스 배경의 게임입니다.'
+  },
+  {
+    id: 'seed-298',
+    title: '블루 라군',
+    titleEn: 'Blue Lagoon',
+    imageUrl: '',
+    genre: ['타일배치', '영역', '가족전략'],
+    minPlayers: 2,
+    maxPlayers: 4,
+    bestPlayers: '3-4인',
+    recommendedAge: 8,
+    playTime: 45,
+    weight: 2.0,
+    publisher: '코스모스',
+    description: '섬에 정착촌과 길을 늘려가며 영역을 넓히는, 초반 정착과 후반 확장 두 단계로 나뉜 크니지아의 가족용 전략 게임'
+  },
+  {
+    id: 'seed-299',
+    title: '베어파크',
+    titleEn: 'Bärenpark',
+    imageUrl: '',
+    genre: ['퍼즐', '폴리오미노', '동물원'],
+    minPlayers: 1,
+    maxPlayers: 4,
+    bestPlayers: '2-3인',
+    recommendedAge: 8,
+    playTime: 50,
+    weight: 1.9,
+    publisher: '룩아웃 게임즈',
+    description: '다양한 모양의 동물 우리 타일을 자신의 동물원 부지에 빈틈없이 배치해나가는 테트리스 스타일의 퍼즐 게임'
+  },
+  {
+    id: 'seed-300',
+    title: '콜로레토',
+    titleEn: 'Coloretto',
+    imageUrl: '',
+    genre: ['카드', '수집', '가족'],
+    minPlayers: 2,
+    maxPlayers: 5,
+    bestPlayers: '4-5인',
+    recommendedAge: 8,
+    playTime: 30,
+    weight: 1.3,
+    publisher: '아바쿠스슈필레',
+    description: '카드를 마차에 쌓거나 가져가며 같은 색을 모으되, 색이 너무 많아지면 오히려 손해를 보는 크니지아의 간결한 수집 카드게임'
   }
 ];
