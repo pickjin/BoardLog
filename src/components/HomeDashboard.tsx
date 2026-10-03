@@ -11,7 +11,8 @@ import {
   Printer,
   BookOpen,
   Download,
-  MessageCircle
+  MessageCircle,
+  Key
 } from 'lucide-react';
 import { UserGame, PlayRecord } from '../types';
 import { PlayCard } from './PlayCard';
@@ -50,6 +51,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
   const recentPlays = plays.slice(0, 3);
   const favoriteGames = [...games].sort((a, b) => (b.playCount || 0) - (a.playCount || 0)).slice(0, 4);
+
+  // Collector level: purely derived from plays already in storage, no new persisted state.
+  const PLAYS_PER_LEVEL = 5;
+  const collectorLevel = Math.floor(totalPlays / PLAYS_PER_LEVEL) + 1;
+  const playsIntoLevel = totalPlays % PLAYS_PER_LEVEL;
+  const levelProgressPct = Math.round((playsIntoLevel / PLAYS_PER_LEVEL) * 100);
+  const playsToNextLevel = PLAYS_PER_LEVEL - playsIntoLevel;
 
   return (
     <div className="space-y-6 pb-20">
@@ -113,6 +121,33 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
         {/* Decorative subtle background accents */}
         <div className="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      </div>
+
+      {/* Collector Level Strip — derived from plays, no new persisted state */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm">
+        <div className="w-9 h-9 rounded-full bg-[#4834D4]/10 text-[#4834D4] flex items-center justify-center shrink-0 font-black italic text-xs">
+          Lv.{collectorLevel}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold text-[#A8ABAF]">수집가 레벨</span>
+            <span className="text-[10px] font-medium text-[#636E72]">
+              {playsToNextLevel === PLAYS_PER_LEVEL ? '기록 시작!' : `다음 레벨까지 ${playsToNextLevel}회`}
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#F1F2F6] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#686DE0] to-[#4834D4] rounded-full transition-all duration-500"
+              style={{ width: `${levelProgressPct}%` }}
+            />
+          </div>
+        </div>
+        <Key
+          className={`w-4 h-4 shrink-0 transition-colors ${
+            levelProgressPct >= 80 ? 'text-amber-400' : 'text-[#DCDDE1]'
+          }`}
+          strokeWidth={2}
+        />
       </div>
 
       {/* Summary KPI Grid */}
