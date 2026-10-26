@@ -52,9 +52,31 @@ interface PlayRecordFormModalProps {
   userGames: UserGame[];
   initialPlay?: PlayRecord | null;
   preselectedGame?: UserGame | null;
+  /** Newest first. */
+  pastPlays?: PlayRecord[];
 }
 
 const MY_RESULT_OPTIONS: MyGameResult[] = ['승리', '패배', '무승부', '참여'];
+
+const NO_PLAYS: PlayRecord[] = [];
+const MAX_COMPANION_CHIPS = 8;
+
+const isPlaceholderName = (name: string) => !name.trim() || /^(동행|플레이어) \d+$/.test(name.trim());
+
+const isMe = (p: PlayParticipant) => p.id === 'p_me' || p.name === '나';
+
+// No result is preselected: a default of '승리' got saved unchanged and inflated win rates.
+const newPlayParticipants = (): PlayParticipant[] => [
+  { id: 'p_me', name: '나', score: null, rank: null, isWinner: false, notes: '' },
+  { id: 'p_2', name: '동행 1', score: null, rank: null, isWinner: false, notes: '' }
+];
+
+/** Null when no winner is marked yet, so the user's explicit result choice is kept. */
+const deriveMyResult = (participants: PlayParticipant[]): MyGameResult | null => {
+  const winners = participants.filter((p) => p.isWinner);
+  if (winners.length === 0) return null;
+  return winners.some(isMe) ? '승리' : '패배';
+};
 
 const LOCATION_PRESETS = [
   '☕ 보드게임 카페',
@@ -80,7 +102,8 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
   onSave,
   userGames,
   initialPlay,
-  preselectedGame
+  preselectedGame,
+  pastPlays = NO_PLAYS
 }) => {
   // Game Selection State
   const [gameId, setGameId] = useState<string | null>(null);
@@ -100,11 +123,8 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
   const [location, setLocation] = useState('보드게임 카페');
 
   // Participants
-  const [participants, setParticipants] = useState<PlayParticipant[]>([
-    { id: 'p_me', name: '나', score: null, rank: 1, isWinner: true, notes: '' },
-    { id: 'p_2', name: '동행 1', score: null, rank: 2, isWinner: false, notes: '' }
-  ]);
-  const [myResult, setMyResult] = useState<MyGameResult>('승리');
+  const [participants, setParticipants] = useState<PlayParticipant[]>(newPlayParticipants);
+  const [myResult, setMyResult] = useState<MyGameResult | null>(null);
   const [isTeamPlay, setIsTeamPlay] = useState(false);
   const [hasExpansion, setHasExpansion] = useState(false);
   const [expansionName, setExpansionName] = useState('');
@@ -145,7 +165,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
           ? initialPlay.participants
           : [{ id: 'p_me', name: '나', score: null, rank: 1, isWinner: true }]
       );
-      setMyResult(initialPlay.myResult || '승리');
+      setMyResult(initialPlay.myResult || null);
       setIsTeamPlay(initialPlay.isTeamPlay || false);
       setHasExpansion(initialPlay.hasExpansion || false);
       setExpansionName(initialPlay.expansionName || '');
@@ -169,11 +189,8 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
       setEndTime(`${eH}:${eM}`);
 
       setLocation(preselectedGame.storageLocation ? '우리 집' : '보드게임 카페');
-      setParticipants([
-        { id: 'p_me', name: '나', score: null, rank: 1, isWinner: true, notes: '' },
-        { id: 'p_2', name: '동행 1', score: null, rank: 2, isWinner: false, notes: '' }
-      ]);
-      setMyResult('승리');
+      setParticipants(newPlayParticipants());
+      setMyResult(null);
       setIsTeamPlay(false);
       setHasExpansion(false);
       setExpansionName('');
@@ -197,11 +214,8 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
       setEndTime(`${eH}:${eM}`);
 
       setLocation('보드게임 카페');
-      setParticipants([
-        { id: 'p_me', name: '나', score: null, rank: 1, isWinner: true, notes: '' },
-        { id: 'p_2', name: '동행 1', score: null, rank: 2, isWinner: false, notes: '' }
-      ]);
-      setMyResult('승리');
+      setParticipants(newPlayParticipants());
+      setMyResult(null);
       setIsTeamPlay(false);
       setHasExpansion(false);
       setExpansionName('');
@@ -251,8 +265,56 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
       storageLocation: ''
     }));
 
-    return [...ownedItems, ...seedItems];
-  }, [userGames]);
+    // Recently played games first, so re-logging last week's game needs no typing.
+    const recencyRank = new Map<string, number>();
+    pastPlays.forEach((play) => {
+      const key = play.gameTitle.trim().toLowerCase();
+      if (!recencyRank.has(key)) recencyRank.set(key, recencyRank.size);
+    });
+
+    return [...ownedItems, ...seedItems]
+      .map((item) => ({ ...item, recentRank: recencyRank.get(item.title.toLowerCase()) ?? null }))
+      .sort((a, b) => (a.recentRank ?? Number.MAX_SAFE_INTEGER) - (b.recentRank ?? Number.MAX_SAFE_INTEGER));
+  }, [userGames, pastPlays]);
+
+  // Same group plays together repeatedly; offer their names instead of retyping each time.
+  const frequentCompanions = useMemo(() => {
+    const counts = new Map<string, number>();
+    pastPlays.forEach((play) =>
+      play.participants.forEach((p) => {
+        if (isMe(p) || isPlaceholderName(p.name)) return;
+        const name = p.name.trim();
+        counts.set(name, (counts.get(name) ?? 0) + 1);
+      })
+    );
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, MAX_COMPANION_CHIPS)
+      .map(([name]) => name);
+  }, [pastPlays]);
+
+  const companionSuggestions = frequentCompanions.filter(
+    (name) => !participants.some((p) => p.name.trim() === name)
+  );
+
+  const addCompanion = (name: string) => {
+    const slot = participants.findIndex((p) => !isMe(p) && isPlaceholderName(p.name));
+    if (slot >= 0) {
+      setParticipants(participants.map((p, i) => (i === slot ? { ...p, name } : p)));
+      return;
+    }
+    setParticipants([
+      ...participants,
+      {
+        id: 'p_' + Math.random().toString(36).substring(2, 7),
+        name,
+        score: null,
+        rank: null,
+        isWinner: false,
+        notes: ''
+      }
+    ]);
+  };
 
   // Filtered game suggestions
   const searchResults = useMemo(() => {
@@ -328,16 +390,13 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
 
   // Handle participant updates
   const updateParticipant = (index: number, updates: Partial<PlayParticipant>) => {
-    setParticipants((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], ...updates };
+    const next = participants.map((p, i) => (i === index ? { ...p, ...updates } : p));
+    setParticipants(next);
 
-      // If winner toggled on for '나', sync myResult to '승리'
-      if (next[index].name === '나' && updates.isWinner !== undefined) {
-        setMyResult(updates.isWinner ? '승리' : '패배');
-      }
-      return next;
-    });
+    if (updates.isWinner !== undefined) {
+      const derived = deriveMyResult(next);
+      if (derived) setMyResult(derived);
+    }
   };
 
   const addParticipant = () => {
@@ -440,6 +499,10 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
     }
     if (participants.length === 0) {
       setFormError('참여자를 최소 1명 이상 입력해 주세요.');
+      return;
+    }
+    if (!myResult) {
+      setFormError('승자를 탭하거나 나의 결과를 골라 주세요.');
       return;
     }
 
@@ -713,6 +776,11 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                                 <span className="text-xs font-black text-[#1E272E] truncate">
                                   {game.title}
                                 </span>
+                                {game.recentRank !== null && (
+                                  <span className="text-[9px] px-1.5 py-0.2 rounded-md bg-amber-100 text-amber-700 font-bold shrink-0">
+                                    최근
+                                  </span>
+                                )}
                                 {game.isOwned ? (
                                   <span className="text-[9px] px-1.5 py-0.2 rounded-md bg-[#4834D4]/10 text-[#4834D4] font-bold shrink-0">
                                     소장
@@ -891,6 +959,9 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
               <label className="block text-xs font-bold text-[#1E272E] mb-1.5 flex items-center gap-1.5">
                 <Trophy className="w-3.5 h-3.5 text-[#4834D4]" />
                 <span>나의 결과</span>
+                {!myResult && (
+                  <span className="font-medium text-[#A8ABAF]">· 아래에서 승자를 탭하면 자동으로 정해져요</span>
+                )}
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {MY_RESULT_OPTIONS.map((res) => (
@@ -901,7 +972,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                       setMyResult(res);
                       // sync with participant '나'
                       setParticipants((prev) =>
-                        prev.map((p) => (p.name === '나' ? { ...p, isWinner: res === '승리' } : p))
+                        prev.map((p) => (isMe(p) ? { ...p, isWinner: res === '승리' } : p))
                       );
                     }}
                     className={`py-2 rounded-full text-xs font-bold border transition-all text-center ${
@@ -934,6 +1005,23 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                   <span>참여자 추가</span>
                 </button>
               </div>
+
+              {companionSuggestions.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] font-bold text-[#A8ABAF]">최근 함께한 사람</span>
+                  {companionSuggestions.map((name) => (
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() => addCompanion(name)}
+                      className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-[#E9ECEF] text-[#1E272E] hover:border-[#4834D4]/40 hover:text-[#4834D4] active:scale-95 transition-all"
+                    >
+                      <Plus className="w-3 h-3" />
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <div className="space-y-2">
                 {participants.map((p, idx) => (

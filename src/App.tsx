@@ -652,6 +652,7 @@ const MainApp: React.FC = () => {
         initialPlay={editingPlay}
         preselectedGame={preselectedGameForPlay}
         userGames={games}
+        pastPlays={plays}
         onClose={() => {
           setIsPlayFormOpen(false);
           setEditingPlay(null);
