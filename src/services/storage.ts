@@ -1,5 +1,6 @@
 import { UserGame, PlayRecord, UserProfile } from '../types';
 import { formatDate } from '../utils/formatters';
+import { ParsedBackup, gameDedupKey, playDedupKey } from '../utils/backupImport';
 
 const DB_NAME = 'board_log_db_v1';
 const DB_VERSION = 1;
@@ -105,6 +106,16 @@ function randomId(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).substring(2, 9)}${Date.now()}`;
 }
 
+export interface ImportPlan {
+  newGames: UserGame[];
+  newPlays: PlayRecord[];
+  /** Existing game id -> number of imported plays linked to it. */
+  playCountBumps: Map<string, number>;
+  skippedGames: number;
+  skippedPlays: number;
+  invalidCount: number;
+}
+
 class BoardLogStorage {
   private dbPromise: Promise<IDBDatabase | null> | null = null;
   private backends = new Map<string, Backend>();
@@ -197,13 +208,21 @@ class BoardLogStorage {
     storeName: string,
     mutate: (store: IDBObjectStore) => void
   ): Promise<boolean> {
+    return this.idbWriteTx([storeName], (tx) => mutate(tx.objectStore(storeName)));
+  }
+
+  /** One transaction over several stores: either every write commits or none does. */
+  private async idbWriteTx(
+    storeNames: string[],
+    mutate: (tx: IDBTransaction) => void
+  ): Promise<boolean> {
     const db = await this.openDb();
     if (!db) return false;
 
     return new Promise((resolve, reject) => {
       let tx: IDBTransaction;
       try {
-        tx = db.transaction(storeName, 'readwrite');
+        tx = db.transaction(storeNames, 'readwrite');
       } catch {
         resolve(false);
         return;
@@ -222,7 +241,7 @@ class BoardLogStorage {
       tx.onabort = settleFailure;
 
       try {
-        mutate(tx.objectStore(storeName));
+        mutate(tx);
       } catch {
         tx.abort();
       }
@@ -733,6 +752,111 @@ class BoardLogStorage {
 
   async deletePlayRecord(uid: string, id: string): Promise<boolean> {
     return this.deleteUserPlay(uid, id);
+  }
+
+  // --- Import JSON backup ---
+  /**
+   * Read-only: works out what a backup would add so the user can confirm first.
+   * Every imported record gets a fresh id (see ImportedGame for why backup ids are never reused).
+   */
+  async planImport(uid: string, parsed: ParsedBackup): Promise<ImportPlan> {
+    const existingGames = await this.getUserGames(uid);
+    const existingPlays = await this.getUserPlays(uid);
+
+    const gameIdByKey = new Map(existingGames.map((g) => [gameDedupKey(g.title), g.id]));
+    const existingGameIds = new Set(existingGames.map((g) => g.id));
+    const sourceToTarget = new Map<string, string>();
+    const newGames: UserGame[] = [];
+    let skippedGames = 0;
+
+    parsed.games.forEach(({ sourceId, data }) => {
+      const key = gameDedupKey(data.title);
+      const known = gameIdByKey.get(key);
+      if (known) {
+        skippedGames += 1;
+        if (sourceId) sourceToTarget.set(sourceId, known);
+        return;
+      }
+      const game: UserGame = {
+        ...data,
+        id: randomId('game'),
+        createdAt: data.createdAt || formatDate(),
+        updatedAt: formatDate()
+      };
+      newGames.push(game);
+      gameIdByKey.set(key, game.id);
+      if (sourceId) sourceToTarget.set(sourceId, game.id);
+    });
+
+    const playKeys = new Set(existingPlays.map(playDedupKey));
+    const newPlays: PlayRecord[] = [];
+    const playCountBumps = new Map<string, number>();
+    let skippedPlays = 0;
+
+    parsed.plays.forEach(({ sourceGameId, data }) => {
+      const key = playDedupKey(data);
+      if (playKeys.has(key)) {
+        skippedPlays += 1;
+        return;
+      }
+      playKeys.add(key);
+      const gameId = sourceGameId ? sourceToTarget.get(sourceGameId) ?? null : null;
+      newPlays.push({
+        ...data,
+        id: randomId('play'),
+        gameId,
+        createdAt: data.createdAt || formatDate(),
+        updatedAt: formatDate()
+      });
+      // A new game already carries the backup's playCount; only games that were here before need it raised.
+      if (gameId && existingGameIds.has(gameId)) {
+        playCountBumps.set(gameId, (playCountBumps.get(gameId) ?? 0) + 1);
+      }
+    });
+
+    return {
+      newGames,
+      newPlays,
+      playCountBumps,
+      skippedGames,
+      skippedPlays,
+      invalidCount: parsed.invalidCount
+    };
+  }
+
+  async commitImport(uid: string, plan: ImportPlan): Promise<void> {
+    if (plan.newGames.length === 0 && plan.newPlays.length === 0) return;
+
+    if ((await this.resolveBackend(uid)) === 'idb') {
+      const bumped: Stored<UserGame>[] = [];
+      for (const [id, extra] of plan.playCountBumps) {
+        const existing = await this.idbReadOwned<UserGame>(STORE_GAMES, uid, id);
+        if (existing) bumped.push({ ...existing, playCount: (existing.playCount || 0) + extra });
+      }
+
+      // Backup arrays are newest first; assigning order oldest-first keeps that ordering.
+      const gameOrders = [...plan.newGames].reverse().map(() => this.nextOrder()).reverse();
+      const playOrders = [...plan.newPlays].reverse().map(() => this.nextOrder()).reverse();
+
+      const written = await this.idbWriteTx([STORE_GAMES, STORE_PLAYS], (tx) => {
+        const games = tx.objectStore(STORE_GAMES);
+        const plays = tx.objectStore(STORE_PLAYS);
+        plan.newGames.forEach((game, i) => games.put({ ...game, userId: uid, order: gameOrders[i] }));
+        bumped.forEach((game) => games.put(game));
+        plan.newPlays.forEach((play, i) => plays.put({ ...play, userId: uid, order: playOrders[i] }));
+      });
+      // Reads stay on IndexedDB for this account, so a LocalStorage fallback here would be invisible.
+      if (!written) throw new Error('복원 데이터를 저장하지 못했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    const games = this.lsGet<UserGame[]>(gamesKey(uid), []).map((g) => {
+      const extra = plan.playCountBumps.get(g.id);
+      return extra ? { ...g, playCount: (g.playCount || 0) + extra } : g;
+    });
+    const plays = this.lsGet<PlayRecord[]>(playsKey(uid), []);
+    this.lsSet(gamesKey(uid), [...plan.newGames, ...games]);
+    this.lsSet(playsKey(uid), [...plan.newPlays, ...plays]);
   }
 
   // --- Export JSON ---

@@ -42,6 +42,12 @@ talks to IndexedDB or localStorage directly. This matters for two reasons:
    though list views (which go through the `userId` index) looked correctly isolated. A fix must be
    verified with a multi-account test, not a single-user one — the bug is invisible otherwise.
 
+The same rule is why backup restore (`planImport` / `commitImport`, parsed by
+`src/utils/backupImport.ts`) never writes a backup's own ids: every imported record gets a fresh
+id and plays are re-linked to games through a source-id map. Writing a backup id with `put` would
+overwrite, and take ownership of, another account's record that happens to share it. Imported
+fields are whitelisted field by field, so a file cannot smuggle in `userId` or `order`.
+
 Auth is entirely client-side: passwords are PBKDF2-SHA256 hashed (210k iterations, per-record salt)
 and stored in `localStorage['boardlog_all_users']`. There is no session token or server validation.
 

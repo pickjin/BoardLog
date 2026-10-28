@@ -141,7 +141,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               {user?.isAnonymous && (
                 <div className="mb-4 p-3 rounded-2xl bg-[#4834D4]/5 border border-[#4834D4]/20 text-xs text-[#1E272E] flex items-start gap-2">
                   <Sparkles className="w-4 h-4 text-[#4834D4] shrink-0 mt-0.5" />
-                  <span>현재 <strong>게스트 모드</strong>입니다. 회원가입하시면 다른 기기에서도 기록을 안전하게 관리할 수 있습니다.</span>
+                  <span>현재 <strong>게스트 모드</strong>입니다. 회원가입을 해도 기록은 <strong>이 브라우저에만</strong> 저장됩니다. 기기를 바꾸기 전에 마이페이지에서 백업 파일을 받아 두세요.</span>
                 </div>
               )}
 

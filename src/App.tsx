@@ -38,6 +38,7 @@ import { PlayRecordFormModal } from './components/PlayRecordFormModal';
 import { PlayDetailModal } from './components/PlayDetailModal';
 import { MyPageView } from './components/MyPageView';
 import { AuthModal } from './components/AuthModal';
+import { PlayShareSheet } from './components/PlayShareSheet';
 import { ConfirmModal } from './components/ConfirmModal';
 import { LoadingState, EmptyState, ErrorState } from './components/StateViews';
 
@@ -87,6 +88,7 @@ const MainApp: React.FC = () => {
 
   const [isPlayFormOpen, setIsPlayFormOpen] = useState(false);
   const [editingPlay, setEditingPlay] = useState<PlayRecord | null>(null);
+  const [sharingPlay, setSharingPlay] = useState<PlayRecord | null>(null);
   const [viewingPlay, setViewingPlay] = useState<PlayRecord | null>(null);
   const [preselectedGameForPlay, setPreselectedGameForPlay] = useState<UserGame | null>(null);
 
@@ -205,6 +207,7 @@ const MainApp: React.FC = () => {
       const updatedGames = await storage.getUserGames(user.uid);
       setGames(updatedGames);
       showToast('새 플레이 기록이 저장되었습니다! 🎲', 'success');
+      setSharingPlay(newPlay);
     }
     setEditingPlay(null);
     setIsPlayFormOpen(false);
@@ -571,6 +574,7 @@ const MainApp: React.FC = () => {
               <MyPageView
                 onOpenAuth={() => setIsAuthOpen(true)}
                 onOpenCatalog={() => setIsCatalogModalOpen(true)}
+                onDataImported={loadData}
               />
             )}
           </>
@@ -675,6 +679,8 @@ const MainApp: React.FC = () => {
           setDeletingPlay(play);
         }}
       />
+
+      <PlayShareSheet play={sharingPlay} onClose={() => setSharingPlay(null)} />
 
       {/* Auth Modal */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />

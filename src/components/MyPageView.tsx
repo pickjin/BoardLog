@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   User,
   Shield,
@@ -11,24 +11,84 @@ import {
   Lock,
   Smartphone,
   Printer,
-  BookOpen
+  BookOpen,
+  Upload
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { storage } from '../services/storage';
+import { storage, ImportPlan } from '../services/storage';
+import { parseBackup, MAX_BACKUP_BYTES } from '../utils/backupImport';
+import { ConfirmModal } from './ConfirmModal';
 
 interface MyPageViewProps {
   onOpenAuth: () => void;
   onOpenCatalog?: () => void;
+  onDataImported?: () => void;
 }
 
-export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalog }) => {
+export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalog, onDataImported }) => {
   const { user, signOut, updateNickname } = useAuth();
   const { showToast } = useToast();
 
   const [isEditingNick, setIsEditingNick] = useState(false);
   const [nickInput, setNickInput] = useState(user?.nickname || '');
   const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [pendingImport, setPendingImport] = useState<ImportPlan | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBackupChosen = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !user) return;
+    if (file.size > MAX_BACKUP_BYTES) {
+      showToast('백업 파일이 너무 큽니다.', 'error');
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const plan = await storage.planImport(user.uid, parseBackup(await file.text()));
+      if (plan.newGames.length === 0 && plan.newPlays.length === 0) {
+        showToast('새로 추가할 데이터가 없습니다. 이미 모두 들어 있어요.', 'info');
+        return;
+      }
+      setPendingImport(plan);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : '백업 파일을 읽지 못했습니다.', 'error');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleConfirmImport = async () => {
+    if (!user || !pendingImport) return;
+    const plan = pendingImport;
+    setPendingImport(null);
+    setIsImporting(true);
+    try {
+      await storage.commitImport(user.uid, plan);
+      showToast(`게임 ${plan.newGames.length}개, 플레이 기록 ${plan.newPlays.length}개를 복원했습니다.`, 'success');
+      onDataImported?.();
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : '복원 중 오류가 발생했습니다.', 'error');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const importSummary = pendingImport
+    ? [
+        `게임 ${pendingImport.newGames.length}개, 플레이 기록 ${pendingImport.newPlays.length}개를 추가합니다.`,
+        pendingImport.skippedGames + pendingImport.skippedPlays > 0
+          ? `이미 있는 게임 ${pendingImport.skippedGames}개, 기록 ${pendingImport.skippedPlays}개는 건너뜁니다.`
+          : '',
+        pendingImport.invalidCount > 0 ? `형식이 잘못된 항목 ${pendingImport.invalidCount}개는 제외됩니다.` : '',
+        '기존 데이터는 지워지지 않습니다.'
+      ]
+        .filter(Boolean)
+        .join(' ')
+    : '';
 
   const handleSaveNickname = async () => {
     if (!nickInput.trim()) return;
@@ -138,7 +198,7 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
         <p className="text-[11px] text-[#636E72] leading-relaxed">
           • <strong>데이터베이스 상태:</strong> 고속 브라우저 로컬 저장소(IndexedDB)에 저장되어 새로고침하거나 브라우저를 닫아도 안전하게 유지됩니다.
           <br />
-          • <strong>외부 연동 상태:</strong> 외부 보드게임 상점/BGG API는 현재 <strong>"외부 DB 미연결"</strong> 상태이며, 번들된 60여 개 인기 보드게임 시드 목록과 사용자 수동 입력을 통해 정직하게 동작합니다.
+          • <strong>외부 연동 상태:</strong> 외부 보드게임 상점/BGG API는 현재 <strong>"외부 DB 미연결"</strong> 상태이며, 번들된 300개 인기 보드게임 시드 목록과 사용자 수동 입력을 통해 정직하게 동작합니다.
         </p>
       </div>
 
@@ -149,7 +209,7 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
           <span>데이터 백업 및 서가 도록 출력</span>
         </h3>
         <p className="text-[11px] text-[#636E72] leading-relaxed">
-          내 게임 목록을 책처럼 찾아볼 수 있는 PDF 도록으로 인쇄하거나 JSON 데이터 백업을 다운로드할 수 있습니다.
+          내 게임 목록을 PDF 도록으로 인쇄하거나, JSON 백업 파일로 저장하고 복원할 수 있습니다. 기록은 이 브라우저에만 저장되니 폰을 바꾸기 전에 백업해 두세요.
         </p>
 
         <div className="space-y-2">
@@ -175,8 +235,36 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
             <Download className="w-4 h-4 text-[#4834D4]" />
             <span>{isExporting ? '파일 생성 중...' : 'JSON 데이터 백업 다운로드'}</span>
           </button>
+
+          <button
+            id="import-json-btn"
+            type="button"
+            disabled={isImporting}
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full py-2.5 bg-[#F1F3F5] hover:bg-[#E9ECEF] text-[#2D3436] rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+          >
+            <Upload className="w-4 h-4 text-[#4834D4]" />
+            <span>{isImporting ? '백업 확인 중...' : '백업 파일로 복원'}</span>
+          </button>
+          <input
+            ref={fileInputRef}
+            id="import-json-input"
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            onChange={handleBackupChosen}
+          />
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!pendingImport}
+        title="백업 복원"
+        message={importSummary}
+        confirmText="복원하기"
+        onConfirm={handleConfirmImport}
+        onCancel={() => setPendingImport(null)}
+      />
 
       {/* Sign out */}
       <div className="pt-2">
