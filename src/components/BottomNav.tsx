@@ -8,50 +8,82 @@ interface BottomNavProps {
   onQuickAddPlay: () => void;
 }
 
-const TABS: { id: TabType; domId: string; label: string; Icon: typeof Home }[] = [
-  { id: 'home', domId: 'nav-tab-home', label: '홈', Icon: Home },
-  { id: 'games', domId: 'nav-tab-games', label: '내 게임', Icon: Layers },
-  { id: 'plays', domId: 'nav-tab-plays', label: '플레이 기록', Icon: Trophy },
-  { id: 'mypage', domId: 'nav-tab-mypage', label: '마이', Icon: User }
-];
-
-export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange, onQuickAddPlay }) => {
-  const tabButton = ({ id, domId, label, Icon }: (typeof TABS)[number]) => {
-    const active = currentTab === id;
-    return (
-      <button
-        key={id}
-        id={domId}
-        type="button"
-        onClick={() => onTabChange(id)}
-        aria-current={active ? 'page' : undefined}
-        className={`flex flex-1 flex-col items-center justify-center gap-1 ${
-          active ? 'text-felt' : 'text-graphite hover:text-ink'
-        }`}
-      >
-        <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.5} />
-        <span className={`text-[11px] leading-4 ${active ? 'font-semibold' : ''}`}>{label}</span>
-      </button>
-    );
-  };
-
+export const BottomNav: React.FC<BottomNavProps> = ({
+  currentTab,
+  onTabChange,
+  onQuickAddPlay
+}) => {
   return (
-    <nav id="bottom-navigation-bar" className="fixed bottom-0 left-0 right-0 z-40 border-t border-rule bg-paper">
-      <div className="mx-auto flex h-16 max-w-xl items-stretch px-4">
-        {TABS.slice(0, 2).map(tabButton)}
-        <div className="flex flex-1 items-center justify-center">
-          {/* Outlined on purpose: the filled 기록하기 button on Home stays the single loudest element. */}
+    <nav
+      id="bottom-navigation-bar"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E9ECEF] shadow-lg safe-area-bottom"
+    >
+      <div className="max-w-xl mx-auto px-4 h-16 flex items-center justify-between relative">
+        {/* 1. 홈 */}
+        <button
+          id="nav-tab-home"
+          type="button"
+          onClick={() => onTabChange('home')}
+          className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors ${
+            currentTab === 'home' ? 'text-[#4834D4] font-bold' : 'text-[#A8ABAF] hover:text-[#2D3436]'
+          }`}
+        >
+          <Home className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">홈</span>
+        </button>
+
+        {/* 2. 내 게임 */}
+        <button
+          id="nav-tab-games"
+          type="button"
+          onClick={() => onTabChange('games')}
+          className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors ${
+            currentTab === 'games' ? 'text-[#4834D4] font-bold' : 'text-[#A8ABAF] hover:text-[#2D3436]'
+          }`}
+        >
+          <Layers className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">내 게임</span>
+        </button>
+
+        {/* 3. 중앙 원형 FAB: 기록 추가 */}
+        <div className="flex-1 flex flex-col items-center justify-center relative -top-3">
           <button
             id="nav-fab-add-play"
             type="button"
             onClick={onQuickAddPlay}
             aria-label="기록 추가"
-            className="flex h-10 w-10 items-center justify-center rounded border-2 border-ink text-ink hover:bg-ink hover:text-paper"
+            className="w-13 h-13 rounded-full bg-[#4834D4] text-white flex items-center justify-center shadow-[0_12px_24px_rgba(72,52,212,0.35)] hover:scale-105 active:scale-95 transition-all ring-4 ring-white"
           >
-            <Plus className="h-5 w-5" strokeWidth={2} />
+            <Plus className="w-6 h-6 stroke-[2.5]" />
           </button>
+          <span className="text-[10px] font-bold text-[#4834D4] mt-0.5">기록 추가</span>
         </div>
-        {TABS.slice(2).map(tabButton)}
+
+        {/* 4. 플레이 기록 */}
+        <button
+          id="nav-tab-plays"
+          type="button"
+          onClick={() => onTabChange('plays')}
+          className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors ${
+            currentTab === 'plays' ? 'text-[#4834D4] font-bold' : 'text-[#A8ABAF] hover:text-[#2D3436]'
+          }`}
+        >
+          <Trophy className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">플레이 기록</span>
+        </button>
+
+        {/* 5. 마이페이지 */}
+        <button
+          id="nav-tab-mypage"
+          type="button"
+          onClick={() => onTabChange('mypage')}
+          className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors ${
+            currentTab === 'mypage' ? 'text-[#4834D4] font-bold' : 'text-[#A8ABAF] hover:text-[#2D3436]'
+          }`}
+        >
+          <User className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">마이</span>
+        </button>
       </div>
     </nav>
   );

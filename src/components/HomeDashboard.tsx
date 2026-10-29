@@ -1,8 +1,24 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
+import {
+  Layers,
+  Trophy,
+  History,
+  Clock,
+  Plus,
+  ArrowRight,
+  TrendingUp,
+  Sparkles,
+  Printer,
+  BookOpen,
+  Download,
+  MessageCircle,
+  Key
+} from 'lucide-react';
 import { UserGame, PlayRecord } from '../types';
+import { PlayCard } from './PlayCard';
+import { GameCard } from './GameCard';
+import { formatDuration } from '../utils/formatters';
 import { findRemovableSampleData } from '../services/storage';
-import { SectionHeading, TextLinks, TextLink, EmptyNote, PlayLedgerRow } from './ledger';
 
 interface HomeDashboardProps {
   games: UserGame[];
@@ -17,32 +33,6 @@ interface HomeDashboardProps {
   onRemoveSampleData?: () => void;
 }
 
-const PLAYS_PER_LEVEL = 5;
-const RECENT_LIMIT = 5;
-const TOP_GAMES_LIMIT = 5;
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
-function today(): { date: string; weekday: string } {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return { date: `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`, weekday: `${WEEKDAYS[d.getDay()]}요일` };
-}
-
-/** h:mm keeps the stat column narrow enough for four columns on a phone. */
-function clockDuration(totalMinutes: number): string {
-  return `${Math.floor(totalMinutes / 60)}:${String(totalMinutes % 60).padStart(2, '0')}`;
-}
-
-const Stat: React.FC<{ label: string; value: string; unit?: string }> = ({ label, value, unit }) => (
-  <div className="flex flex-col gap-1 px-2 py-4 first:pl-0 last:pr-0">
-    <span className="text-xs leading-4 text-graphite">{label}</span>
-    <span className="font-mono text-[28px] font-medium leading-8 tracking-tight">
-      {value}
-      {unit && <span className="ml-1 font-sans text-xs font-normal text-graphite">{unit}</span>}
-    </span>
-  </div>
-);
-
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   games,
   plays,
@@ -55,163 +45,245 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onNavigateTab,
   onRemoveSampleData
 }) => {
-  const { date: todayDate, weekday } = today();
   const removableSample = findRemovableSampleData(games, plays);
   const hasSampleData = removableSample.samplePlays.length + removableSample.sampleGames.length > 0;
 
+  // Statistics calculations
+  const totalGames = games.length;
   const totalPlays = plays.length;
   const totalMinutes = plays.reduce((acc, p) => acc + (p.durationMinutes || 0), 0);
   const winCount = plays.filter((p) => p.myResult === '승리').length;
   const winRate = totalPlays > 0 ? Math.round((winCount / totalPlays) * 100) : 0;
 
+  const recentPlays = plays.slice(0, 3);
+  const favoriteGames = [...games].sort((a, b) => (b.playCount || 0) - (a.playCount || 0)).slice(0, 4);
+
+  // Collector level: purely derived from plays already in storage, no new persisted state.
+  const PLAYS_PER_LEVEL = 5;
   const collectorLevel = Math.floor(totalPlays / PLAYS_PER_LEVEL) + 1;
   const playsIntoLevel = totalPlays % PLAYS_PER_LEVEL;
-
-  const recentPlays = plays.slice(0, RECENT_LIMIT);
-  const topGames = [...games]
-    .filter((g) => (g.playCount || 0) > 0)
-    .sort((a, b) => (b.playCount || 0) - (a.playCount || 0))
-    .slice(0, TOP_GAMES_LIMIT);
-
-  const secondaryActions = [
-    { label: '게임 등록', onClick: onOpenAddGame },
-    onOpenKakaoShare && { label: '카톡으로 목록 공유', onClick: onOpenKakaoShare },
-    onOpenCatalog && { label: 'PDF 도록', onClick: onOpenCatalog }
-  ].filter((a): a is TextLink => Boolean(a));
+  const levelProgressPct = Math.round((playsIntoLevel / PLAYS_PER_LEVEL) * 100);
+  const playsToNextLevel = PLAYS_PER_LEVEL - playsIntoLevel;
 
   return (
-    <div className="flex flex-col gap-10">
-      {/* Opening: the one thing to do here */}
-      <section className="flex flex-col gap-6 pt-4">
-        <div className="flex flex-col gap-2">
-          <p className="text-xs leading-4 text-graphite">
-            <span className="font-mono">{todayDate}</span> {weekday}
-          </p>
-          <h2 className="text-[28px] font-bold leading-9 tracking-tight">
-            오늘 한 게임,
-            <br />
-            누가 이겼나요?
+    <div className="space-y-6 pb-20">
+      {/* Top Banner / Quick Action CTA - Editorial Gradient */}
+      <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#4834D4] via-[#5742df] to-[#686DE0] p-6 text-white shadow-[0_20px_40px_rgba(72,52,212,0.25)] border border-white/10">
+        <div className="relative z-10">
+          <div className="flex items-center gap-1.5 text-white/80 text-[11px] font-bold mb-2 tracking-wide uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Editorial Board Game Log</span>
+          </div>
+          <h2 className="text-2xl font-black italic tracking-tight mb-1.5 leading-snug">
+            오늘 플레이한 게임을 기록하세요
           </h2>
+          <p className="text-xs text-white/80 mb-5 max-w-xs leading-relaxed font-normal">
+            승패, 순위, 점수, 현장 사진을 3터치 이내로 빠르게 아카이빙합니다.
+          </p>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              id="dashboard-add-play-cta"
+              type="button"
+              onClick={onOpenAddPlay}
+              className="inline-flex items-center gap-2 px-4.5 py-2.5 bg-white hover:bg-[#F8F9FA] text-[#4834D4] rounded-full text-xs font-bold shadow-[0_4px_12px_rgba(0,0,0,0.1)] active:scale-95 transition-all"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span>새 플레이 기록</span>
+            </button>
+            <button
+              id="dashboard-add-game-cta"
+              type="button"
+              onClick={onOpenAddGame}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white/15 hover:bg-white/25 text-white rounded-full text-xs font-semibold backdrop-blur-xs transition-colors border border-white/20"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>게임 등록</span>
+            </button>
+            {onOpenKakaoShare && (
+              <button
+                id="dashboard-open-kakao-cta"
+                type="button"
+                onClick={onOpenKakaoShare}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-[#FEE500] hover:bg-[#F5DC00] text-[#191919] rounded-full text-xs font-black transition-transform active:scale-95 shadow-xs"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-[#191919]" />
+                <span>카톡 목록 공유</span>
+              </button>
+            )}
+            {onOpenCatalog && (
+              <button
+                id="dashboard-open-catalog-cta"
+                type="button"
+                onClick={onOpenCatalog}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white/15 hover:bg-white/25 text-white rounded-full text-xs font-semibold backdrop-blur-xs transition-colors border border-white/20"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>PDF 도록 / 인쇄</span>
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <button
-            id="dashboard-add-play-cta"
-            type="button"
-            onClick={onOpenAddPlay}
-            className="flex h-14 items-center justify-center gap-2 rounded bg-felt text-[15px] font-semibold text-paper transition-opacity hover:opacity-90 active:opacity-80"
-          >
-            <Plus className="h-5 w-5" strokeWidth={2} />
-            기록하기
-          </button>
-
-          <TextLinks links={secondaryActions} />
-        </div>
-      </section>
+        {/* Decorative subtle background accents */}
+        <div className="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      </div>
 
       {hasSampleData && onRemoveSampleData && (
-        <div className="flex items-center justify-between gap-4 border-y border-dashed border-rule py-4">
-          <p className="text-[13px] leading-5 text-graphite">
-            처음에 넣어둔 <span className="text-ink">예시 기록</span>이 통계에 섞여 있어요.
+        <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 rounded-[24px] border border-amber-200">
+          <p className="flex-1 text-[11px] leading-relaxed text-amber-900">
+            처음에 넣어둔 <strong>예시 기록</strong>이 승률과 통계에 섞여 있어요.
           </p>
           <button
             id="dashboard-remove-sample-btn"
             type="button"
             onClick={onRemoveSampleData}
-            className="shrink-0 text-[13px] font-semibold leading-5 underline underline-offset-4"
+            className="shrink-0 px-3 py-1.5 bg-white border border-amber-300 text-amber-900 rounded-full text-[11px] font-bold hover:bg-amber-100 active:scale-95 transition-all"
           >
             예시 지우기
           </button>
         </div>
       )}
 
-      {/* Summary: a ruled score table, not cards */}
-      <section className="flex flex-col">
-        <SectionHeading title="기록 요약" />
-        <div className="grid grid-cols-4 divide-x divide-rule border-b border-rule">
-          <Stat label="보유 게임" value={String(games.length)} />
-          <Stat label="총 플레이" value={String(totalPlays)} />
-          <Stat label="승률" value={String(winRate)} unit="%" />
-          <Stat label="총 시간" value={clockDuration(totalMinutes)} />
+      {/* Collector Level Strip — derived from plays, no new persisted state */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm">
+        <div className="w-9 h-9 rounded-full bg-[#4834D4]/10 text-[#4834D4] flex items-center justify-center shrink-0 font-black italic text-xs">
+          Lv.{collectorLevel}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold text-[#A8ABAF]">수집가 레벨</span>
+            <span className="text-[10px] font-medium text-[#636E72]">
+              {playsToNextLevel === PLAYS_PER_LEVEL ? '기록 시작!' : `다음 레벨까지 ${playsToNextLevel}회`}
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#F1F2F6] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#686DE0] to-[#4834D4] rounded-full transition-all duration-500"
+              style={{ width: `${levelProgressPct}%` }}
+            />
+          </div>
+        </div>
+        <Key
+          className={`w-4 h-4 shrink-0 transition-colors ${
+            levelProgressPct >= 80 ? 'text-amber-400' : 'text-[#DCDDE1]'
+          }`}
+          strokeWidth={2}
+        />
+      </div>
+
+      {/* Summary KPI Grid */}
+      <div className="grid grid-cols-4 gap-2.5">
+        <div className="p-3.5 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm text-center">
+          <span className="text-[10px] text-[#A8ABAF] font-bold block mb-0.5">보유 게임</span>
+          <span className="text-xl font-black italic text-[#1E272E]">{totalGames}</span>
+          <span className="text-[10px] text-[#636E72] font-medium block">개</span>
         </div>
 
-        {/* Collector level as score-pad tally boxes */}
-        <div className="flex items-center justify-between gap-4 py-4">
-          <div className="flex items-center gap-4">
-            <span className="text-[13px] font-semibold leading-5">수집가 Lv.{collectorLevel}</span>
-            <div className="flex gap-1" aria-label={`이번 레벨 ${playsIntoLevel}/${PLAYS_PER_LEVEL}회`}>
-              {Array.from({ length: PLAYS_PER_LEVEL }, (_, i) => (
-                <span key={i} className={`h-4 w-4 border border-ink ${i < playsIntoLevel ? 'bg-ink' : ''}`} />
-              ))}
-            </div>
-          </div>
-          <span className="text-xs leading-4 text-graphite">
-            다음 레벨까지 <span className="font-mono">{PLAYS_PER_LEVEL - playsIntoLevel}</span>회
+        <div className="p-3.5 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm text-center">
+          <span className="text-[10px] text-[#A8ABAF] font-bold block mb-0.5">총 플레이</span>
+          <span className="text-xl font-black italic text-[#4834D4]">{totalPlays}</span>
+          <span className="text-[10px] text-[#636E72] font-medium block">회</span>
+        </div>
+
+        <div className="p-3.5 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm text-center">
+          <span className="text-[10px] text-[#A8ABAF] font-bold block mb-0.5">승률</span>
+          <span className="text-xl font-black italic text-[#27AE60]">{winRate}%</span>
+          <span className="text-[10px] text-[#636E72] font-medium block">{winCount}승</span>
+        </div>
+
+        <div className="p-3.5 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm text-center">
+          <span className="text-[10px] text-[#A8ABAF] font-bold block mb-0.5">총 시간</span>
+          <span className="text-xs font-black italic text-[#1E272E] block mt-1.5">
+            {formatDuration(totalMinutes)}
           </span>
         </div>
-      </section>
+      </div>
 
-      {/* Recent plays: ledger rows */}
-      <section className="flex flex-col">
-        <SectionHeading
-          title="최근 기록"
-          action={recentPlays.length > 0 ? { label: '전체 보기', onClick: () => onNavigateTab('plays') } : undefined}
-        />
+      {/* Recent Plays Section */}
+      <div className="space-y-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-[#4834D4]/10 text-[#4834D4] flex items-center justify-center">
+              <History className="w-4 h-4" />
+            </div>
+            <h3 className="text-base font-black italic text-[#1E272E]">최근 플레이 기록</h3>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigateTab('plays')}
+            className="text-xs font-bold text-[#4834D4] hover:text-[#3c2ab9] flex items-center gap-1 transition-colors"
+          >
+            <span>전체보기</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
         {recentPlays.length > 0 ? (
-          <ul className="divide-y divide-rule">
-            {recentPlays.map((play) => (
-              <li key={play.id}>
-                <PlayLedgerRow play={play} onClick={() => onSelectPlay(play)} />
-              </li>
+          <div className="space-y-3.5">
+            {recentPlays.map((p) => (
+              <PlayCard key={p.id} play={p} onClick={() => onSelectPlay(p)} />
             ))}
-          </ul>
+          </div>
         ) : (
-          <EmptyNote>아직 기록이 없어요. 게임이 끝나면 누가 이겼는지만 남겨도 충분해요.</EmptyNote>
+          <div className="p-8 bg-white rounded-[28px] border border-dashed border-[#E9ECEF] text-center shadow-sm">
+            <p className="text-xs text-[#636E72] mb-3">
+              아직 기록이 없어요. 게임이 끝나면 누가 이겼는지만 남겨도 충분해요.
+            </p>
+            <button
+              type="button"
+              onClick={onOpenAddPlay}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#4834D4] text-white text-xs font-bold rounded-full shadow-[0_4px_14px_rgba(72,52,212,0.3)] transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>첫 플레이 기록 남기기</span>
+            </button>
+          </div>
         )}
-      </section>
+      </div>
 
-      {/* Most played: ranked list with dotted leaders */}
-      <section className="flex flex-col">
-        <SectionHeading
-          title="많이 한 게임"
-          action={games.length > 0 ? { label: '내 게임', onClick: () => onNavigateTab('games') } : undefined}
-        />
-        {topGames.length > 0 ? (
-          <ol>
-            {topGames.map((game, i) => (
-              <li key={game.id}>
-                <button
-                  type="button"
-                  onClick={() => onSelectGame(game)}
-                  className="flex w-full items-baseline gap-4 py-3 text-left hover:bg-ink/[0.03]"
-                >
-                  <span className="w-6 shrink-0 font-mono text-xs leading-4 text-graphite">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span className="min-w-0 truncate text-[15px] leading-6">{game.title}</span>
-                  <span className="mb-1 min-w-4 flex-1 border-b border-dotted border-rule" aria-hidden />
-                  <span className="shrink-0 text-[13px] leading-5">
-                    <span className="font-mono">{game.playCount}</span>회
-                  </span>
-                </button>
-              </li>
+      {/* Most Played Games Section */}
+      <div className="space-y-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-[#4834D4]/10 text-[#4834D4] flex items-center justify-center">
+              <Trophy className="w-4 h-4" />
+            </div>
+            <h3 className="text-base font-black italic text-[#1E272E]">많이 플레이한 게임</h3>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigateTab('games')}
+            className="text-xs font-bold text-[#4834D4] hover:text-[#3c2ab9] flex items-center gap-1 transition-colors"
+          >
+            <span>내 게임 전체</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {favoriteGames.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3.5">
+            {favoriteGames.map((g) => (
+              <GameCard key={g.id} game={g} onClick={() => onSelectGame(g)} />
             ))}
-          </ol>
+          </div>
         ) : (
-          <EmptyNote>
-            {games.length > 0 ? (
-              '기록이 쌓이면 자주 한 게임 순으로 보여드려요.'
-            ) : (
-              <>
-                아직 등록한 게임이 없어요.{' '}
-                <button type="button" onClick={onOpenAddGame} className="text-ink underline underline-offset-4">
-                  게임 등록
-                </button>
-              </>
-            )}
-          </EmptyNote>
+          <div className="p-8 bg-white rounded-[28px] border border-dashed border-[#E9ECEF] text-center shadow-sm">
+            <p className="text-xs text-[#636E72] mb-3">등록된 게임이 없습니다.</p>
+            <button
+              type="button"
+              onClick={onOpenAddGame}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#4834D4] text-white text-xs font-bold rounded-full shadow-[0_4px_14px_rgba(72,52,212,0.3)] transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>인기 게임 등록하기</span>
+            </button>
+          </div>
         )}
-      </section>
+      </div>
     </div>
   );
 };
+

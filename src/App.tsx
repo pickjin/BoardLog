@@ -1,25 +1,59 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { UserGame, PlayRecord } from './types';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Search,
+  Plus,
+  LayoutGrid,
+  List,
+  Filter,
+  Dices,
+  Trophy,
+  SlidersHorizontal,
+  ChevronDown,
+  Sparkles,
+  HelpCircle,
+  FolderPlus,
+  Printer,
+  BookOpen,
+  Download,
+  MessageCircle,
+  Share2
+} from 'lucide-react';
+import { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult } from './types';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { storage } from './services/storage';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
 import { HomeDashboard } from './components/HomeDashboard';
-import { GamesTabView, OwnershipFilter } from './components/GamesTabView';
-import { PlaysTabView, ResultFilter } from './components/PlaysTabView';
+import { GameCard } from './components/GameCard';
+import { GameListItem } from './components/GameListItem';
 import { GameFormModal } from './components/GameFormModal';
 import { GameScanModal } from './components/GameScanModal';
 import { GameDetailModal } from './components/GameDetailModal';
 import { GameCatalogModal } from './components/GameCatalogModal';
 import { KakaoShareModal } from './components/KakaoShareModal';
+import { PlayCard } from './components/PlayCard';
 import { PlayRecordFormModal } from './components/PlayRecordFormModal';
 import { PlayDetailModal } from './components/PlayDetailModal';
 import { MyPageView } from './components/MyPageView';
 import { AuthModal } from './components/AuthModal';
 import { PlayShareSheet } from './components/PlayShareSheet';
 import { ConfirmModal } from './components/ConfirmModal';
-import { LoadingState, ErrorState } from './components/StateViews';
+import { LoadingState, EmptyState, ErrorState } from './components/StateViews';
+
+const OWNERSHIP_TABS: (GameOwnershipStatus | '전체')[] = [
+  '전체',
+  '보유중',
+  '빌려줌',
+  '빌림',
+  '판매예정',
+  '판매완료',
+  '분실',
+  '처분'
+];
+
+const PLAY_RESULT_TABS: (MyGameResult | '전체')[] = ['전체', '승리', '패배', '무승부'];
 
 const MainApp: React.FC = () => {
   const { user } = useAuth();
@@ -36,11 +70,12 @@ const MainApp: React.FC = () => {
 
   // Search & Filter States for Games tab
   const [gameSearch, setGameSearch] = useState('');
-  const [selectedOwnership, setSelectedOwnership] = useState<OwnershipFilter>('전체');
+  const [selectedOwnership, setSelectedOwnership] = useState<GameOwnershipStatus | '전체'>('전체');
+  const [gameViewMode, setGameViewMode] = useState<'grid' | 'list'>('grid');
 
   // Search & Filter States for Plays tab
   const [playSearch, setPlaySearch] = useState('');
-  const [selectedPlayResult, setSelectedPlayResult] = useState<ResultFilter>('전체');
+  const [selectedPlayResult, setSelectedPlayResult] = useState<MyGameResult | '전체'>('전체');
 
   // Modals Management
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -249,16 +284,16 @@ const MainApp: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-paper text-ink flex flex-col font-sans selection:bg-felt/20">
+    <div className="min-h-screen bg-[#F1F3F5] text-[#2D3436] flex flex-col font-sans selection:bg-[#4834D4]/20 selection:text-[#4834D4]">
       {/* Top Fixed Header */}
       <Navbar
         onOpenAuth={() => setIsAuthOpen(true)}
       />
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-xl mx-auto px-4 pt-4 pb-24">
+      <main className="flex-1 w-full max-w-xl mx-auto px-4 pt-18 pb-24">
         {isLoading ? (
-          <LoadingState />
+          <LoadingState message="보드로그 데이터를 불러오는 중입니다..." />
         ) : loadError ? (
           <ErrorState message={loadError} onRetry={loadData} />
         ) : (
@@ -286,41 +321,264 @@ const MainApp: React.FC = () => {
               />
             )}
 
-            {/* 2. GAMES TAB */}
+            {/* 2. GAMES TAB (내 보드게임) */}
             {activeTab === 'games' && (
-              <GamesTabView
-                games={games}
-                filteredGames={filteredGames}
-                search={gameSearch}
-                onSearchChange={setGameSearch}
-                ownership={selectedOwnership}
-                onOwnershipChange={setSelectedOwnership}
-                onAddGame={() => {
-                  setEditingGame(null);
-                  setIsGameFormOpen(true);
-                }}
-                onOpenKakaoShare={() => setIsKakaoShareOpen(true)}
-                onOpenCatalog={() => setIsCatalogModalOpen(true)}
-                onSelectGame={(game) => setViewingGame(game)}
-              />
+              <div className="space-y-4 pb-20">
+                {/* Header & View toggle */}
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-xl font-black italic text-[#1E272E]">내 보드게임 컬렉션</h2>
+                    <p className="text-xs text-[#636E72]">총 {games.length}개의 게임</p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                    {/* Add Game Button */}
+                    <button
+                      id="games-add-game-btn"
+                      type="button"
+                      onClick={() => {
+                        setEditingGame(null);
+                        setIsGameFormOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#4834D4] hover:bg-[#3c2ab9] text-white rounded-2xl text-xs font-bold shadow-[0_4px_12px_rgba(72,52,212,0.25)] transition-all active:scale-95"
+                      title="새 보드게임 추가하기"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>게임 추가</span>
+                    </button>
+
+                    {/* KakaoTalk Share Button */}
+                    <button
+                      id="games-kakao-share-btn"
+                      type="button"
+                      onClick={() => setIsKakaoShareOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#FEE500] hover:bg-[#F5DC00] active:bg-[#E8CE00] text-[#191919] rounded-2xl text-xs font-black shadow-xs transition-all active:scale-95 border border-[#F5DC00]"
+                      title="소장 보드게임 목록 카카오톡 공유 (전체 / 4인이하 등 조건 선택)"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 fill-[#191919]" />
+                      <span className="hidden sm:inline">카카오톡 공유</span>
+                      <span className="sm:hidden">카톡 공유</span>
+                    </button>
+
+                    {/* Catalog Print & PDF Export Button */}
+                    <button
+                      id="games-print-catalog-btn"
+                      type="button"
+                      onClick={() => setIsCatalogModalOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-[#F8F9FA] text-[#1E272E] rounded-2xl text-xs font-bold border border-[#E9ECEF] shadow-sm transition-all active:scale-95"
+                      title="소장 도록 PDF 저장 및 인쇄"
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#4834D4]" />
+                      <span className="hidden sm:inline">PDF 도록 / 인쇄</span>
+                      <span className="sm:hidden">PDF</span>
+                    </button>
+
+                    <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-[#E9ECEF] shadow-sm">
+                      <button
+                        type="button"
+                        onClick={() => setGameViewMode('grid')}
+                        className={`p-2 rounded-xl transition-colors ${
+                          gameViewMode === 'grid'
+                            ? 'bg-[#4834D4] text-white shadow-xs'
+                            : 'text-[#A8ABAF] hover:text-[#2D3436]'
+                        }`}
+                        title="그리드 뷰"
+                      >
+                        <LayoutGrid className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setGameViewMode('list')}
+                        className={`p-2 rounded-xl transition-colors ${
+                          gameViewMode === 'list'
+                            ? 'bg-[#4834D4] text-white shadow-xs'
+                            : 'text-[#A8ABAF] hover:text-[#2D3436]'
+                        }`}
+                        title="리스트 뷰"
+                      >
+                        <List className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#A8ABAF]" />
+                  <input
+                    id="games-search-input"
+                    type="text"
+                    placeholder="게임명, 영문명, 장르, 보관장소 검색..."
+                    value={gameSearch}
+                    onChange={(e) => setGameSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#E9ECEF] rounded-full text-xs text-[#1E272E] focus:outline-hidden focus:ring-2 focus:ring-[#4834D4]/20 focus:border-[#4834D4] shadow-sm transition-all"
+                  />
+                </div>
+
+                {/* Ownership Filter Pills */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+                  {OWNERSHIP_TABS.map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setSelectedOwnership(tab)}
+                      className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition-all ${
+                        selectedOwnership === tab
+                          ? 'bg-[#4834D4] text-white shadow-xs'
+                          : 'bg-white text-[#636E72] border border-[#E9ECEF] hover:bg-[#F8F9FA]'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Game List / Grid */}
+                {filteredGames.length > 0 ? (
+                  gameViewMode === 'grid' ? (
+                    <div className="grid grid-cols-2 gap-3.5">
+                      {filteredGames.map((game) => (
+                        <GameCard
+                          key={game.id}
+                          game={game}
+                          onClick={() => setViewingGame(game)}
+                          onDelete={(e) => {
+                            e.stopPropagation();
+                            setDeletingGame(game);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {filteredGames.map((game) => (
+                        <GameListItem
+                          key={game.id}
+                          game={game}
+                          onClick={() => setViewingGame(game)}
+                          onDelete={(e) => {
+                            e.stopPropagation();
+                            setDeletingGame(game);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )
+                ) : games.length === 0 ? (
+                  <EmptyState
+                    title="등록된 보드게임이 없습니다"
+                    description="자주 즐기는 보드게임을 등록하고 플레이 기록을 남겨보세요."
+                    actionText="인기 게임 검색해서 추가하기"
+                    onAction={() => {
+                      setEditingGame(null);
+                      setIsGameFormOpen(true);
+                    }}
+                  />
+                ) : (
+                  <div className="p-8 bg-white rounded-[28px] border border-[#E9ECEF] text-center space-y-3 shadow-sm">
+                    <p className="text-xs text-[#636E72]">
+                      '{gameSearch}' 검색 조건에 맞는 게임이 없습니다.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingGame(null);
+                        setIsGameFormOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#4834D4] hover:bg-[#3c2ab9] text-white text-xs font-bold rounded-full shadow-[0_4px_14px_rgba(72,52,212,0.3)] transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>'{gameSearch}' 직접 등록하기</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
 
-            {/* 3. PLAYS TAB */}
+            {/* 3. PLAYS TAB (플레이 기록) */}
             {activeTab === 'plays' && (
-              <PlaysTabView
-                plays={plays}
-                filteredPlays={filteredPlays}
-                search={playSearch}
-                onSearchChange={setPlaySearch}
-                result={selectedPlayResult}
-                onResultChange={setSelectedPlayResult}
-                onAddPlay={() => {
-                  setEditingPlay(null);
-                  setPreselectedGameForPlay(null);
-                  setIsPlayFormOpen(true);
-                }}
-                onSelectPlay={(play) => setViewingPlay(play)}
-              />
+              <div className="space-y-4 pb-20">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-black italic text-[#1E272E]">플레이 기록</h2>
+                    <p className="text-xs text-[#636E72]">총 {plays.length}회의 플레이 기록</p>
+                  </div>
+
+                  <button
+                    id="plays-tab-add-btn"
+                    type="button"
+                    onClick={() => {
+                      setEditingPlay(null);
+                      setPreselectedGameForPlay(null);
+                      setIsPlayFormOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#4834D4] hover:bg-[#3c2ab9] text-white rounded-full text-xs font-bold shadow-[0_4px_14px_rgba(72,52,212,0.3)] transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>새 기록</span>
+                  </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#A8ABAF]" />
+                  <input
+                    id="plays-search-input"
+                    type="text"
+                    placeholder="게임명, 참여자 이름, 장소 검색..."
+                    value={playSearch}
+                    onChange={(e) => setPlaySearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#E9ECEF] rounded-full text-xs text-[#1E272E] focus:outline-hidden focus:ring-2 focus:ring-[#4834D4]/20 focus:border-[#4834D4] shadow-sm transition-all"
+                  />
+                </div>
+
+                {/* Result Filter Tabs */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+                  {PLAY_RESULT_TABS.map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setSelectedPlayResult(tab)}
+                      className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition-all ${
+                        selectedPlayResult === tab
+                          ? 'bg-[#4834D4] text-white shadow-xs'
+                          : 'bg-white text-[#636E72] border border-[#E9ECEF] hover:bg-[#F8F9FA]'
+                      }`}
+                    >
+                      {tab === '승리' ? '👑 승리' : tab}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Plays List */}
+                {filteredPlays.length > 0 ? (
+                  <div className="space-y-3.5">
+                    {filteredPlays.map((play) => (
+                      <PlayCard
+                        key={play.id}
+                        play={play}
+                        onClick={() => setViewingPlay(play)}
+                      />
+                    ))}
+                  </div>
+                ) : plays.length === 0 ? (
+                  <EmptyState
+                    title="아직 기록된 플레이가 없습니다"
+                    description="오늘 진행한 보드게임의 참여자, 점수, 순위, 현장 사진을 기록해 보세요."
+                    actionText="첫 플레이 기록 남기기"
+                    onAction={() => {
+                      setEditingPlay(null);
+                      setPreselectedGameForPlay(null);
+                      setIsPlayFormOpen(true);
+                    }}
+                  />
+                ) : (
+                  <div className="p-8 bg-white rounded-[28px] border border-[#E9ECEF] text-center text-xs text-[#636E72] shadow-sm">
+                    '{playSearch}' 조건에 해당하는 플레이 기록이 없습니다.
+                  </div>
+                )}
+              </div>
             )}
 
             {/* 4. MY PAGE TAB */}

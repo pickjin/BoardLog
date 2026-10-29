@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { UserGame } from '../types';
 import { formatWon } from '../utils/formatters';
-import { getOwnershipBadgeColor } from '../utils/ownership';
+import { getOwnershipBadgeColor } from './GameCard';
 import { useToast } from '../context/ToastContext';
 import { applyImageFallback } from '../utils/imageFallback';
 
