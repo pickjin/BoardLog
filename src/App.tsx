@@ -181,6 +181,17 @@ const MainApp: React.FC = () => {
     }
   };
 
+  const handleRemoveSampleData = async () => {
+    if (!user) return;
+    try {
+      const removed = await storage.removeSampleData(user.uid);
+      await loadData();
+      showToast(`예시 기록 ${removed.plays}개, 예시 게임 ${removed.games}개를 지웠습니다.`, 'success');
+    } catch {
+      showToast('예시 데이터를 지우지 못했습니다.', 'error');
+    }
+  };
+
   // --- Handlers: Play Record CRUD ---
   const handleSavePlay = async (
     playData: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'>
@@ -292,6 +303,7 @@ const MainApp: React.FC = () => {
               <HomeDashboard
                 games={games}
                 plays={plays}
+                onRemoveSampleData={handleRemoveSampleData}
                 onOpenAddPlay={() => {
                   setEditingPlay(null);
                   setPreselectedGameForPlay(null);

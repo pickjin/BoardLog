@@ -106,6 +106,22 @@ function randomId(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).substring(2, 9)}${Date.now()}`;
 }
 
+/** Demo records seeded by earlier versions all carry this id prefix. */
+export const isSampleRecordId = (id: string) => id.startsWith('sample-');
+
+/**
+ * What `removeSampleData` would delete: every demo play, and each demo game no real play is
+ * logged on. Shared so the "remove" prompt never shows when there is nothing left to remove.
+ */
+export function findRemovableSampleData(games: UserGame[], plays: PlayRecord[]) {
+  const samplePlays = plays.filter((p) => isSampleRecordId(p.id));
+  const realPlays = plays.filter((p) => !isSampleRecordId(p.id));
+  const sampleGames = games.filter(
+    (g) => isSampleRecordId(g.id) && !realPlays.some((p) => p.gameId === g.id)
+  );
+  return { samplePlays, sampleGames };
+}
+
 export interface ImportPlan {
   newGames: UserGame[];
   newPlays: PlayRecord[];
@@ -349,7 +365,6 @@ class BoardLogStorage {
     users[cleanEmail] = { profile: newUser, password: await createPasswordRecord(password) };
     this.lsSet(LS_ALL_USERS, users);
     await this.setActiveSession(newUser);
-    await this.seedInitialUserGames(uid);
 
     return newUser;
   }
@@ -430,7 +445,6 @@ class BoardLogStorage {
     };
 
     await this.setActiveSession(guestUser);
-    await this.seedInitialUserGames(guestUid);
     return guestUser;
   }
 
@@ -457,107 +471,24 @@ class BoardLogStorage {
   }
 
   // --- Seed default games for a fresh user ---
-  private async seedInitialUserGames(uid: string) {
-    const existingGames = await this.getUserGames(uid);
-    if (existingGames.length > 0) return;
-
-    const sampleGames: UserGame[] = [
-      {
-        id: 'sample-game-1-' + uid,
-        title: '스플렌더',
-        titleEn: 'Splendor',
-        imageUrl: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
-        genre: ['엔진빌딩', '전략', '셋컬렉션'],
-        minPlayers: 2,
-        maxPlayers: 4,
-        bestPlayers: '3인',
-        recommendedAge: 10,
-        playTime: 30,
-        weight: 1.8,
-        publisher: '스페이스 카우보이즈',
-        purchaseDate: formatDate(),
-        purchasePrice: 32000,
-        originalPrice: 42000,
-        marketPrice: 25000,
-        storageLocation: '거실 보드게임장 1단',
-        condition: '최상',
-        tags: ['가족용', '입문추천', '인기게임'],
-        notes: '친구들과 언제 돌려도 실패 없는 르네상스 보석 상인 엔진 빌딩',
-        ownershipStatus: '보유중',
-        playCount: 1,
-        priceMeta: {
-          source: '온라인 구매 (사용자 수동 입력)',
-          verifiedDate: formatDate(),
-          isManual: true
-        },
-        createdAt: formatDate(),
-        updatedAt: formatDate()
-      },
-      {
-        id: 'sample-game-2-' + uid,
-        title: '카탄',
-        titleEn: 'Catan',
-        imageUrl: 'https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=600&q=80',
-        genre: ['전략', '협상', '주사위'],
-        minPlayers: 3,
-        maxPlayers: 4,
-        bestPlayers: '4인',
-        recommendedAge: 10,
-        playTime: 75,
-        weight: 2.3,
-        publisher: '코스모스',
-        purchaseDate: formatDate(),
-        purchasePrice: 45000,
-        originalPrice: 52000,
-        marketPrice: 35000,
-        storageLocation: '서재 선반 A열',
-        condition: '상',
-        tags: ['주말모임', '거래협상'],
-        notes: '밀과 벽돌을 교역하며 섬을 개척하는 명작',
-        ownershipStatus: '보유중',
-        playCount: 0,
-        priceMeta: {
-          source: '보드게임 페스타 (사용자 수동 입력)',
-          verifiedDate: formatDate(),
-          isManual: true
-        },
-        createdAt: formatDate(),
-        updatedAt: formatDate()
-      }
-    ];
-
-    for (const g of sampleGames) {
-      await this.addUserGame(uid, g);
+  /**
+   * Earlier versions put a demo game pair and a won demo play into every new account, which
+   * showed a 100% win rate and invented companions before the user recorded anything. Removes
+   * them on request; a demo game the user has since logged real plays on is kept.
+   */
+  async removeSampleData(uid: string): Promise<{ plays: number; games: number }> {
+    const { samplePlays, sampleGames } = findRemovableSampleData(
+      await this.getUserGames(uid),
+      await this.getUserPlays(uid)
+    );
+    for (const play of samplePlays) {
+      await this.deleteUserPlay(uid, play.id);
+    }
+    for (const game of sampleGames) {
+      await this.deleteUserGame(uid, game.id);
     }
 
-    const samplePlay: PlayRecord = {
-      id: 'sample-play-1-' + uid,
-      gameId: sampleGames[0].id,
-      gameTitle: '스플렌더',
-      gameImageUrl: sampleGames[0].imageUrl,
-      date: formatDate(),
-      startTime: '19:30',
-      endTime: '20:10',
-      durationMinutes: 40,
-      location: '강남 보드게임 카페',
-      participants: [
-        { id: 'p1', name: '나', score: 15, rank: 1, isWinner: true, notes: '루비/사파이어 엔진 완성!' },
-        { id: 'p2', name: '민수', score: 13, rank: 2, isWinner: false },
-        { id: 'p3', name: '지은', score: 10, rank: 3, isWinner: false }
-      ],
-      winnerNames: ['나'],
-      myResult: '승리',
-      isTeamPlay: false,
-      hasExpansion: false,
-      expansionName: '',
-      rating: 5,
-      review: '초반 1단계 카드를 빠르게 모아 후반 귀족 타일 2개를 선점하며 15점으로 역전 승리!',
-      photos: [],
-      createdAt: formatDate(),
-      updatedAt: formatDate()
-    };
-
-    await this.addUserPlay(uid, samplePlay);
+    return { plays: samplePlays.length, games: sampleGames.length };
   }
 
   // --- User Games CRUD ---
