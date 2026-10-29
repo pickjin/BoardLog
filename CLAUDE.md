@@ -48,6 +48,12 @@ id and plays are re-linked to games through a source-id map. Writing a backup id
 overwrite, and take ownership of, another account's record that happens to share it. Imported
 fields are whitelisted field by field, so a file cannot smuggle in `userId` or `order`.
 
+Shared play links (`src/utils/sharedPlay.ts`) carry one play in the URL fragment (`#play=`, never
+sent to the server). The link is untrusted input: it is decoded with size/count caps, rewritten to
+the recipient's point of view, then stored through the same `normalizePlay` → `planImport` →
+`commitImport` path as a backup restore. Keep it on that path rather than writing the record
+directly.
+
 Auth is entirely client-side: passwords are PBKDF2-SHA256 hashed (210k iterations, per-record salt)
 and stored in `localStorage['boardlog_all_users']`. There is no session token or server validation.
 

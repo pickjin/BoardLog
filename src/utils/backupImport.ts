@@ -122,7 +122,7 @@ function normalizePhoto(raw: unknown, index: number): PlayPhoto | null {
   };
 }
 
-function normalizePlay(raw: unknown): ImportedPlay | null {
+export function normalizePlay(raw: unknown): ImportedPlay | null {
   if (!isObject(raw)) return null;
   const gameTitle = str(raw.gameTitle).trim();
   if (!gameTitle) return null;

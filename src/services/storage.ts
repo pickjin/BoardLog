@@ -11,6 +11,7 @@ const STORE_PLAYS = 'plays';
 const LS_ACTIVE_USER = 'boardlog_active_user';
 const LS_ALL_USERS = 'boardlog_all_users';
 const LS_GUEST_UID = 'boardlog_guest_uid';
+const LS_SHARE_NAME = 'boardlog_share_name';
 
 const PBKDF2_ITERATIONS = 210_000;
 const PBKDF2_HASH = 'SHA-256';
@@ -685,6 +686,15 @@ class BoardLogStorage {
     return this.deleteUserPlay(uid, id);
   }
 
+  // --- Name shown to friends in shared play links ---
+  getShareName(): string {
+    return this.lsGet<string>(LS_SHARE_NAME, '');
+  }
+
+  setShareName(name: string): void {
+    this.lsSetQuiet(LS_SHARE_NAME, name.trim());
+  }
+
   // --- Import JSON backup ---
   /**
    * Read-only: works out what a backup would add so the user can confirm first.
@@ -731,7 +741,12 @@ class BoardLogStorage {
         return;
       }
       playKeys.add(key);
-      const gameId = sourceGameId ? sourceToTarget.get(sourceGameId) ?? null : null;
+      // Plays without a game in the same file (a shared play, or a backup made without its
+      // game) still attach to a game this account already has under the same title.
+      const gameId =
+        (sourceGameId ? sourceToTarget.get(sourceGameId) : undefined) ??
+        gameIdByKey.get(gameDedupKey(data.gameTitle)) ??
+        null;
       newPlays.push({
         ...data,
         id: randomId('play'),
