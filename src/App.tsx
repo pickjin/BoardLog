@@ -284,14 +284,14 @@ const MainApp: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F1F3F5] text-[#2D3436] flex flex-col font-sans selection:bg-[#4834D4]/20 selection:text-[#4834D4]">
+    <div className="min-h-screen bg-paper text-ink flex flex-col font-sans selection:bg-felt/20">
       {/* Top Fixed Header */}
       <Navbar
         onOpenAuth={() => setIsAuthOpen(true)}
       />
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-xl mx-auto px-4 pt-18 pb-24">
+      <main className="flex-1 w-full max-w-xl mx-auto px-4 pt-4 pb-24">
         {isLoading ? (
           <LoadingState message="보드로그 데이터를 불러오는 중입니다..." />
         ) : loadError ? (

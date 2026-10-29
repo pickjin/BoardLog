@@ -1,10 +1,24 @@
 @import "tailwindcss";
 
+/* Score-pad palette: one main colour (felt), one accent (mark, wins only), the rest neutral. */
+@theme {
+  --color-paper: #F5F2EA;
+  --color-ink: #1C1B19;
+  --color-graphite: #6B6862;
+  --color-rule: #D6D0C2;
+  --color-felt: #1F4A3A;
+  --color-mark: #C2402A;
+
+  --font-sans: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
 @layer base {
   body {
-    background-color: #F1F3F5;
-    color: #2D3436;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
 }
 
