@@ -1,7 +1,8 @@
 import React from 'react';
-import { Plus, ArrowRight } from 'lucide-react';
-import { UserGame, PlayRecord, MyGameResult } from '../types';
+import { Plus } from 'lucide-react';
+import { UserGame, PlayRecord } from '../types';
 import { findRemovableSampleData } from '../services/storage';
+import { SectionHeading, TextLinks, TextLink, EmptyNote, PlayLedgerRow } from './ledger';
 
 interface HomeDashboardProps {
   games: UserGame[];
@@ -21,8 +22,6 @@ const RECENT_LIMIT = 5;
 const TOP_GAMES_LIMIT = 5;
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-const RESULT_MARK: Record<MyGameResult, string> = { 승리: '승', 패배: '패', 무승부: '무', 참여: '참' };
-
 function today(): { date: string; weekday: string } {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -33,25 +32,6 @@ function today(): { date: string; weekday: string } {
 function clockDuration(totalMinutes: number): string {
   return `${Math.floor(totalMinutes / 60)}:${String(totalMinutes % 60).padStart(2, '0')}`;
 }
-
-const SectionHeading: React.FC<{ title: string; action?: { label: string; onClick: () => void } }> = ({
-  title,
-  action
-}) => (
-  <div className="flex items-baseline justify-between border-b-2 border-ink pb-2">
-    <h3 className="text-[15px] font-bold leading-6">{title}</h3>
-    {action && (
-      <button
-        type="button"
-        onClick={action.onClick}
-        className="flex items-center gap-1 text-[13px] leading-5 text-graphite hover:text-ink"
-      >
-        {action.label}
-        <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
-      </button>
-    )}
-  </div>
-);
 
 const Stat: React.FC<{ label: string; value: string; unit?: string }> = ({ label, value, unit }) => (
   <div className="flex flex-col gap-1 px-2 py-4 first:pl-0 last:pr-0">
@@ -97,7 +77,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     { label: '게임 등록', onClick: onOpenAddGame },
     onOpenKakaoShare && { label: '카톡으로 목록 공유', onClick: onOpenKakaoShare },
     onOpenCatalog && { label: 'PDF 도록', onClick: onOpenCatalog }
-  ].filter((a): a is { label: string; onClick: () => void } => Boolean(a));
+  ].filter((a): a is TextLink => Boolean(a));
 
   return (
     <div className="flex flex-col gap-10">
@@ -125,18 +105,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             기록하기
           </button>
 
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {secondaryActions.map((action) => (
-              <button
-                key={action.label}
-                type="button"
-                onClick={action.onClick}
-                className="text-[13px] leading-5 text-graphite underline decoration-rule underline-offset-4 hover:text-ink hover:decoration-ink"
-              >
-                {action.label}
-              </button>
-            ))}
-          </div>
+          <TextLinks links={secondaryActions} />
         </div>
       </section>
 
@@ -190,43 +159,14 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         />
         {recentPlays.length > 0 ? (
           <ul className="divide-y divide-rule">
-            {recentPlays.map((play) => {
-              const others = play.participants.length - 1;
-              const won = play.myResult === '승리';
-              return (
-                <li key={play.id}>
-                  <button
-                    type="button"
-                    onClick={() => onSelectPlay(play)}
-                    className="flex w-full items-center gap-4 py-4 text-left hover:bg-ink/[0.03]"
-                  >
-                    <span className="w-12 shrink-0 font-mono text-xs leading-4 text-graphite">
-                      {play.date.slice(5)}
-                    </span>
-                    <span className="flex min-w-0 flex-1 flex-col gap-1">
-                      <span className="truncate text-[15px] font-semibold leading-6">{play.gameTitle}</span>
-                      <span className="truncate text-xs leading-4 text-graphite">
-                        {others > 0 ? `나 외 ${others}명` : '혼자'}
-                        {play.location ? ` · ${play.location}` : ''}
-                      </span>
-                    </span>
-                    <span
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold ${
-                        won ? 'border-2 border-mark text-mark' : 'text-graphite'
-                      }`}
-                      aria-label={play.myResult}
-                    >
-                      {RESULT_MARK[play.myResult]}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
+            {recentPlays.map((play) => (
+              <li key={play.id}>
+                <PlayLedgerRow play={play} onClick={() => onSelectPlay(play)} />
+              </li>
+            ))}
           </ul>
         ) : (
-          <p className="py-6 text-[13px] leading-5 text-graphite">
-            아직 기록이 없어요. 게임이 끝나면 누가 이겼는지만 남겨도 충분해요.
-          </p>
+          <EmptyNote>아직 기록이 없어요. 게임이 끝나면 누가 이겼는지만 남겨도 충분해요.</EmptyNote>
         )}
       </section>
 
@@ -258,7 +198,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             ))}
           </ol>
         ) : (
-          <p className="py-6 text-[13px] leading-5 text-graphite">
+          <EmptyNote>
             {games.length > 0 ? (
               '기록이 쌓이면 자주 한 게임 순으로 보여드려요.'
             ) : (
@@ -269,7 +209,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 </button>
               </>
             )}
-          </p>
+          </EmptyNote>
         )}
       </section>
     </div>
