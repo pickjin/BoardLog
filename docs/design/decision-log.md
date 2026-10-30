@@ -56,6 +56,7 @@
 | D-039 | P8-Q02 | B. `AGENTS.md`를 규칙 원본(150줄 이하), `CLAUDE.md`는 `@AGENTS.md` + Claude 전용 | Accepted | 2026-10-30 |
 | D-040 | P8-Q03 | A. 변경 종류별 완료 증거, 증거 없으면 "미검증" 보고, 디자인 변경은 소유자 확인 | Accepted | 2026-10-30 |
 | D-041 | P9-Q01 | C. M0 기반 정비 → M1 측정(+TBD-006 실기기 확인) → 4주 관문 → M2 결정 | Accepted | 2026-10-30 |
+| D-042 | P9-Q02 | B. M0는 CI를 맨 앞에 둔 PR 5개, PR마다 검사 추가 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -337,6 +338,13 @@
 - **Does not change:** D-010(백엔드 추가)은 유지. 순서만 정함
 - **Risk accepted:** 클라우드 착수 최소 4주 지연, 그동안 아이폰 사용자 유실 가능성은 JSON 내보내기로만 대응
 - **Alternatives:** A 문서 순서대로 전부, B 클라우드 우선, D M0 생략
+
+### D-042 M0 순서와 PR 단위
+- **Question:** P9-Q02 M0 작업 9개의 순서·PR 단위
+- **Selected:** B. PR1(잠금 파일·의존성·스크립트·`.env.example`·최소 CI) → PR2(React 타입·strict·버그 4건) → PR3(Biome: 설정 / 전체 포맷 / 오류 정리 3커밋) → PR4(Vitest) → PR5(Playwright Test). PR마다 해당 검사를 CI에 추가
+- **Rationale:** 검사 없이 병합되는 PR 0개(PR1 제외). PR1 직후 TBD-014로 D-038 기술적 강제. 사용자 영향 있는 버그 수정을 앞에. 포맷을 테스트 추가 전에 해 충돌 방지
+- **Constraint:** M0 기간에는 다른 기능 작업 병행 안 함(PR3 전체 포맷 충돌)
+- **Alternatives:** A PR 1개, C CI 마지막, D 작업별 PR 9개
 
 ## 미결 항목 (TBD)
 
