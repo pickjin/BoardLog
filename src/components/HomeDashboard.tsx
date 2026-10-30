@@ -18,6 +18,7 @@ import { UserGame, PlayRecord } from '../types';
 import { PlayCard } from './PlayCard';
 import { GameCard } from './GameCard';
 import { formatDuration } from '../utils/formatters';
+import { findRemovableSampleData } from '../services/storage';
 
 interface HomeDashboardProps {
   games: UserGame[];
@@ -29,6 +30,7 @@ interface HomeDashboardProps {
   onSelectGame: (game: UserGame) => void;
   onSelectPlay: (play: PlayRecord) => void;
   onNavigateTab: (tab: 'games' | 'plays') => void;
+  onRemoveSampleData?: () => void;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
@@ -40,8 +42,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenKakaoShare,
   onSelectGame,
   onSelectPlay,
-  onNavigateTab
+  onNavigateTab,
+  onRemoveSampleData
 }) => {
+  const removableSample = findRemovableSampleData(games, plays);
+  const hasSampleData = removableSample.samplePlays.length + removableSample.sampleGames.length > 0;
+
   // Statistics calculations
   const totalGames = games.length;
   const totalPlays = plays.length;
@@ -122,6 +128,22 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* Decorative subtle background accents */}
         <div className="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full blur-3xl pointer-events-none" />
       </div>
+
+      {hasSampleData && onRemoveSampleData && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 rounded-[24px] border border-amber-200">
+          <p className="flex-1 text-[11px] leading-relaxed text-amber-900">
+            처음에 넣어둔 <strong>예시 기록</strong>이 승률과 통계에 섞여 있어요.
+          </p>
+          <button
+            id="dashboard-remove-sample-btn"
+            type="button"
+            onClick={onRemoveSampleData}
+            className="shrink-0 px-3 py-1.5 bg-white border border-amber-300 text-amber-900 rounded-full text-[11px] font-bold hover:bg-amber-100 active:scale-95 transition-all"
+          >
+            예시 지우기
+          </button>
+        </div>
+      )}
 
       {/* Collector Level Strip — derived from plays, no new persisted state */}
       <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm">
@@ -206,7 +228,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         ) : (
           <div className="p-8 bg-white rounded-[28px] border border-dashed border-[#E9ECEF] text-center shadow-sm">
-            <p className="text-xs text-[#636E72] mb-3">아직 기록된 플레이가 없습니다.</p>
+            <p className="text-xs text-[#636E72] mb-3">
+              아직 기록이 없어요. 게임이 끝나면 누가 이겼는지만 남겨도 충분해요.
+            </p>
             <button
               type="button"
               onClick={onOpenAddPlay}

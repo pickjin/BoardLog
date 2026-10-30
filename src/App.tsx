@@ -39,6 +39,9 @@ import { PlayDetailModal } from './components/PlayDetailModal';
 import { MyPageView } from './components/MyPageView';
 import { AuthModal } from './components/AuthModal';
 import { PlayShareSheet } from './components/PlayShareSheet';
+import { SharedPlayModal } from './components/SharedPlayModal';
+import { SharedPlay, decodeSharedPlay, sharedHashPresent, toRecipientRecord } from './utils/sharedPlay';
+import { normalizePlay } from './utils/backupImport';
 import { ConfirmModal } from './components/ConfirmModal';
 import { LoadingState, EmptyState, ErrorState } from './components/StateViews';
 
@@ -89,6 +92,7 @@ const MainApp: React.FC = () => {
   const [isPlayFormOpen, setIsPlayFormOpen] = useState(false);
   const [editingPlay, setEditingPlay] = useState<PlayRecord | null>(null);
   const [sharingPlay, setSharingPlay] = useState<PlayRecord | null>(null);
+  const [incomingShare, setIncomingShare] = useState<SharedPlay | null>(null);
   const [viewingPlay, setViewingPlay] = useState<PlayRecord | null>(null);
   const [preselectedGameForPlay, setPreselectedGameForPlay] = useState<UserGame | null>(null);
 
@@ -178,6 +182,61 @@ const MainApp: React.FC = () => {
       showToast('삭제 중 오류가 발생했습니다.', 'error');
     } finally {
       setDeletingGame(null);
+    }
+  };
+
+  // A shared play arrives in the URL hash. Clear it right away so a reload does not reopen it
+  // and the friends' names do not linger in the address bar or history.
+  // Also on hashchange: opening a second link while the app is already open only changes the
+  // fragment, which does not reload the page.
+  useEffect(() => {
+    const readSharedHash = () => {
+      const { hash, pathname, search } = window.location;
+      if (!sharedHashPresent(hash)) return;
+      window.history.replaceState(null, '', pathname + search);
+      const shared = decodeSharedPlay(hash);
+      if (shared) {
+        setIncomingShare(shared);
+      } else {
+        showToast('공유 링크가 손상되어 기록을 열 수 없습니다.', 'error');
+      }
+    };
+    readSharedHash();
+    window.addEventListener('hashchange', readSharedHash);
+    return () => window.removeEventListener('hashchange', readSharedHash);
+  }, [showToast]);
+
+  const handleAddSharedPlay = async (myIndex: number) => {
+    if (!user || !incomingShare) return;
+    const imported = normalizePlay(toRecipientRecord(incomingShare, myIndex));
+    if (!imported) {
+      showToast('공유된 기록을 읽지 못했습니다.', 'error');
+      return;
+    }
+    try {
+      // Same path as backup restore: fresh id, whitelisted fields, duplicate check, ownership.
+      const plan = await storage.planImport(user.uid, { games: [], plays: [imported], invalidCount: 0 });
+      if (plan.newPlays.length === 0) {
+        showToast('이미 내 기록에 있는 게임이에요.', 'info');
+      } else {
+        await storage.commitImport(user.uid, plan);
+        await loadData();
+        showToast('내 기록에 추가했어요.', 'success');
+      }
+      setIncomingShare(null);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : '기록을 추가하지 못했습니다.', 'error');
+    }
+  };
+
+  const handleRemoveSampleData = async () => {
+    if (!user) return;
+    try {
+      const removed = await storage.removeSampleData(user.uid);
+      await loadData();
+      showToast(`예시 기록 ${removed.plays}개, 예시 게임 ${removed.games}개를 지웠습니다.`, 'success');
+    } catch {
+      showToast('예시 데이터를 지우지 못했습니다.', 'error');
     }
   };
 
@@ -292,6 +351,7 @@ const MainApp: React.FC = () => {
               <HomeDashboard
                 games={games}
                 plays={plays}
+                onRemoveSampleData={handleRemoveSampleData}
                 onOpenAddPlay={() => {
                   setEditingPlay(null);
                   setPreselectedGameForPlay(null);
@@ -681,6 +741,7 @@ const MainApp: React.FC = () => {
       />
 
       <PlayShareSheet play={sharingPlay} onClose={() => setSharingPlay(null)} />
+      <SharedPlayModal shared={incomingShare} onClose={() => setIncomingShare(null)} onAdd={handleAddSharedPlay} />
 
       {/* Auth Modal */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />

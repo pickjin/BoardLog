@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Copy, X } from 'lucide-react';
 import { PlayRecord } from '../types';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
+import { storage } from '../services/storage';
 import { formatPlayShareText } from '../utils/playShareText';
+import { buildShareLink } from '../utils/sharedPlay';
 
 interface PlayShareSheetProps {
   play: PlayRecord | null;
@@ -12,10 +15,22 @@ interface PlayShareSheetProps {
 
 export const PlayShareSheet: React.FC<PlayShareSheetProps> = ({ play, onClose }) => {
   const { showToast } = useToast();
-  const text = useMemo(() => (play ? formatPlayShareText(play, window.location.origin) : ''), [play]);
+  const { user } = useAuth();
+  // Friends cannot tell who '게스트 플레이어' is, so a guest is asked for a name once.
+  const [sharerName, setSharerName] = useState(
+    () => storage.getShareName() || (user && !user.isAnonymous ? user.nickname : '')
+  );
+  const nameReady = sharerName.trim().length > 0;
+
+  const text = useMemo(() => {
+    if (!play) return '';
+    const link = buildShareLink(play, sharerName, window.location.origin);
+    return formatPlayShareText(play, link, sharerName);
+  }, [play, sharerName]);
   const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
   const copyText = async () => {
+    storage.setShareName(sharerName);
     try {
       await navigator.clipboard.writeText(text);
       showToast('결과가 복사됐어요. 카톡 채팅방에 붙여넣으세요.', 'success');
@@ -26,6 +41,7 @@ export const PlayShareSheet: React.FC<PlayShareSheetProps> = ({ play, onClose })
   };
 
   const share = async () => {
+    storage.setShareName(sharerName);
     try {
       await navigator.share({ text });
       onClose();
@@ -66,6 +82,19 @@ export const PlayShareSheet: React.FC<PlayShareSheetProps> = ({ play, onClose })
               </button>
             </div>
 
+            <label className="mb-3 flex flex-col gap-1">
+              <span className="text-[11px] font-bold text-[#636E72]">친구들에게 보일 내 이름</span>
+              <input
+                id="play-share-name-input"
+                type="text"
+                value={sharerName}
+                maxLength={30}
+                onChange={(e) => setSharerName(e.target.value)}
+                placeholder="예: 철수"
+                className="rounded-xl border border-[#E9ECEF] bg-white px-3 py-2 text-xs text-[#1E272E] focus:border-[#4834D4] focus:outline-none"
+              />
+            </label>
+
             <pre className="mb-4 max-h-56 overflow-y-auto whitespace-pre-wrap rounded-2xl border border-[#E9ECEF] bg-[#F8F9FA] p-3.5 font-sans text-xs leading-relaxed text-[#2D3436]">
               {text}
             </pre>
@@ -76,7 +105,8 @@ export const PlayShareSheet: React.FC<PlayShareSheetProps> = ({ play, onClose })
                   id="play-share-native-btn"
                   type="button"
                   onClick={share}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#FEE500] py-2.5 text-xs font-black text-[#191919] transition-transform active:scale-95"
+                  disabled={!nameReady}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#FEE500] py-2.5 text-xs font-black text-[#191919] transition-transform active:scale-95 disabled:opacity-40"
                 >
                   <Share2 className="h-3.5 w-3.5" />
                   카톡 등으로 공유
@@ -86,7 +116,8 @@ export const PlayShareSheet: React.FC<PlayShareSheetProps> = ({ play, onClose })
                 id="play-share-copy-btn"
                 type="button"
                 onClick={copyText}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 text-xs font-bold transition-transform active:scale-95 ${
+                disabled={!nameReady}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 text-xs font-bold transition-transform active:scale-95 disabled:opacity-40 ${
                   canNativeShare ? 'bg-[#F1F3F5] text-[#2D3436]' : 'bg-[#FEE500] text-[#191919]'
                 }`}
               >

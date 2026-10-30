@@ -1,0 +1,131 @@
+# 07. Deployment & Operations
+
+상태: **확정(Accepted)**. 2026-10-30. D-032~D-037.
+
+## 1. 배포 환경 (D-032)
+
+| 환경 | 트리거 | Supabase | 클라우드 기능 |
+|---|---|---|---|
+| Production | `main` 병합 시 Vercel 자동 배포 | 프로덕션 프로젝트 | `VITE_CLOUD_PUBLIC=true`일 때만 공개 |
+| Preview | PR마다 Vercel 자동 배포 | 연결 안 함 | 꺼짐 |
+| Development | 로컬 `npm run dev` / `vercel dev` | 로컬 Supabase(D-031) | 켜짐 |
+
+변수별 배치는 [04-architecture §8.1](./04-architecture.md).
+
+## 2. 클라우드 기능 공개 절차 (D-032)
+
+1. `VITE_CLOUD_PUBLIC=false`로 프로덕션 배포
+2. 운영자가 점검 경로로 카카오 로그인, 매직링크 수신, 백업·복원, 계정 삭제를 직접 확인(06 §6)
+3. 이상 없으면 `VITE_CLOUD_PUBLIC=true`로 바꾸고 재배포
+4. 문제가 생기면 `false`로 되돌리고 재배포. 기기 기록에는 영향 없음
+
+점검 경로의 형태는 구현 시 결정한다.
+
+## 3. CI (D-033)
+
+| 항목 | 내용 |
+|---|---|
+| 위치 | GitHub Actions, `.github/workflows/ci.yml` |
+| 실행 시점 | PR 생성·갱신, `main` 푸시 |
+| 작업 | 단일 작업 `ci`. 이 이름을 main 브랜치 보호의 필수 검사로 지정(TBD-014) |
+| 단계 | ① `npm ci` ② `npm run typecheck` ③ `biome check` ④ `npm test`(단위·통합, 커버리지 기준 D-030) ⑤ `supabase start` → `npm run test:db` ⑥ `npm run build` + 결과물 비밀값 문자열 검사(D-037) ⑦ `npm run test:e2e` |
+| 실패 | 어느 단계든 실패하면 병합 불가. 검사를 끄거나 건너뛰는 방식으로 통과시키지 않음(D-025, D-027) |
+| 캐시 | npm 캐시, Playwright 브라우저, Supabase Docker 이미지 |
+| 중복 실행 | 같은 PR에 새 푸시가 오면 이전 실행 취소(`concurrency`) |
+| 비밀값 | 없음. 로컬 Supabase는 실행마다 생성되는 키 사용. 프로덕션 키를 CI에 두지 않음 |
+| 도입 순서 | M0 PR1에서 최소 단계로 시작해 PR마다 검사 추가(D-042). ⑤ 로컬 Supabase 단계는 M2(클라우드 백업)에서 추가 |
+| 측정 | 구현 직후 1회 실행 시간, 매월 사용 시간 확인. 무료 한도 70% 초과 시 경로별 실행으로 축소 검토 |
+
+## 4. DB 스키마 변경 절차 (D-034)
+
+| 항목 | 규칙 |
+|---|---|
+| 허용 | 테이블·컬럼(NULL 허용 또는 기본값 있음)·인덱스·RLS 정책 **추가** |
+| 금지 | `DROP`, `RENAME`, `ALTER ... TYPE`, NOT NULL 컬럼을 기본값 없이 추가. CI가 구문 검사로 차단 |
+| 순서 | ① PR에서 CI(로컬 Supabase) 통과 ② 운영자가 `supabase db push`로 프로덕션 적용 ③ PR 병합 → Vercel 배포 |
+| 삭제가 필요할 때 | 1차 PR: 앱이 해당 항목을 쓰지 않도록 배포. 2차 PR: 삭제 마이그레이션, PR 설명에 사유를 적고 그 PR에서만 차단 해제 |
+| 권한 | Supabase CLI 로그인과 DB 비밀번호는 운영자 PC·비밀번호 관리자에만. GitHub·Vercel에 두지 않음 |
+| 잊었을 때 | 새 앱의 백업 실패 → 상태 "대기 중", 기기 기록은 정상(FR-CLOUD-09). 적용 후 다음 재시도에서 복구 |
+
+## 5. 서버 데이터 백업·복구 (D-035)
+
+### 5.1 수동 덤프
+
+| 항목 | 내용 |
+|---|---|
+| 해야 할 때 | 마이그레이션 적용 직전(§4 ②의 앞), 대량 수정 직전, 요금제·프로젝트 설정 변경 직전 |
+| 명령 | `supabase db dump --data-only` + `supabase db dump`(스키마) |
+| 보관 | 운영자 PC, 암호화된 위치(예: 암호화 압축). 클라우드 드라이브·GitHub·메신저에 올리지 않음 |
+| 삭제 | 작성 7일 후 삭제. 작업 기록에 덤프 생성·삭제 날짜를 남김 |
+| 범위 | `public.backups`. 사진 축소본(Storage)은 제외 |
+
+### 5.2 복구 절차
+
+1. 앱 공개 스위치 `VITE_CLOUD_PUBLIC=false`로 재배포(새 업로드가 손상 데이터 위에 쌓이지 않게)
+2. 덤프 또는 Supabase 기본 백업에서 복원
+3. 운영자 계정으로 백업·복원 확인(06 §6 수동 점검)
+4. 스위치를 다시 켬
+5. 복구 시점 이후에 기기에서 바뀐 내용은 다음 자동 백업 때 합치기 규칙(ADR-002)으로 다시 올라감
+
+### 5.3 복구 시험
+
+클라우드 백업 공개 전 1회: 로컬 Supabase에 프로덕션 스키마 덤프와 테스트 데이터로 5.2를 실행해 본다.
+
+### 5.4 알려진 공백
+
+- Supabase 기본 백업 유무·보관 기간 미확인(TBD-013). **확인 전 클라우드 백업 공개 금지**
+- 사진 축소본 Storage 손실 시, 기기 데이터가 지워진 사용자의 해당 사진은 복구 불가(기록은 영향 없음)
+
+## 6. 모니터링 (D-036)
+
+### 6.1 주간 확인 (운영자, 주 1회)
+
+| 확인할 곳 | 항목 | 조사 기준(시작값) |
+|---|---|---|
+| GA4 | `backup_upload_result` 결과 분포 | 실패(`ok` 외) 비율 5% 초과, 또는 `auth`·`server` 1건 이상 |
+| GA4 | `app_error` 종류별 건수 | 전주 대비 2배 이상 증가 |
+| Vercel 런타임 로그 | `api/delete-account`, `api/scan-games` 오류 응답 | 502 반복 |
+| Supabase 대시보드 | DB·Storage 사용량, 무료 한도 대비 비율(TBD-013) | 70% 초과 |
+| GitHub Actions | 월 사용 시간(D-033) | 무료 한도 70% 초과 |
+
+임계값은 근거 없는 시작값이다. 4주 실측 후 조정하고 decision-log에 남긴다. GA4는 차단기로 일부 누락되므로 추세로 판단한다.
+
+### 6.2 사용자 쪽 보완
+
+백업 연속 3회 실패 시 사용자에게 파일 내보내기 권유(FR-CLOUD-11). 운영자가 발견하기 전의 공백을 줄인다.
+
+### 6.3 이벤트 원칙
+
+오류 원문·스택·기록 내용은 보내지 않는다. 분류 값만 보낸다(FR-MEAS-03). 원문은 브라우저 콘솔과 서버 로그에만 남긴다.
+
+## 7. 비밀값 관리 (D-037)
+
+### 7.1 보관 위치
+
+| 비밀값 | 위치 | 환경 | 접근 |
+|---|---|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Vercel 환경변수(Sensitive 유형) | Production만 | `api/delete-account.ts`만 |
+| Supabase DB 비밀번호 | 운영자 비밀번호 관리자 | — | `supabase db push`/`dump` 시 운영자 |
+| Supabase CLI 접근 토큰 | 운영자 PC | — | 운영자 |
+| 카카오 REST API 키·Client Secret | Supabase 대시보드 Auth 설정 | — | 저장소·Vercel에 두지 않음 |
+| `GEMINI_API_KEY` | Vercel 환경변수 | Production, Development만. Preview에서 제거(TBD-016) | `api/scan-games.ts`만 |
+| GitHub Actions | **비밀값 없음**(D-033) | — | — |
+
+공개 가능 값(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GA_MEASUREMENT_ID`)은 브라우저에 노출되는 것이 정상이며, 보호는 RLS가 맡는다.
+
+### 7.2 규칙
+
+- 비밀값은 코드·문서·커밋·PR·이슈·채팅에 쓰지 않는다. `.env*`는 이미 `.gitignore` 대상(`.env.example`만 예외, 값 없이 이름만)
+- `VITE_` 접두어 변수에 비밀값을 넣지 않는다(빌드 결과에 그대로 포함됨). CI에서 빌드 결과물에 `service_role` 문자열이 있으면 실패
+- 저장소 비밀 탐지(GitHub secret scanning·push protection)는 저장소 요금제에서 가능하면 켠다(TBD-015)
+
+### 7.3 유출 의심 시 절차
+
+1. 해당 키를 공급자에서 즉시 재발급(이전 키 폐기)
+2. Vercel 환경변수 교체 → 재배포
+3. 서비스 역할 키였다면 Supabase 대시보드에서 비정상 삭제·조회 흔적 확인, 필요 시 D-035 복구 절차
+4. decision-log에 사건 기록(날짜, 원인, 조치)
+
+### 7.4 구현 시 정리 대상
+
+- `.env.example`이 AI Studio 시절 내용(`APP_URL`, AI Studio 설명)으로 남아 있음 → 04 §8 변수 목록 기준으로 이름만 다시 작성

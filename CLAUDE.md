@@ -1,87 +1,58 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+All agent rules live in AGENTS.md (D-039). This file only adds Claude Code specifics.
 
-## Commands
+@AGENTS.md
 
-```bash
-npm run dev      # Vite dev server on :3000. Does NOT serve /api/* (see below).
-npm run build    # Production build (tsc types are not checked here)
-npm run lint     # tsc --noEmit — this is the only type-check step; there is no separate test suite
-```
+## Running the serverless function locally
 
-`api/scan-games.ts` is a Vercel serverless function. `npm run dev` does not run it. To exercise it
-locally: `vercel link` (project: `boardlog`), `vercel env pull .env.local`, then `vercel dev`.
+`api/scan-games.ts` is a Vercel serverless function; `npm run dev` does not run it. To exercise it:
+`vercel link` (project: `boardlog`), `vercel env pull .env.local`, then `vercel dev`.
 
-## Deployment
+## Deployment facts
 
 - Vercel project `boardlog`, team `wlstkden-6327s-projects`. Production domain:
-  `boardlog-blush.vercel.app`.
-- Production target is the `main` branch: pushing to `main` on GitHub auto-deploys.
-- Required env var: `GEMINI_API_KEY` (set in Vercel, all three environments). Optional:
-  `GEMINI_MODEL` to pin a specific model id instead of the fallback list in `api/scan-games.ts`.
+  `boardlog-blush.vercel.app`. `main` auto-deploys to production.
+- `GEMINI_API_KEY` is required; `GEMINI_MODEL` optionally pins a model id instead of the fallback
+  list in `api/scan-games.ts`. Per D-037 the key belongs in Production and Development only; removing
+  it from Preview is an owner task (TBD-016).
+- Vercel MCP tools may be available in a session. Use them to read deployments and logs. Changing
+  project settings or env vars is forbidden for agents (AGENTS.md, D-038).
 
-## Architecture
+## Plan and where we are (update at every milestone step)
 
-**There is no backend database.** All user data (accounts, games, play records) lives in the
-browser's IndexedDB, with localStorage as a fallback and for session/account pointers. Nothing
-syncs across devices or browsers. `api/scan-games.ts` is the only server-side code in the repo, and
-it is stateless — it proxies one Gemini vision call and stores nothing.
+Order (D-041): **M0 foundation → M1 measurement → 4-week gate → M2**. Details: [09-roadmap](docs/design/09-roadmap.md).
 
-### `src/services/storage.ts` — the persistence boundary
+| Step | Status (2026-10-30) |
+|---|---|
+| Design session (D-001..D-043, TBD-001..016) | Done |
+| PR #1: design docs + unshipped features (empty start / sample removal, PWA, share link) | Open, **waiting for owner's explicit merge instruction**. One-time D-038 exception (no CI yet), evidence: lint, build, qa-evidence 97/97 |
+| M0 PR1: npm lockfile, dependency cleanup, scripts, `.env.example`, minimal CI | Next, after PR #1 merges |
+| M0 PR2: React types + `strict`, fix the 4 bugs | — |
+| M0 PR3: Biome (config / full format / fixes as 3 commits) | — |
+| M0 PR4: Vitest + tests for existing pure functions | — |
+| M0 PR5: Playwright Test, migrate qa-evidence scripts | — |
+| M1: `analytics.ts` + FR-MEAS-02 events, Vercel Web Analytics | — |
+| Gate (4 weeks after M1): ≥30 users with `play_saved` AND ≥30% iOS Safari AND 7-day wipe confirmed → M2 = cloud backup; else hub or share-link growth | — |
 
-Every read and write in the app goes through this single file (`storage` singleton). No component
-talks to IndexedDB or localStorage directly. This matters for two reasons:
+Owner tasks, by priority: TBD-006 real-iPhone test (Safari tab + home-screen app, 8 days unopened)
+→ TBD-004 GA4 property → TBD-014 `main` protection with required check `ci` (after M0 PR1) →
+TBD-015 repo visibility / Actions quota → TBD-016 remove `GEMINI_API_KEY` from Preview.
 
-1. **Swapping in a real backend later only means reimplementing this file.** The 19 UI components
-   never need to change — they already only know the `storage.*` method signatures.
-2. **IndexedDB is a single shared store per record type (`games`, `plays`), keyed by record id, not
-   per-user.** Any new by-id method (update/delete) MUST check `record.userId === uid` before
-   touching the record — the `idbReadOwned` helper does this. Skipping it is a real bug that
-   happened once already: one account could read/edit/delete another account's games by id, even
-   though list views (which go through the `userId` index) looked correctly isolated. A fix must be
-   verified with a multi-account test, not a single-user one — the bug is invisible otherwise.
+## Known state (2026-10-30)
 
-The same rule is why backup restore (`planImport` / `commitImport`, parsed by
-`src/utils/backupImport.ts`) never writes a backup's own ids: every imported record gets a fresh
-id and plays are re-linked to games through a source-id map. Writing a backup id with `put` would
-overwrite, and take ownership of, another account's record that happens to share it. Imported
-fields are whitelisted field by field, so a file cannot smuggle in `userId` or `order`.
-
-Auth is entirely client-side: passwords are PBKDF2-SHA256 hashed (210k iterations, per-record salt)
-and stored in `localStorage['boardlog_all_users']`. There is no session token or server validation.
-
-### Bulk photo registration (`api/scan-games.ts` + `src/services/gameScanner.ts`)
-
-Uploads go through the serverless function (key stays server-side) which calls Gemini's vision API
-and returns detected game titles. The client (`gameScanner.ts`) matches each title against the
-60-game seed list (`src/data/seedGames.ts`) using fuzzy string matching (`src/utils/titleMatch.ts`);
-unmatched titles are still registered under the read title with placeholder fields.
-
-The function tries a short list of model ids in order (`MODEL_CANDIDATES`), not a single hardcoded
-one — Gemini model ids retire while still appearing in the account's own `models.list()` output, so
-a single pinned id eventually breaks with no warning. `classifyProviderError` distinguishes a model
-that is genuinely unavailable from one that is just temporarily overloaded (HTTP 503 /
-"UNAVAILABLE") versus the account's key, quota, or region being the actual problem — these need
-different fixes and must not be conflated in the error message shown to the user. If a rejected
-model id still appears in a fresh `listUsableModels()` call, treat the failure as transient provider
-instability, not a configuration problem — telling the user to change `GEMINI_MODEL` to an id that
-is already known to be valid just wastes a deploy cycle.
-
-### Image fallback
-
-`src/utils/imageFallback.ts` provides `applyImageFallback`, an inline SVG placeholder with a
-one-shot guard (`dataset.fallbackApplied`). Every `<img onError>` in the codebase must use this, not
-a remote URL — a remote fallback that itself 404s re-fires `onError` against itself, which caused an
-infinite request loop (~500 req/s) in production once already.
-
-## Known state / open issues
-
-- No backend, by design, pending validation: the plan is to add one only after real users show
-  second-visit retention (see conversation history / commit messages for the reasoning). Don't treat
-  "add a backend" as the next obvious step without checking whether that validation has happened.
-- The Gemini photo-scan feature has shown intermittent provider-side instability in testing
-  (alternating between a clean success, a 503 overload, and a "not found" response for a model the
-  account's own listing confirms exists). This is external to the app; retries and error
-  classification are already handled, but it is not fully solved because it cannot be — it depends
-  on Google's service state.
+- **Design session is closed (D-001..D-043). Implementation started with milestone M0**
+  ([09-roadmap](docs/design/09-roadmap.md)): five PRs, CI first (D-042). No other feature work during M0.
+- No backend in code yet. A Supabase cloud backup is designed (D-010, 04-architecture, ADR-002).
+  ADR-001 (platform) stays Proposed until TBD-013 (Supabase facts) is verified; supabase.com may be
+  blocked by the session network policy.
+- First implementation tasks already decided: npm lockfile (D-021), React types + `strict` and the 4
+  bugs it exposes (D-025), Biome with a separate format commit (D-026), unused dependency removal and
+  `clean` script fix (D-028), migrating `docs/design/qa-evidence/*.mjs` to Playwright Test (D-029),
+  rewriting the stale AI Studio `.env.example` (07 §7.4).
+- `main` branch protection is not on yet (TBD-014). Until it is, the merge rules in AGENTS.md are
+  enforced only by agents following them.
+- The Gemini photo scan shows intermittent provider-side instability (success / 503 / "not found"
+  for a listed model). Retries and classification exist; it cannot be fully fixed from our side.
+- iOS Safari's 7-day storage cap is the reason for the backend; it is not yet verified on a current
+  device (TBD-006).
