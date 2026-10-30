@@ -88,8 +88,9 @@
 
 | 스크립트 | 변경 |
 |---|---|
-| `typecheck` | 신규: `tsc --noEmit` |
-| `lint` | `tsc --noEmit` → `npm run typecheck && biome check .` |
+| `typecheck` | 신규: `tsc --noEmit` (M0 PR1 완료) |
+| `lint` | `tsc --noEmit` → `npm run typecheck && biome check .` (PR1에서 `npm run typecheck`, Biome은 PR3) |
+| `check:secrets` | 신규: 빌드 결과물 비밀값 검사(D-037, M0 PR1 완료) |
 | `format` | 신규: `biome format --write .` |
 | `test` | 신규(PHASE 6에서 확정) |
-| `clean` | `rm -rf dist server.js`는 윈도우 기본 명령창에서 동작하지 않고, `server.js`는 존재하지 않는다 → Node 한 줄 명령으로 `dist`만 삭제하도록 교체 |
+| `clean` | `rm -rf dist server.js`는 윈도우 기본 명령창에서 동작하지 않고, `server.js`는 존재하지 않는다 → Node 한 줄 명령으로 `dist`만 삭제하도록 교체 (M0 PR1 완료) |

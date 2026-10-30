@@ -10,9 +10,12 @@ same PR.
 | Command | Status | What it does |
 |---|---|---|
 | `npm run dev` | now | Vite dev server on :3000. Does NOT serve `/api/*` (use `vercel dev`) |
+| `npm ci` | now | Install exactly from `package-lock.json` (npm only, D-021; Node 24.x) |
 | `npm run build` | now | Production build (does not type-check) |
-| `npm run lint` | now | `tsc --noEmit` — currently the only check |
-| `npm run typecheck`, `npm run format` | planned (D-025, D-026) | `tsc --noEmit`; Biome format |
+| `npm run typecheck` | now | `tsc --noEmit` (`strict` arrives in M0 PR2) |
+| `npm run lint` | now | `npm run typecheck`; Biome is added in M0 PR3 |
+| `npm run check:secrets` | now | Scan `dist/` for server secrets after `build` (D-037) |
+| `npm run format` | planned (D-026) | Biome format |
 | `npm test`, `npm run test:e2e`, `npm run test:db` | planned (D-029, D-031) | Vitest; Playwright Test; local Supabase policy tests |
 
 Run every check that exists before saying work is done. Report failures with their output.
