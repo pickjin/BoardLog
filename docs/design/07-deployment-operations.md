@@ -28,7 +28,7 @@
 | 위치 | GitHub Actions, `.github/workflows/ci.yml` |
 | 실행 시점 | PR 생성·갱신, `main` 푸시 |
 | 작업 | 단일 작업 `ci`. 이 이름을 main 브랜치 보호의 필수 검사로 지정(TBD-014) |
-| 단계 | ① `npm ci` ② `npm run typecheck` ③ `biome check` ④ `npm test`(단위·통합, 커버리지 기준 D-030) ⑤ `supabase start` → `npm run test:db` ⑥ `npm run build` ⑦ `npm run test:e2e` |
+| 단계 | ① `npm ci` ② `npm run typecheck` ③ `biome check` ④ `npm test`(단위·통합, 커버리지 기준 D-030) ⑤ `supabase start` → `npm run test:db` ⑥ `npm run build` + 결과물 비밀값 문자열 검사(D-037) ⑦ `npm run test:e2e` |
 | 실패 | 어느 단계든 실패하면 병합 불가. 검사를 끄거나 건너뛰는 방식으로 통과시키지 않음(D-025, D-027) |
 | 캐시 | npm 캐시, Playwright 브라우저, Supabase Docker 이미지 |
 | 중복 실행 | 같은 PR에 새 푸시가 오면 이전 실행 취소(`concurrency`) |
