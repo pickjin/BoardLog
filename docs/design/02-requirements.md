@@ -42,7 +42,7 @@
 | ID | 요구사항 |
 |---|---|
 | FR-MEAS-01 | GA4는 환경변수 `VITE_GA_MEASUREMENT_ID`가 있을 때만 불러온다. 없으면 아무 데이터도 보내지 않는다 |
-| FR-MEAS-02 | 이벤트: `play_saved`, `share_sheet_opened`, `share_link_opened`, `share_link_added`, `game_added`(method: `manual`/`seed`/`scan`), `game_hub_viewed`, `catalog_exported`, `kakao_list_shared`, `backup_exported`, `backup_restored`, `backup_prompt_shown`(group: `ios_safari_browser`/`other`), `backup_login_completed`, `play_photo_added`(count) |
+| FR-MEAS-02 | 이벤트: `play_saved`, `share_sheet_opened`, `share_link_opened`, `share_link_added`, `game_added`(method: `manual`/`seed`/`scan`), `game_hub_viewed`, `catalog_exported`, `kakao_list_shared`, `backup_exported`, `backup_restored`, `backup_prompt_shown`(group: `ios_safari_browser`/`other`), `backup_login_completed`, `play_photo_added`(count), `backup_upload_result`(result: `ok`/`network`/`auth`/`conflict`/`server`) (D-036), `app_error`(kind: `render`/`storage`/`cloud`/`scan`/`unknown`) (D-036) |
 | FR-MEAS-03 | 이벤트 매개변수는 FR-MEAS-02에 적힌 값 목록만 허용한다. 이름·게임명·장소·점수·사진은 보내지 않는다. 허용 목록 밖의 값은 코드에서 전송 전에 막는다 |
 | FR-MEAS-04 | Vercel Web Analytics로 방문 추세를 수집한다(`@vercel/analytics/react`) |
 
@@ -60,6 +60,7 @@
 | FR-CLOUD-08 | 백업 화면에 "사진은 작은 크기로만 백업돼요"와 마지막 백업 시각을 표시한다 |
 | FR-CLOUD-09 | 서버나 네트워크가 실패해도 기록 입력·조회는 기기에서 정상 동작한다. 실패한 백업은 "대기 중"으로 두고, 앱을 열 때와 연결이 복구될 때 다시 시도한다 (D-017) |
 | FR-CLOUD-10 | 백업 상태를 완료·대기 중·실패 3종으로 관리하고 백업 화면에 표시한다 (D-017) |
+| FR-CLOUD-11 | 백업이 연속 3회 실패하면 "백업이 안 되고 있어요. 파일로 내보내 두세요" 안내와 내보내기 버튼을 표시한다. 성공 시 카운트 초기화. 닫으면 다음 연속 3회 실패 때 다시 표시 (D-036) |
 
 ### 1.6 개인정보 🆕
 
@@ -107,6 +108,7 @@
 | FR-CLOUD-04 | 서버에 기록 10건, 새 기기에 기록 2건(그중 1건 중복) | 로그인하면 | 기기 기록 11건, 모든 id가 새로 발급됨 |
 | FR-CLOUD-07 | 서버에 기록이 있는 계정 | 계정을 삭제하면 | 서버 조회 결과 0건, 기기 기록은 그대로 |
 | FR-CLOUD-09 | 네트워크 끊김 | 기록을 저장하면 | 저장 성공, 백업은 대기 상태로 표시되고 연결 후 재시도 |
+| FR-CLOUD-11 | 서버가 계속 500 응답 | 백업 시도가 3회 연속 실패하면 | 내보내기 권유 표시, `backup_upload_result`(result=`server`) 3건 |
 | NFR-01 | 계정 A, B의 서버 데이터 | B로 로그인해 A의 레코드 id로 요청하면 | 거부 |
 
 ## 5. 미결 (이 문서 관련)
