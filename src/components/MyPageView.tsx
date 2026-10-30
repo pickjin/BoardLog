@@ -1,22 +1,9 @@
-import React, { useRef, useState } from 'react';
-import {
-  User,
-  Shield,
-  Database,
-  Download,
-  LogOut,
-  Sparkles,
-  Info,
-  CheckCircle2,
-  Lock,
-  Smartphone,
-  Printer,
-  BookOpen,
-  Upload
-} from 'lucide-react';
+import type React from 'react';
+import { useRef, useState } from 'react';
+import { Database, Download, LogOut, CheckCircle2, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { storage, ImportPlan } from '../services/storage';
+import { storage, type ImportPlan } from '../services/storage';
 import { parseBackup, MAX_BACKUP_BYTES } from '../utils/backupImport';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -164,9 +151,7 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
                   </button>
                 </div>
               )}
-              <p className="text-xs text-[#636E72] mt-0.5">
-                {user?.isAnonymous ? '게스트 계정' : user?.email}
-              </p>
+              <p className="text-xs text-[#636E72] mt-0.5">{user?.isAnonymous ? '게스트 계정' : user?.email}</p>
             </div>
           </div>
 
@@ -196,9 +181,10 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
           <span>데이터베이스 & 외부 연동 안내</span>
         </div>
         <p className="text-[11px] text-[#636E72] leading-relaxed">
-          • <strong>데이터베이스 상태:</strong> 고속 브라우저 로컬 저장소(IndexedDB)에 저장되어 새로고침하거나 브라우저를 닫아도 안전하게 유지됩니다.
-          <br />
-          • <strong>외부 연동 상태:</strong> 외부 보드게임 상점/BGG API는 현재 <strong>"외부 DB 미연결"</strong> 상태이며, 번들된 300개 인기 보드게임 시드 목록과 사용자 수동 입력을 통해 정직하게 동작합니다.
+          • <strong>데이터베이스 상태:</strong> 고속 브라우저 로컬 저장소(IndexedDB)에 저장되어 새로고침하거나
+          브라우저를 닫아도 안전하게 유지됩니다.
+          <br />• <strong>외부 연동 상태:</strong> 외부 보드게임 상점/BGG API는 현재 <strong>"외부 DB 미연결"</strong>{' '}
+          상태이며, 번들된 300개 인기 보드게임 시드 목록과 사용자 수동 입력을 통해 정직하게 동작합니다.
         </p>
       </div>
 
@@ -209,7 +195,8 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
           <span>데이터 백업 및 서가 도록 출력</span>
         </h3>
         <p className="text-[11px] text-[#636E72] leading-relaxed">
-          내 게임 목록을 PDF 도록으로 인쇄하거나, JSON 백업 파일로 저장하고 복원할 수 있습니다. 기록은 이 브라우저에만 저장되니 폰을 바꾸기 전에 백업해 두세요.
+          내 게임 목록을 PDF 도록으로 인쇄하거나, JSON 백업 파일로 저장하고 복원할 수 있습니다. 기록은 이 브라우저에만
+          저장되니 폰을 바꾸기 전에 백업해 두세요.
         </p>
 
         <div className="space-y-2">
@@ -284,4 +271,3 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
     </div>
   );
 };
-

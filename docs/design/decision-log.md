@@ -248,6 +248,7 @@
 - **Selected:** B. Biome 2.6.4
 - **Measured:** 오류 74, 경고 117, 정보 4. 훅 의존성 누락 3건, 쓰지 않는 코드 18건
 - **Rules:** 현재 스타일에 맞춘 포맷 설정, 전체 포맷 별도 커밋, 위반 시 실패, 예외는 위치별 + 사유
+- **Result (M0 PR3, 2026-10-30):** 적용 범위는 코드 파일만(`src`, `api`, `scripts`, `vite.config.ts`; Markdown·CSS 제외). 오류 114·경고 117 → 0. 자동 수정(import 타입 분리, 미사용 import, 템플릿 문자열 등), 수동 수정(`isNaN`→`Number.isNaN` 9곳은 모두 숫자 입력이라 동작 동일, `forEach` 콜백 중괄호 12, 미사용 변수·상태 제거 등), 위치별 예외 62건(접근성 54 → TBD-018, 훅 의존성 트리거 3, 정적 목록 index key 5). `npm run lint`는 경고도 실패 처리(`--error-on-warnings`)
 - **Alternatives:** A ESLint + Prettier, C 포매터만, D 도입 안 함
 
 ### D-027 Git 정책
@@ -373,5 +374,6 @@
 | TBD-014 | ~~GitHub `main` 브랜치 보호~~ **해결 2026-10-30:** 저장소 ruleset `main-protection`(active, 기본 브랜치). 삭제 금지, 강제 푸시 금지, PR 필수(승인 0), 필수 검사 `ci`(GitHub Actions). 공개 API `/rules/branches/main`로 확인 | — |
 | TBD-015 | ~~저장소 공개 여부, Actions 한도~~ **해결 2026-10-30:** 저장소는 Public. 브랜치 규칙 무료 적용 확인. Actions 표준 러너 한도는 공개 저장소 기준 무료(2026-06 지식, 요금 페이지 미확인). 코드·설계 문서가 공개 상태임을 소유자가 인지 | — |
 | TBD-016 | Vercel Preview 환경에서 `GEMINI_API_KEY` 제거(D-037). 대상은 프로덕션 프로젝트 `board-log`(TBD-017) | 소유자 작업(Vercel 프로젝트 설정) |
+| TBD-018 | **접근성 정리 54건**: 입력과 연결되지 않은 label 36, 키보드 처리 없는 클릭 요소 16(`useKeyWithClickEvents` 8 + `noStaticElementInteractions` 8), `role="radio"` 버튼 1(`useSemanticElements`), autoFocus 1. M0 PR3에서 Biome 오류로 드러났고, UI 동작을 바꾸는 수정이라 위치별 `biome-ignore`(사유 `TBD-018`)로 표시만 함. `grep -rn "TBD-018" src`로 위치 확인 | M0 이후. 우선순위는 사용자 영향 데이터 후(M1 이후) 결정 |
 | TBD-017 | 같은 저장소에 Vercel 프로젝트 2개 연결: 실제 서비스는 `board-log`(계정 `pickjin1`, `board-log.vercel.app`, 소유자 확인 2026-10-30). `boardlog`(팀 `wlstkden-6327s-projects`, `boardlog-blush.vercel.app`)는 미사용인데 푸시마다 빌드되고 `GEMINI_API_KEY`를 가질 수 있음 → 연결 해제 또는 삭제 여부 | 소유자 작업(Vercel 설정) |
 | TBD-006 | 최신 iOS 사파리의 7일 저장 제한, 홈 화면 앱 예외, `navigator.storage.persist()` 효과, GA4 쿠키 유효기간 제한 | 실제 아이폰으로 확인. **M1 기간 소유자 작업, 관문 지표(D-041)** |

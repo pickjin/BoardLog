@@ -1,31 +1,9 @@
-import React, { useState, useMemo, useRef } from 'react';
+import type React from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Share2,
-  Copy,
-  Check,
-  Download,
-  Users,
-  Clock,
-  Flame,
-  Search,
-  Filter,
-  X,
-  MessageCircle,
-  Sparkles,
-  CheckSquare,
-  Square,
-  HelpCircle,
-  Tag,
-  Dices,
-  Layers,
-  ChevronRight,
-  ExternalLink,
-  Image as ImageIcon,
-  Send
-} from 'lucide-react';
+import { Copy, Check, Users, Search, X, MessageCircle, Sparkles, Tag, Dices, Image as ImageIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { UserGame } from '../types';
+import type { UserGame } from '../types';
 import { useToast } from '../context/ToastContext';
 import { applyImageFallback } from '../utils/imageFallback';
 
@@ -39,12 +17,7 @@ interface KakaoShareModalProps {
 type PlayerPreset = 'all' | 'under4' | 'twoPlayers' | 'party5Plus';
 type WeightPreset = 'all' | 'easy' | 'medium' | 'heavy';
 
-export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
-  isOpen,
-  games,
-  ownerName,
-  onClose
-}) => {
+export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({ isOpen, games, ownerName, onClose }) => {
   const { showToast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -68,7 +41,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
     });
     // fallback if empty
     if (initialSet.size === 0) {
-      games.slice(0, 8).forEach((g) => initialSet.add(g.id));
+      games.slice(0, 8).forEach((g) => {
+        initialSet.add(g.id);
+      });
     }
     return initialSet;
   });
@@ -89,7 +64,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
   const allGenres = useMemo(() => {
     const set = new Set<string>();
     games.forEach((g) => {
-      g.genre.forEach((gr) => set.add(gr.trim()));
+      g.genre.forEach((gr) => {
+        set.add(gr.trim());
+      });
     });
     return Array.from(set).filter(Boolean);
   }, [games]);
@@ -124,7 +101,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
       // 4. Search Query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchesTitle = g.title.toLowerCase().includes(q) || (g.titleEn && g.titleEn.toLowerCase().includes(q));
+        const matchesTitle = g.title.toLowerCase().includes(q) || g.titleEn?.toLowerCase().includes(q);
         const matchesGenre = g.genre.some((gr) => gr.toLowerCase().includes(q));
         if (!matchesTitle && !matchesGenre) return false;
       }
@@ -170,7 +147,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
     });
 
     const newSet = new Set<string>();
-    matching.forEach((g) => newSet.add(g.id));
+    matching.forEach((g) => {
+      newSet.add(g.id);
+    });
     setSelectedGameIds(newSet);
 
     showToast(`${matching.length}개의 게임이 선택되었습니다.`, 'success');
@@ -188,7 +167,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
 
   const handleSelectFilteredOnly = () => {
     const set = new Set<string>();
-    filteredPresetGames.forEach((g) => set.add(g.id));
+    filteredPresetGames.forEach((g) => {
+      set.add(g.id);
+    });
     setSelectedGameIds(set);
     showToast(`필터된 ${filteredPresetGames.length}개 게임이 선택되었습니다.`, 'success');
   };
@@ -201,18 +182,15 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
         ? `📦 전체 소장 컬렉션 (${gamesToShare.length}종)`
         : `✨ 추천/선택 보드게임 (${gamesToShare.length}종)`;
 
-    const lines = [
-      titleHeader,
-      subDesc,
-      customMessage ? `💬 "${customMessage}"` : '',
-      '──────────────────'
-    ].filter(Boolean);
+    const lines = [titleHeader, subDesc, customMessage ? `💬 "${customMessage}"` : '', '──────────────────'].filter(
+      Boolean
+    );
 
     if (gamesToShare.length === 0) {
       lines.push('(선택된 게임이 없습니다)');
     } else {
       gamesToShare.forEach((g, idx) => {
-        let line = `${idx + 1}. 🎮 ${g.title}`;
+        const line = `${idx + 1}. 🎮 ${g.title}`;
         const metaParts: string[] = [];
 
         if (includePlayers) {
@@ -239,16 +217,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
     lines.push(`🎲 보드게임 로그 & 룸: ${window.location.origin}`);
 
     return lines.join('\n');
-  }, [
-    ownerName,
-    gamesToShare,
-    shareMode,
-    customMessage,
-    includePlayers,
-    includePlaytime,
-    includeWeight,
-    includeGenre
-  ]);
+  }, [ownerName, gamesToShare, shareMode, customMessage, includePlayers, includePlaytime, includeWeight, includeGenre]);
 
   // Copy to Clipboard
   const handleCopyText = async () => {
@@ -265,7 +234,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
   // Direct Kakao Share / Web Share API
   const handleNativeOrKakaoShare = async () => {
     const shareTitle = `${ownerName || '보드게이머'}님의 보드게임 목록 (${gamesToShare.length}종)`;
-    
+
     // 1. Try Web Share API (Natively opens KakaoTalk app on mobile/desktop!)
     if (navigator.share) {
       try {
@@ -276,8 +245,8 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
         });
         showToast('카카오톡 또는 원하는 앱으로 공유를 시작했습니다.', 'success');
         return;
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
           // If canceled, do nothing. Otherwise fallback to clipboard
           handleCopyText();
         }
@@ -291,7 +260,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
     const kakaoWebSharerUrl = `https://sharer.kakao.com/talk/friends/picker/link?app_key=boardgame&shortKey=${encodeURIComponent(
       window.location.href
     )}`;
-    
+
     // Check if on mobile
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile) {
@@ -523,6 +492,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                     <div className="pt-2 border-t border-[#E9ECEF] grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                       {/* Genre Select */}
                       <div>
+                        {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                         <label className="block text-[10px] font-bold text-[#636E72] mb-1">장르 선택</label>
                         <select
                           value={selectedGenre}
@@ -543,6 +513,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
 
                       {/* Weight Select */}
                       <div>
+                        {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                         <label className="block text-[10px] font-bold text-[#636E72] mb-1">난이도 (웨이트)</label>
                         <select
                           value={weightPreset}
@@ -558,6 +529,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
 
                       {/* Search Bar */}
                       <div className="col-span-2 sm:col-span-1">
+                        {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                         <label className="block text-[10px] font-bold text-[#636E72] mb-1">게임 직접 검색</label>
                         <div className="relative">
                           <Search className="w-3.5 h-3.5 text-[#A8ABAF] absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -615,6 +587,8 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                         filteredPresetGames.map((game) => {
                           const isSelected = selectedGameIds.has(game.id);
                           return (
+                            // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
+                            // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
                             <div
                               key={game.id}
                               onClick={() => toggleGameSelection(game.id)}
@@ -655,7 +629,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                                     </span>
                                   </div>
                                   <div className="text-[10px] text-[#636E72] flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                    <span>👥 {game.minPlayers}~{game.maxPlayers}인</span>
+                                    <span>
+                                      👥 {game.minPlayers}~{game.maxPlayers}인
+                                    </span>
                                     {game.playTime && <span>• ⏱ {game.playTime}분</span>}
                                     {game.weight && <span>• ⭐ {game.weight.toFixed(1)}</span>}
                                     {game.genre && game.genre.length > 0 && (
@@ -682,6 +658,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
 
                 {/* 4. Message Options & Greetings */}
                 <div className="p-3.5 bg-[#F8F9FA] rounded-2xl border border-[#E9ECEF] space-y-2.5">
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-xs font-bold text-[#1E272E]">
                     카카오톡 공유 상단 메시지 (선택 입력)
                   </label>
@@ -801,7 +778,11 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                               <div className="min-w-0 flex-1">
                                 <div className="text-xs font-black text-[#191919] truncate">{g.title}</div>
                                 <div className="text-[10px] text-[#555] flex items-center gap-1 flex-wrap">
-                                  {includePlayers && <span>👥 {g.minPlayers}~{g.maxPlayers}인</span>}
+                                  {includePlayers && (
+                                    <span>
+                                      👥 {g.minPlayers}~{g.maxPlayers}인
+                                    </span>
+                                  )}
                                   {includePlaytime && g.playTime && <span>• ⏱ {g.playTime}분</span>}
                                   {includeWeight && g.weight && <span>• ⭐ {g.weight.toFixed(1)}</span>}
                                   {includeGenre && g.genre.length > 0 && <span>• 🏷 {g.genre[0]}</span>}
@@ -810,9 +791,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                             </div>
                           ))
                         ) : (
-                          <div className="p-3 text-center text-xs text-[#666]">
-                            선택된 게임이 없습니다.
-                          </div>
+                          <div className="p-3 text-center text-xs text-[#666]">선택된 게임이 없습니다.</div>
                         )}
                       </div>
 

@@ -1,25 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  Search,
-  Plus,
-  LayoutGrid,
-  List,
-  Filter,
-  Dices,
-  Trophy,
-  SlidersHorizontal,
-  ChevronDown,
-  Sparkles,
-  HelpCircle,
-  FolderPlus,
-  Printer,
-  BookOpen,
-  Download,
-  MessageCircle,
-  Share2
-} from 'lucide-react';
-import { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult, TabType } from './types';
+import type React from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Search, Plus, LayoutGrid, List, Download, MessageCircle } from 'lucide-react';
+import type { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult, TabType } from './types';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { storage } from './services/storage';
@@ -40,7 +22,7 @@ import { MyPageView } from './components/MyPageView';
 import { AuthModal } from './components/AuthModal';
 import { PlayShareSheet } from './components/PlayShareSheet';
 import { SharedPlayModal } from './components/SharedPlayModal';
-import { SharedPlay, decodeSharedPlay, sharedHashPresent, toRecipientRecord } from './utils/sharedPlay';
+import { type SharedPlay, decodeSharedPlay, sharedHashPresent, toRecipientRecord } from './utils/sharedPlay';
 import { normalizePlay } from './utils/backupImport';
 import { ConfirmModal } from './components/ConfirmModal';
 import { LoadingState, EmptyState, ErrorState } from './components/StateViews';
@@ -112,7 +94,7 @@ const MainApp: React.FC = () => {
       ]);
       setGames(fetchedGames);
       setPlays(fetchedPlays);
-    } catch (err) {
+    } catch {
       setLoadError('데이터를 불러오는 중 오류가 발생했습니다.');
       showToast('데이터 불러오기 실패', 'error');
     } finally {
@@ -125,9 +107,7 @@ const MainApp: React.FC = () => {
   }, [loadData]);
 
   // --- Handlers: Game CRUD ---
-  const handleSaveGame = async (
-    gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>
-  ) => {
+  const handleSaveGame = async (gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!user) return;
     if (editingGame) {
       // Update
@@ -149,9 +129,7 @@ const MainApp: React.FC = () => {
     setIsGameFormOpen(false);
   };
 
-  const handleRegisterScannedGames = async (
-    scanned: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>[]
-  ) => {
+  const handleRegisterScannedGames = async (scanned: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>[]) => {
     if (!user) return;
     const created: UserGame[] = [];
     try {
@@ -241,9 +219,7 @@ const MainApp: React.FC = () => {
   };
 
   // --- Handlers: Play Record CRUD ---
-  const handleSavePlay = async (
-    playData: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'>
-  ) => {
+  const handleSavePlay = async (playData: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!user) return;
     if (editingPlay) {
       // Update
@@ -311,8 +287,7 @@ const MainApp: React.FC = () => {
       g.genre.some((tag) => tag.toLowerCase().includes(gameSearch.toLowerCase())) ||
       g.storageLocation.toLowerCase().includes(gameSearch.toLowerCase());
 
-    const matchesOwnership =
-      selectedOwnership === '전체' || g.ownershipStatus === selectedOwnership;
+    const matchesOwnership = selectedOwnership === '전체' || g.ownershipStatus === selectedOwnership;
 
     return matchesSearch && matchesOwnership;
   });
@@ -325,8 +300,7 @@ const MainApp: React.FC = () => {
       p.location.toLowerCase().includes(playSearch.toLowerCase()) ||
       p.participants.some((part) => part.name.toLowerCase().includes(playSearch.toLowerCase()));
 
-    const matchesResult =
-      selectedPlayResult === '전체' || p.myResult === selectedPlayResult;
+    const matchesResult = selectedPlayResult === '전체' || p.myResult === selectedPlayResult;
 
     return matchesSearch && matchesResult;
   });
@@ -334,9 +308,7 @@ const MainApp: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F1F3F5] text-[#2D3436] flex flex-col font-sans selection:bg-[#4834D4]/20 selection:text-[#4834D4]">
       {/* Top Fixed Header */}
-      <Navbar
-        onOpenAuth={() => setIsAuthOpen(true)}
-      />
+      <Navbar onOpenAuth={() => setIsAuthOpen(true)} />
 
       {/* Main Container */}
       <main className="flex-1 w-full max-w-xl mx-auto px-4 pt-18 pb-24">
@@ -524,9 +496,7 @@ const MainApp: React.FC = () => {
                   />
                 ) : (
                   <div className="p-8 bg-white rounded-[28px] border border-[#E9ECEF] text-center space-y-3 shadow-sm">
-                    <p className="text-xs text-[#636E72]">
-                      '{gameSearch}' 검색 조건에 맞는 게임이 없습니다.
-                    </p>
+                    <p className="text-xs text-[#636E72]">'{gameSearch}' 검색 조건에 맞는 게임이 없습니다.</p>
                     <button
                       type="button"
                       onClick={() => {
@@ -603,11 +573,7 @@ const MainApp: React.FC = () => {
                 {filteredPlays.length > 0 ? (
                   <div className="space-y-3.5">
                     {filteredPlays.map((play) => (
-                      <PlayCard
-                        key={play.id}
-                        play={play}
-                        onClick={() => setViewingPlay(play)}
-                      />
+                      <PlayCard key={play.id} play={play} onClick={() => setViewingPlay(play)} />
                     ))}
                   </div>
                 ) : plays.length === 0 ? (

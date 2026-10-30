@@ -1,6 +1,6 @@
-import { UserGame, PlayRecord, UserProfile } from '../types';
+import type { UserGame, PlayRecord, UserProfile } from '../types';
 import { formatDate } from '../utils/formatters';
-import { ParsedBackup, gameDedupKey, playDedupKey } from '../utils/backupImport';
+import { type ParsedBackup, gameDedupKey, playDedupKey } from '../utils/backupImport';
 
 const DB_NAME = 'board_log_db_v1';
 const DB_VERSION = 1;
@@ -18,8 +18,7 @@ const PBKDF2_HASH = 'SHA-256';
 const PBKDF2_KEY_BITS = 256;
 const PBKDF2_SALT_BYTES = 16;
 
-const QUOTA_MESSAGE =
-  '저장 공간이 가득 찼습니다. 사진 수를 줄이거나 오래된 기록을 정리한 뒤 다시 시도해주세요.';
+const QUOTA_MESSAGE = '저장 공간이 가득 찼습니다. 사진 수를 줄이거나 오래된 기록을 정리한 뒤 다시 시도해주세요.';
 
 const gamesKey = (uid: string) => `boardlog_games_${uid}`;
 const playsKey = (uid: string) => `boardlog_plays_${uid}`;
@@ -60,18 +59,10 @@ function base64ToBytes(value: string): Uint8Array {
   return bytes;
 }
 
-async function derivePasswordHash(
-  password: string,
-  salt: Uint8Array,
-  iterations: number
-): Promise<string> {
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  );
+async function derivePasswordHash(password: string, salt: Uint8Array, iterations: number): Promise<string> {
+  const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, [
+    'deriveBits'
+  ]);
   const bits = await crypto.subtle.deriveBits(
     { name: 'PBKDF2', salt, iterations, hash: PBKDF2_HASH },
     keyMaterial,
@@ -117,9 +108,7 @@ export const isSampleRecordId = (id: string) => id.startsWith('sample-');
 export function findRemovableSampleData(games: UserGame[], plays: PlayRecord[]) {
   const samplePlays = plays.filter((p) => isSampleRecordId(p.id));
   const realPlays = plays.filter((p) => !isSampleRecordId(p.id));
-  const sampleGames = games.filter(
-    (g) => isSampleRecordId(g.id) && !realPlays.some((p) => p.gameId === g.id)
-  );
+  const sampleGames = games.filter((g) => isSampleRecordId(g.id) && !realPlays.some((p) => p.gameId === g.id));
   return { samplePlays, sampleGames };
 }
 
@@ -211,28 +200,18 @@ class BoardLogStorage {
    * Both stores are keyed by record id alone, so a bare id lookup would reach any
    * account's rows. Every by-id path goes through here to stay inside one owner.
    */
-  private async idbReadOwned<T>(
-    storeName: string,
-    uid: string,
-    id: string
-  ): Promise<Stored<T> | null> {
+  private async idbReadOwned<T>(storeName: string, uid: string, id: string): Promise<Stored<T> | null> {
     const record = await this.idbReadOne<T>(storeName, id);
     return record && record.userId === uid ? record : null;
   }
 
   /** Resolves false when the store is simply unusable; rejects only when the device is out of space. */
-  private async idbWrite(
-    storeName: string,
-    mutate: (store: IDBObjectStore) => void
-  ): Promise<boolean> {
+  private async idbWrite(storeName: string, mutate: (store: IDBObjectStore) => void): Promise<boolean> {
     return this.idbWriteTx([storeName], (tx) => mutate(tx.objectStore(storeName)));
   }
 
   /** One transaction over several stores: either every write commits or none does. */
-  private async idbWriteTx(
-    storeNames: string[],
-    mutate: (tx: IDBTransaction) => void
-  ): Promise<boolean> {
+  private async idbWriteTx(storeNames: string[], mutate: (tx: IDBTransaction) => void): Promise<boolean> {
     const db = await this.openDb();
     if (!db) return false;
 
@@ -323,12 +302,16 @@ class BoardLogStorage {
 
     const base = Date.now();
     const writtenGames = await this.idbWrite(STORE_GAMES, (store) => {
-      legacyGames.forEach((game, i) => store.put({ ...game, userId: uid, order: base - i }));
+      legacyGames.forEach((game, i) => {
+        store.put({ ...game, userId: uid, order: base - i });
+      });
     });
     if (!writtenGames) return false;
 
     const writtenPlays = await this.idbWrite(STORE_PLAYS, (store) => {
-      legacyPlays.forEach((play, i) => store.put({ ...play, userId: uid, order: base - i }));
+      legacyPlays.forEach((play, i) => {
+        store.put({ ...play, userId: uid, order: base - i });
+      });
     });
     if (!writtenPlays) return false;
 
@@ -428,7 +411,9 @@ class BoardLogStorage {
           stale.push(key);
         }
       }
-      stale.forEach((key) => localStorage.removeItem(key));
+      stale.forEach((key) => {
+        localStorage.removeItem(key);
+      });
     } catch (err) {
       console.warn('Guest cleanup skipped', err);
     }
@@ -497,9 +482,7 @@ class BoardLogStorage {
     if ((await this.resolveBackend(uid)) === 'idb') {
       const stored = await this.idbReadAll<UserGame>(STORE_GAMES, uid);
       if (stored) {
-        return stored
-          .sort((a, b) => b.order - a.order)
-          .map(({ userId, order, ...game }) => game as UserGame);
+        return stored.sort((a, b) => b.order - a.order).map(({ userId, order, ...game }) => game as UserGame);
       }
     }
     return this.lsGet<UserGame[]>(gamesKey(uid), []);
@@ -510,10 +493,7 @@ class BoardLogStorage {
     return games.find((g) => g.id === id) || null;
   }
 
-  async addUserGame(
-    uid: string,
-    game: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'> | UserGame
-  ): Promise<UserGame> {
+  async addUserGame(uid: string, game: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'> | UserGame): Promise<UserGame> {
     const newGame: UserGame = {
       ...game,
       id: 'id' in game && game.id ? game.id : randomId('game'),
@@ -568,7 +548,10 @@ class BoardLogStorage {
     }
 
     const games = this.lsGet<UserGame[]>(gamesKey(uid), []);
-    this.lsSet(gamesKey(uid), games.filter((g) => g.id !== id));
+    this.lsSet(
+      gamesKey(uid),
+      games.filter((g) => g.id !== id)
+    );
     return true;
   }
 
@@ -577,9 +560,7 @@ class BoardLogStorage {
     if ((await this.resolveBackend(uid)) === 'idb') {
       const stored = await this.idbReadAll<PlayRecord>(STORE_PLAYS, uid);
       if (stored) {
-        return stored
-          .sort((a, b) => b.order - a.order)
-          .map(({ userId, order, ...play }) => play as PlayRecord);
+        return stored.sort((a, b) => b.order - a.order).map(({ userId, order, ...play }) => play as PlayRecord);
       }
     }
     return this.lsGet<PlayRecord[]>(playsKey(uid), []);
@@ -670,7 +651,10 @@ class BoardLogStorage {
     }
     if (!deleted) {
       const plays = this.lsGet<PlayRecord[]>(playsKey(uid), []);
-      this.lsSet(playsKey(uid), plays.filter((p) => p.id !== id));
+      this.lsSet(
+        playsKey(uid),
+        plays.filter((p) => p.id !== id)
+      );
     }
 
     if (target.gameId) {
@@ -781,15 +765,27 @@ class BoardLogStorage {
       }
 
       // Backup arrays are newest first; assigning order oldest-first keeps that ordering.
-      const gameOrders = [...plan.newGames].reverse().map(() => this.nextOrder()).reverse();
-      const playOrders = [...plan.newPlays].reverse().map(() => this.nextOrder()).reverse();
+      const gameOrders = [...plan.newGames]
+        .reverse()
+        .map(() => this.nextOrder())
+        .reverse();
+      const playOrders = [...plan.newPlays]
+        .reverse()
+        .map(() => this.nextOrder())
+        .reverse();
 
       const written = await this.idbWriteTx([STORE_GAMES, STORE_PLAYS], (tx) => {
         const games = tx.objectStore(STORE_GAMES);
         const plays = tx.objectStore(STORE_PLAYS);
-        plan.newGames.forEach((game, i) => games.put({ ...game, userId: uid, order: gameOrders[i] }));
-        bumped.forEach((game) => games.put(game));
-        plan.newPlays.forEach((play, i) => plays.put({ ...play, userId: uid, order: playOrders[i] }));
+        plan.newGames.forEach((game, i) => {
+          games.put({ ...game, userId: uid, order: gameOrders[i] });
+        });
+        bumped.forEach((game) => {
+          games.put(game);
+        });
+        plan.newPlays.forEach((play, i) => {
+          plays.put({ ...play, userId: uid, order: playOrders[i] });
+        });
       });
       // Reads stay on IndexedDB for this account, so a LocalStorage fallback here would be invisible.
       if (!written) throw new Error('복원 데이터를 저장하지 못했습니다. 다시 시도해주세요.');

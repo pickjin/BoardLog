@@ -1,7 +1,7 @@
-import { SeedGame } from '../types';
+import type { SeedGame } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
 import { compressImage } from '../utils/imageCompressor';
-import { findSeedMatch, SeedMatch } from '../utils/titleMatch';
+import { findSeedMatch, type SeedMatch } from '../utils/titleMatch';
 
 export const MAX_SCAN_IMAGES = 4;
 
@@ -46,10 +46,7 @@ function isDetection(value: unknown): value is ScanDetection {
   );
 }
 
-export async function scanGamePhotos(
-  files: File[],
-  seeds: SeedGame[] = SEED_GAMES
-): Promise<ScanCandidate[]> {
+export async function scanGamePhotos(files: File[], seeds: SeedGame[] = SEED_GAMES): Promise<ScanCandidate[]> {
   if (files.length === 0) return [];
   if (files.length > MAX_SCAN_IMAGES) {
     throw new Error(`사진은 한 번에 ${MAX_SCAN_IMAGES}장까지 인식할 수 있습니다.`);
@@ -77,9 +74,7 @@ export async function scanGamePhotos(
     const available = Array.isArray(payload.available)
       ? payload.available.filter((name): name is string => typeof name === 'string')
       : [];
-    throw new Error(
-      available.length > 0 ? `${message}\n\n쓸 수 있는 모델:\n${available.join('\n')}` : message
-    );
+    throw new Error(available.length > 0 ? `${message}\n\n쓸 수 있는 모델:\n${available.join('\n')}` : message);
   }
 
   const raw = Array.isArray(payload.detections) ? payload.detections : [];
@@ -89,7 +84,7 @@ export async function scanGamePhotos(
   raw.filter(isDetection).forEach((detection, index) => {
     const match = findSeedMatch(detection.title, seeds);
     // One shelf photo can show the same box twice from different angles.
-    const key = (match ? match.game.id : detection.title.trim().toLowerCase());
+    const key = match ? match.game.id : detection.title.trim().toLowerCase();
     if (seen.has(key)) return;
     seen.add(key);
     candidates.push({ id: `scan_${index}_${key}`, detection, match });

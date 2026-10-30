@@ -1,6 +1,6 @@
-import React from 'react';
-import { Users, Clock, Flame, MapPin, CheckSquare, Trash2, Edit } from 'lucide-react';
-import { UserGame, GameOwnershipStatus } from '../types';
+import type React from 'react';
+import { Users, Clock, Flame, MapPin, CheckSquare, Trash2 } from 'lucide-react';
+import type { UserGame, GameOwnershipStatus } from '../types';
 import { applyImageFallback } from '../utils/imageFallback';
 
 export const getOwnershipBadgeColor = (status: GameOwnershipStatus): string => {
@@ -31,8 +31,10 @@ interface GameCardProps {
   onQuickRecord?: (e: React.MouseEvent) => void;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDelete }) => {
+export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onDelete }) => {
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
+    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
     <div
       id={`game-card-${game.id}`}
       onClick={onClick}
@@ -41,7 +43,10 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDel
       {/* Top Image & Floating Badges */}
       <div className="relative w-full aspect-4/3 bg-[#F8F9FA] overflow-hidden">
         <img
-          src={game.imageUrl || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'}
+          src={
+            game.imageUrl ||
+            'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'
+          }
           alt={game.title}
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -93,19 +98,14 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDel
             <h3 className="text-sm font-black text-[#1E272E] line-clamp-1 group-hover:text-[#4834D4] transition-colors">
               {game.title}
             </h3>
-            {game.titleEn && (
-              <span className="text-[10px] text-[#A8ABAF] line-clamp-1 truncate">{game.titleEn}</span>
-            )}
+            {game.titleEn && <span className="text-[10px] text-[#A8ABAF] line-clamp-1 truncate">{game.titleEn}</span>}
           </div>
 
           {/* Genre tags */}
           {game.genre && game.genre.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2.5">
               {game.genre.slice(0, 2).map((g) => (
-                <span
-                  key={g}
-                  className="px-2 py-0.5 bg-[#F1F3F5] text-[#636E72] rounded-full text-[9px] font-medium"
-                >
+                <span key={g} className="px-2 py-0.5 bg-[#F1F3F5] text-[#636E72] rounded-full text-[9px] font-medium">
                   {g}
                 </span>
               ))}
@@ -121,9 +121,7 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDel
           <div className="flex items-center gap-1">
             <Users className="w-3.5 h-3.5 text-[#A8ABAF]" />
             <span>
-              {game.minPlayers === game.maxPlayers
-                ? `${game.minPlayers}인`
-                : `${game.minPlayers}~${game.maxPlayers}인`}
+              {game.minPlayers === game.maxPlayers ? `${game.minPlayers}인` : `${game.minPlayers}~${game.maxPlayers}인`}
             </span>
           </div>
 
@@ -150,4 +148,3 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDel
     </div>
   );
 };
-

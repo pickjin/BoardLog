@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import type React from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Copy, X } from 'lucide-react';
-import { PlayRecord } from '../types';
+import type { PlayRecord } from '../types';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { storage } from '../services/storage';

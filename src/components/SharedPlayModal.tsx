@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trophy, X, Check } from 'lucide-react';
-import { SharedPlay, resultFor } from '../utils/sharedPlay';
+import { type SharedPlay, resultFor } from '../utils/sharedPlay';
 import { formatDuration } from '../utils/formatters';
 
 interface SharedPlayModalProps {
@@ -14,6 +15,7 @@ export const SharedPlayModal: React.FC<SharedPlayModalProps> = ({ shared, onClos
   const [myIndex, setMyIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `shared` is the reset trigger (a new link clears the picked row); the effect body does not read it
   useEffect(() => {
     setMyIndex(null);
   }, [shared]);
@@ -53,7 +55,11 @@ export const SharedPlayModal: React.FC<SharedPlayModalProps> = ({ shared, onClos
                 </p>
                 <h3 className="mt-0.5 text-lg font-black italic text-[#1E272E]">{shared.gameTitle}</h3>
                 <p className="mt-0.5 text-xs text-[#636E72]">
-                  {[shared.date, shared.location, shared.durationMinutes > 0 ? formatDuration(shared.durationMinutes) : '']
+                  {[
+                    shared.date,
+                    shared.location,
+                    shared.durationMinutes > 0 ? formatDuration(shared.durationMinutes) : ''
+                  ]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>
@@ -73,7 +79,9 @@ export const SharedPlayModal: React.FC<SharedPlayModalProps> = ({ shared, onClos
               {shared.participants.map((p, i) => {
                 const selected = myIndex === i;
                 return (
+                  // biome-ignore lint/a11y/useSemanticElements: TBD-018: custom radio built from a button; semantic element not adopted yet
                   <button
+                    // biome-ignore lint/suspicious/noArrayIndexKey: static, never reordered list; no stable id exists
                     key={`${p.name}-${i}`}
                     type="button"
                     role="radio"

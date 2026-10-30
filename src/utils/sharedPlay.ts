@@ -1,4 +1,4 @@
-import { PlayRecord, MyGameResult } from '../types';
+import type { PlayRecord, MyGameResult } from '../types';
 
 /**
  * A play travels inside the link itself (after '#', which browsers never send to the server),
@@ -40,7 +40,9 @@ const isMe = (p: { id?: string; name: string }) => p.id === 'p_me' || p.name ===
 function toBase64Url(text: string): string {
   const bytes = new TextEncoder().encode(text);
   let binary = '';
-  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  bytes.forEach((b) => {
+    binary += String.fromCharCode(b);
+  });
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 

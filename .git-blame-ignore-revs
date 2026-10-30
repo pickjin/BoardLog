@@ -1,0 +1,3 @@
+# Format-only commits, skipped by `git blame` (git config blame.ignoreRevsFile .git-blame-ignore-revs)
+# M0 PR3: Biome formatter over the whole codebase
+f5ae272de7ddf17f288dca44652e322bb2228761

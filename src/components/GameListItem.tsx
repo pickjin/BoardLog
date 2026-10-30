@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import { Users, Clock, Flame, CheckSquare, Trash2 } from 'lucide-react';
-import { UserGame } from '../types';
+import type { UserGame } from '../types';
 import { getOwnershipBadgeColor } from './GameCard';
 import { applyImageFallback } from '../utils/imageFallback';
 
@@ -12,6 +12,8 @@ interface GameListItemProps {
 
 export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDelete }) => {
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
+    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
     <div
       id={`game-list-item-${game.id}`}
       onClick={onClick}
@@ -20,7 +22,10 @@ export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDel
       {/* Thumbnail */}
       <div className="relative w-16 h-16 rounded-xl bg-[#F8F9FA] overflow-hidden shrink-0 border border-[#E9ECEF]">
         <img
-          src={game.imageUrl || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'}
+          src={
+            game.imageUrl ||
+            'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'
+          }
           alt={game.title}
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -64,9 +69,7 @@ export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDel
           )}
         </div>
 
-        {game.storageLocation && (
-          <p className="text-[9px] text-[#A8ABAF] truncate mt-0.5">📍 {game.storageLocation}</p>
-        )}
+        {game.storageLocation && <p className="text-[9px] text-[#A8ABAF] truncate mt-0.5">📍 {game.storageLocation}</p>}
       </div>
 
       {/* Right stats & Actions */}
@@ -90,4 +93,3 @@ export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDel
     </div>
   );
 };
-

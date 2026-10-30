@@ -1,4 +1,4 @@
-import { PlayRecord } from '../types';
+import type { PlayRecord } from '../types';
 import { formatDuration } from './formatters';
 
 /**
@@ -9,9 +9,7 @@ export function formatPlayShareText(play: PlayRecord, link: string, sharerName: 
   const displayName = (p: PlayRecord['participants'][number]) =>
     (p.id === 'p_me' || p.name === '나') && sharerName.trim() ? sharerName.trim() : p.name;
   const winners = play.participants.filter((p) => p.isWinner).map(displayName);
-  const scored = play.participants
-    .filter((p) => p.score !== null)
-    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  const scored = play.participants.filter((p) => p.score !== null).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
   const lines = [
     `🎲 ${play.gameTitle}`,

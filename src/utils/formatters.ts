@@ -3,7 +3,7 @@
  */
 
 export function formatWon(amount: number | null | undefined): string {
-  if (amount === undefined || amount === null || isNaN(amount) || amount === 0) {
+  if (amount === undefined || amount === null || Number.isNaN(amount) || amount === 0) {
     return '₩0';
   }
   return `₩${amount.toLocaleString('ko-KR')}`;
@@ -32,9 +32,9 @@ export function calculateDurationMinutes(start: string, end: string): number {
   if (!start || !end) return 0;
   const [sH, sM] = start.split(':').map(Number);
   const [eH, eM] = end.split(':').map(Number);
-  if (isNaN(sH) || isNaN(sM) || isNaN(eH) || isNaN(eM)) return 0;
+  if (Number.isNaN(sH) || Number.isNaN(sM) || Number.isNaN(eH) || Number.isNaN(eM)) return 0;
 
-  let startTotal = sH * 60 + sM;
+  const startTotal = sH * 60 + sM;
   let endTotal = eH * 60 + eM;
 
   if (endTotal < startTotal) {

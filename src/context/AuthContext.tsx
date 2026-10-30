@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { UserProfile } from '../types';
+import type React from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import type { UserProfile } from '../types';
 import { storage } from '../services/storage';
 
 interface AuthContextValue {

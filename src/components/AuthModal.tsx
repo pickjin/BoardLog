@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Mail, Lock, User, LogIn, UserPlus, LogOut, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -79,7 +80,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <AnimatePresence>
-      <div id="auth-modal-backdrop" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+      <div
+        id="auth-modal-backdrop"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -141,7 +145,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               {user?.isAnonymous && (
                 <div className="mb-4 p-3 rounded-2xl bg-[#4834D4]/5 border border-[#4834D4]/20 text-xs text-[#1E272E] flex items-start gap-2">
                   <Sparkles className="w-4 h-4 text-[#4834D4] shrink-0 mt-0.5" />
-                  <span>현재 <strong>게스트 모드</strong>입니다. 회원가입을 해도 기록은 <strong>이 브라우저에만</strong> 저장됩니다. 기기를 바꾸기 전에 마이페이지에서 백업 파일을 받아 두세요.</span>
+                  <span>
+                    현재 <strong>게스트 모드</strong>입니다. 회원가입을 해도 기록은 <strong>이 브라우저에만</strong>{' '}
+                    저장됩니다. 기기를 바꾸기 전에 마이페이지에서 백업 파일을 받아 두세요.
+                  </span>
                 </div>
               )}
 
@@ -184,6 +191,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <form onSubmit={handleSubmit} className="space-y-3">
                 {mode === 'signup' && (
                   <div>
+                    {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                     <label className="block text-[11px] font-bold text-[#1E272E] mb-1">닉네임</label>
                     <div className="relative">
                       <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#A8ABAF]" />
@@ -200,6 +208,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 )}
 
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-[11px] font-bold text-[#1E272E] mb-1">이메일 주소</label>
                   <div className="relative">
                     <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#A8ABAF]" />
@@ -216,6 +225,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-[11px] font-bold text-[#1E272E] mb-1">비밀번호</label>
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#A8ABAF]" />
@@ -267,4 +277,3 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     </AnimatePresence>
   );
 };
-

@@ -1,21 +1,8 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  X,
-  Trophy,
-  Clock,
-  Calendar,
-  MapPin,
-  Users,
-  Star,
-  Edit,
-  Trash2,
-  Image as ImageIcon,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import { PlayRecord } from '../types';
+import { X, Trophy, Clock, Calendar, MapPin, Users, Star, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import type { PlayRecord } from '../types';
 import { formatDuration } from '../utils/formatters';
 
 interface PlayDetailModalProps {
@@ -26,20 +13,17 @@ interface PlayDetailModalProps {
   onDelete: (play: PlayRecord) => void;
 }
 
-export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
-  play,
-  isOpen,
-  onClose,
-  onEdit,
-  onDelete
-}) => {
+export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({ play, isOpen, onClose, onEdit, onDelete }) => {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   if (!isOpen || !play) return null;
 
   return (
     <AnimatePresence>
-      <div id="play-detail-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
+      <div
+        id="play-detail-modal-overlay"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -50,7 +34,10 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
           <div className="p-4.5 sm:p-5 border-b border-[#E9ECEF] flex items-center justify-between bg-white">
             <div className="flex items-center gap-3">
               <img
-                src={play.gameImageUrl || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'}
+                src={
+                  play.gameImageUrl ||
+                  'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'
+                }
                 alt={play.gameTitle}
                 referrerPolicy="no-referrer"
                 className="w-12 h-12 rounded-2xl object-cover bg-stone-200 border border-[#E9ECEF] shadow-sm"
@@ -127,10 +114,9 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
                 <div className="flex items-center justify-center gap-0.5">
                   {[...Array(5)].map((_, i) => (
                     <Star
+                      // biome-ignore lint/suspicious/noArrayIndexKey: static, never reordered list; no stable id exists
                       key={i}
-                      className={`w-3 h-3 ${
-                        i < play.rating ? 'text-[#F5CD79] fill-[#F5CD79]' : 'text-[#E9ECEF]'
-                      }`}
+                      className={`w-3 h-3 ${i < play.rating ? 'text-[#F5CD79] fill-[#F5CD79]' : 'text-[#E9ECEF]'}`}
                     />
                   ))}
                 </div>
@@ -158,8 +144,8 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
                           p.rank === 1 || p.isWinner
                             ? 'bg-[#4834D4] text-white shadow-xs'
                             : p.rank === 2
-                            ? 'bg-[#A8ABAF] text-white'
-                            : 'bg-[#E9ECEF] text-[#636E72]'
+                              ? 'bg-[#A8ABAF] text-white'
+                              : 'bg-[#E9ECEF] text-[#636E72]'
                         }`}
                       >
                         {p.rank || idx + 1}
@@ -175,9 +161,7 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {p.score !== null && (
-                        <span className="font-black text-[#1E272E] text-sm">{p.score}점</span>
-                      )}
+                      {p.score !== null && <span className="font-black text-[#1E272E] text-sm">{p.score}점</span>}
                       {p.isWinner && (
                         <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#4834D4] bg-[#4834D4]/10 px-2.5 py-0.5 rounded-full">
                           <Trophy className="w-3 h-3" />
@@ -200,6 +184,8 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
 
                 <div className="grid grid-cols-3 gap-2.5">
                   {play.photos.map((photo, pIdx) => (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
                     <div
                       key={photo.id || pIdx}
                       onClick={() => setSelectedPhotoIndex(pIdx)}
@@ -233,9 +219,7 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
 
           {/* Modal Footer */}
           <div className="p-4 border-t border-[#E9ECEF] bg-white flex items-center justify-between">
-            <span className="text-[11px] text-[#A8ABAF] font-medium">
-              작성일: {play.createdAt || play.date}
-            </span>
+            <span className="text-[11px] text-[#A8ABAF] font-medium">작성일: {play.createdAt || play.date}</span>
             <button
               type="button"
               onClick={onClose}
@@ -248,12 +232,19 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
 
         {/* Photo Lightbox Popup */}
         {selectedPhotoIndex !== null && play.photos[selectedPhotoIndex] && (
+          // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
+          // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
           <div
             id="photo-lightbox-modal"
             className="fixed inset-0 z-60 bg-black/90 flex flex-col items-center justify-center p-4"
             onClick={() => setSelectedPhotoIndex(null)}
           >
-            <div className="relative max-w-lg w-full max-h-[85vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet */}
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet */}
+            <div
+              className="relative max-w-lg w-full max-h-[85vh] flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
               <img
                 src={play.photos[selectedPhotoIndex].url}
                 alt="확대 사진"
@@ -279,4 +270,3 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({
     </AnimatePresence>
   );
 };
-

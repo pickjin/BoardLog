@@ -1,20 +1,6 @@
-import React from 'react';
-import {
-  Layers,
-  Trophy,
-  History,
-  Clock,
-  Plus,
-  ArrowRight,
-  TrendingUp,
-  Sparkles,
-  Printer,
-  BookOpen,
-  Download,
-  MessageCircle,
-  Key
-} from 'lucide-react';
-import { UserGame, PlayRecord } from '../types';
+import type React from 'react';
+import { Layers, Trophy, History, Plus, ArrowRight, Sparkles, Download, MessageCircle, Key } from 'lucide-react';
+import type { UserGame, PlayRecord } from '../types';
 import { PlayCard } from './PlayCard';
 import { GameCard } from './GameCard';
 import { formatDuration } from '../utils/formatters';
@@ -194,9 +180,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
         <div className="p-3.5 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm text-center">
           <span className="text-[10px] text-[#A8ABAF] font-bold block mb-0.5">총 시간</span>
-          <span className="text-xs font-black italic text-[#1E272E] block mt-1.5">
-            {formatDuration(totalMinutes)}
-          </span>
+          <span className="text-xs font-black italic text-[#1E272E] block mt-1.5">{formatDuration(totalMinutes)}</span>
         </div>
       </div>
 
@@ -286,4 +270,3 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     </div>
   );
 };
-
