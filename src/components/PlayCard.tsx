@@ -37,8 +37,8 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
             play.myResult === '승리'
               ? 'bg-[#EBFAEF] text-[#27AE60] border-[#27AE60]/30'
               : play.myResult === '패배'
-              ? 'bg-[#FEEBEC] text-[#EB4D4B] border-[#EB4D4B]/30'
-              : 'bg-[#F1F3F5] text-[#636E72] border-[#E9ECEF]'
+                ? 'bg-[#FEEBEC] text-[#EB4D4B] border-[#EB4D4B]/30'
+                : 'bg-[#F1F3F5] text-[#636E72] border-[#E9ECEF]'
           }`}
         >
           {play.myResult === '승리' ? '👑 내 승리' : play.myResult}
@@ -49,7 +49,10 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
       <div className="flex items-center gap-3.5">
         <div className="w-14 h-14 rounded-2xl bg-[#F8F9FA] overflow-hidden shrink-0 border border-[#E9ECEF]">
           <img
-            src={play.gameImageUrl || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'}
+            src={
+              play.gameImageUrl ||
+              'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'
+            }
             alt={play.gameTitle}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -78,9 +81,7 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-3 h-3 ${
-                  i < play.rating ? 'text-amber-400 fill-amber-400' : 'text-[#E9ECEF]'
-                }`}
+                className={`w-3 h-3 ${i < play.rating ? 'text-amber-400 fill-amber-400' : 'text-[#E9ECEF]'}`}
               />
             ))}
           </div>
@@ -105,9 +106,7 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
             </span>
           ))}
           {play.participants.length > 4 && (
-            <span className="text-[10px] text-[#A8ABAF] font-medium">
-              +{play.participants.length - 4}명
-            </span>
+            <span className="text-[10px] text-[#A8ABAF] font-medium">+{play.participants.length - 4}명</span>
           )}
         </div>
 
@@ -128,4 +127,3 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
     </div>
   );
 };
-

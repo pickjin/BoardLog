@@ -38,12 +38,7 @@ interface GameScanModalProps {
   onRegister: (games: NewGame[]) => Promise<void>;
 }
 
-export const GameScanModal: React.FC<GameScanModalProps> = ({
-  isOpen,
-  onClose,
-  existingGames,
-  onRegister
-}) => {
+export const GameScanModal: React.FC<GameScanModalProps> = ({ isOpen, onClose, existingGames, onRegister }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -52,10 +47,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [excluded, setExcluded] = useState<Record<string, boolean>>({});
 
-  const ownedTitles = useMemo(
-    () => new Set(existingGames.map((g) => normalizeTitle(g.title))),
-    [existingGames]
-  );
+  const ownedTitles = useMemo(() => new Set(existingGames.map((g) => normalizeTitle(g.title))), [existingGames]);
 
   const reset = useCallback(() => {
     setCandidates([]);
@@ -93,9 +85,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
       setTitles(Object.fromEntries(found.map((c) => [c.id, c.match?.game.title ?? c.detection.title])));
     } catch (err) {
       setError(
-        err instanceof ScanNotConfiguredError || err instanceof Error
-          ? err.message
-          : '사진 인식에 실패했습니다.'
+        err instanceof ScanNotConfiguredError || err instanceof Error ? err.message : '사진 인식에 실패했습니다.'
       );
     } finally {
       setIsScanning(false);
@@ -175,9 +165,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
                 </div>
                 <div>
                   <h2 className="text-base font-black text-[#1E272E]">사진으로 일괄 등록</h2>
-                  <p className="text-[11px] text-[#636E72]">
-                    책장 사진을 올리면 박스 제목을 읽어 한 번에 등록합니다
-                  </p>
+                  <p className="text-[11px] text-[#636E72]">책장 사진을 올리면 박스 제목을 읽어 한 번에 등록합니다</p>
                 </div>
               </div>
               <button
@@ -210,9 +198,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
                 >
                   <Camera className="w-7 h-7 text-[#A8ABAF]" />
                   <span className="text-xs font-bold text-[#1E272E]">사진 선택 (최대 {MAX_SCAN_IMAGES}장)</span>
-                  <span className="text-[11px] text-[#636E72]">
-                    가로·세로로 쓰인 제목, 세워둔 박스 모두 인식합니다
-                  </span>
+                  <span className="text-[11px] text-[#636E72]">가로·세로로 쓰인 제목, 세워둔 박스 모두 인식합니다</span>
                 </button>
               )}
 
@@ -227,9 +213,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
               {error && (
                 <div className="flex items-start gap-2 p-3 bg-[#FDECEA] border border-[#F5C6C2] rounded-2xl">
                   <AlertCircle className="w-4 h-4 text-[#C0392B] shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-[#C0392B] leading-relaxed whitespace-pre-line break-all">
-                    {error}
-                  </p>
+                  <p className="text-[11px] text-[#C0392B] leading-relaxed whitespace-pre-line break-all">{error}</p>
                 </div>
               )}
 
@@ -254,8 +238,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
                       const title = titles[candidate.id] ?? '';
                       const isOff = !!excluded[candidate.id];
                       const owned = ownedTitles.has(normalizeTitle(title));
-                      const { text: orientText, Icon: OrientIcon } =
-                        ORIENTATION_LABEL[candidate.detection.orientation];
+                      const { text: orientText, Icon: OrientIcon } = ORIENTATION_LABEL[candidate.detection.orientation];
 
                       return (
                         <div
@@ -268,13 +251,9 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
                             <button
                               type="button"
                               aria-label={isOff ? '등록 포함' : '등록 제외'}
-                              onClick={() =>
-                                setExcluded((prev) => ({ ...prev, [candidate.id]: !prev[candidate.id] }))
-                              }
+                              onClick={() => setExcluded((prev) => ({ ...prev, [candidate.id]: !prev[candidate.id] }))}
                               className={`w-5 h-5 mt-0.5 rounded-lg flex items-center justify-center shrink-0 border transition-colors ${
-                                isOff
-                                  ? 'border-[#CED4DA] bg-white'
-                                  : 'border-[#4834D4] bg-[#4834D4] text-white'
+                                isOff ? 'border-[#CED4DA] bg-white' : 'border-[#4834D4] bg-[#4834D4] text-white'
                               }`}
                             >
                               {!isOff && <Check className="w-3 h-3 stroke-[3]" />}
@@ -285,9 +264,7 @@ export const GameScanModal: React.FC<GameScanModalProps> = ({
                                 id={`scan-title-${candidate.id}`}
                                 type="text"
                                 value={title}
-                                onChange={(e) =>
-                                  setTitles((prev) => ({ ...prev, [candidate.id]: e.target.value }))
-                                }
+                                onChange={(e) => setTitles((prev) => ({ ...prev, [candidate.id]: e.target.value }))}
                                 className="w-full px-2.5 py-1.5 bg-[#F8F9FA] border border-[#E9ECEF] rounded-xl text-xs font-bold text-[#1E272E] focus:outline-hidden focus:border-[#4834D4] transition-colors"
                               />
 

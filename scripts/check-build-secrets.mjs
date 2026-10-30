@@ -10,7 +10,7 @@ const PATTERNS = [
   // "service_role" inside a base64url-encoded JWT payload
   { name: 'service_role JWT payload', re: /c2VydmljZV9yb2xl/ },
   { name: 'Google API key', re: /AIza[0-9A-Za-z_-]{35}/ },
-  { name: 'Server env var name', re: /SUPABASE_SERVICE_ROLE_KEY|GEMINI_API_KEY/ },
+  { name: 'Server env var name', re: /SUPABASE_SERVICE_ROLE_KEY|GEMINI_API_KEY/ }
 ];
 
 function listFiles(dir) {

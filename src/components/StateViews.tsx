@@ -25,14 +25,11 @@ interface EmptyStateProps {
   icon?: React.ReactNode;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({
-  title,
-  description,
-  actionText,
-  onAction,
-  icon
-}) => (
-  <div id="empty-state-view" className="flex flex-col items-center justify-center py-14 px-6 text-center bg-white rounded-[28px] border border-dashed border-[#E9ECEF] my-4 shadow-sm">
+export const EmptyState: React.FC<EmptyStateProps> = ({ title, description, actionText, onAction, icon }) => (
+  <div
+    id="empty-state-view"
+    className="flex flex-col items-center justify-center py-14 px-6 text-center bg-white rounded-[28px] border border-dashed border-[#E9ECEF] my-4 shadow-sm"
+  >
     <div className="w-14 h-14 rounded-2xl bg-[#F8F9FA] border border-[#E9ECEF] flex items-center justify-center mb-3 text-[#A8ABAF]">
       {icon || <PackageOpen className="w-7 h-7 text-[#4834D4]" />}
     </div>
@@ -58,12 +55,11 @@ interface NoSearchResultStateProps {
   onReset?: () => void;
 }
 
-export const NoSearchResultState: React.FC<NoSearchResultStateProps> = ({
-  query,
-  onDirectAdd,
-  onReset
-}) => (
-  <div id="no-search-results-view" className="flex flex-col items-center justify-center py-12 px-6 text-center bg-white rounded-[28px] border border-[#E9ECEF] my-4 shadow-sm">
+export const NoSearchResultState: React.FC<NoSearchResultStateProps> = ({ query, onDirectAdd, onReset }) => (
+  <div
+    id="no-search-results-view"
+    className="flex flex-col items-center justify-center py-12 px-6 text-center bg-white rounded-[28px] border border-[#E9ECEF] my-4 shadow-sm"
+  >
     <div className="w-12 h-12 rounded-2xl bg-[#F1F3F5] flex items-center justify-center mb-3 text-[#A8ABAF]">
       <SearchX className="w-6 h-6" />
     </div>
@@ -103,11 +99,11 @@ interface ErrorStateProps {
   onRetry?: () => void;
 }
 
-export const ErrorState: React.FC<ErrorStateProps> = ({
-  message = '일시적인 오류가 발생했습니다.',
-  onRetry
-}) => (
-  <div id="error-state-view" className="flex flex-col items-center justify-center py-12 px-6 text-center bg-white rounded-[28px] border border-[#EB4D4B]/30 my-4 shadow-sm">
+export const ErrorState: React.FC<ErrorStateProps> = ({ message = '일시적인 오류가 발생했습니다.', onRetry }) => (
+  <div
+    id="error-state-view"
+    className="flex flex-col items-center justify-center py-12 px-6 text-center bg-white rounded-[28px] border border-[#EB4D4B]/30 my-4 shadow-sm"
+  >
     <div className="w-12 h-12 rounded-2xl bg-[#FEEBEC] flex items-center justify-center mb-3 text-[#EB4D4B]">
       <AlertTriangle className="w-6 h-6" />
     </div>
@@ -125,4 +121,3 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
     )}
   </div>
 );
-

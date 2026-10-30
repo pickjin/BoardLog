@@ -30,15 +30,7 @@ interface GameFormModalProps {
   onOpenScan?: () => void;
 }
 
-const OWNERSHIP_OPTIONS: GameOwnershipStatus[] = [
-  '보유중',
-  '빌려줌',
-  '빌림',
-  '판매예정',
-  '판매완료',
-  '분실',
-  '처분'
-];
+const OWNERSHIP_OPTIONS: GameOwnershipStatus[] = ['보유중', '빌려줌', '빌림', '판매예정', '판매완료', '분실', '처분'];
 
 const CONDITION_OPTIONS: GameCondition[] = ['최상', '상', '중', '하', '미개봉'];
 
@@ -212,7 +204,9 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
       await onSave({
         title: title.trim(),
         titleEn: titleEn.trim(),
-        imageUrl: imageUrl.trim() || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
+        imageUrl:
+          imageUrl.trim() ||
+          'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
         genre: genres.length > 0 ? genres : ['기타'],
         minPlayers: Number(minPlayers) || 1,
         maxPlayers: Number(maxPlayers) || 4,
@@ -249,7 +243,10 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div id="game-form-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
+      <div
+        id="game-form-modal-overlay"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -341,12 +338,8 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-black text-[#1E272E] truncate">
-                                {seed.title}
-                              </span>
-                              <span className="text-[10px] text-[#A8ABAF] truncate">
-                                {seed.titleEn}
-                              </span>
+                              <span className="text-xs font-black text-[#1E272E] truncate">{seed.title}</span>
+                              <span className="text-[10px] text-[#A8ABAF] truncate">{seed.titleEn}</span>
                             </div>
                             <p className="text-[10px] text-[#636E72] truncate">
                               {seed.genre.join(', ')} • {seed.minPlayers}~{seed.maxPlayers}인 • {seed.playTime}분
@@ -553,9 +546,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#1E272E] mb-1">
-                    보관 장소 (선택)
-                  </label>
+                  <label className="block text-xs font-bold text-[#1E272E] mb-1">보관 장소 (선택)</label>
                   <input
                     id="game-input-storage-location"
                     type="text"
@@ -564,9 +555,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                     onChange={(e) => setStorageLocation(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-[#E9ECEF] rounded-2xl text-xs text-[#1E272E] focus:outline-hidden focus:border-[#4834D4] transition-colors"
                   />
-                  <p className="text-[10px] text-[#A8ABAF] mt-1.5">
-                    어디에 보관되어 있는지 메모해두세요
-                  </p>
+                  <p className="text-[10px] text-[#A8ABAF] mt-1.5">어디에 보관되어 있는지 메모해두세요</p>
                 </div>
               </div>
 
@@ -654,9 +643,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                   {/* Difficulty / Weight & Best Players */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-[#1E272E] mb-1">
-                        난이도 (1.0 ~ 5.0)
-                      </label>
+                      <label className="block text-[11px] font-bold text-[#1E272E] mb-1">난이도 (1.0 ~ 5.0)</label>
                       <input
                         id="game-input-weight"
                         type="number"
@@ -688,7 +675,8 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                       <span>가격 데이터 정직성 안내</span>
                     </div>
                     <p className="text-[10px] text-[#636E72] leading-relaxed">
-                      보드로그의 모든 가격 정보는 사용자가 직접 수동 입력하며, 실시간 시세가 아닌 기록 당시의 정보입니다.
+                      보드로그의 모든 가격 정보는 사용자가 직접 수동 입력하며, 실시간 시세가 아닌 기록 당시의
+                      정보입니다.
                     </p>
 
                     <div className="grid grid-cols-3 gap-2 pt-1">

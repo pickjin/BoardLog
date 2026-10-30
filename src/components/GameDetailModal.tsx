@@ -63,7 +63,10 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div id="game-detail-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
+      <div
+        id="game-detail-modal-overlay"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -73,7 +76,10 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
           {/* Hero Image & Floating Controls */}
           <div className="relative w-full h-56 sm:h-64 bg-[#F8F9FA] shrink-0">
             <img
-              src={game.imageUrl || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'}
+              src={
+                game.imageUrl ||
+                'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'
+              }
               alt={game.title}
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
@@ -133,12 +139,8 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
                   </span>
                 )}
               </div>
-              <h2 className="text-xl font-black text-white leading-tight drop-shadow-sm">
-                {game.title}
-              </h2>
-              {game.titleEn && (
-                <p className="text-xs text-white/80 drop-shadow-xs">{game.titleEn}</p>
-              )}
+              <h2 className="text-xl font-black text-white leading-tight drop-shadow-sm">{game.title}</h2>
+              {game.titleEn && <p className="text-xs text-white/80 drop-shadow-xs">{game.titleEn}</p>}
             </div>
           </div>
 
@@ -152,7 +154,9 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
                   <span className="text-[10px] font-bold">추천 인원</span>
                 </div>
                 <p className="text-xs font-black text-[#1E272E]">
-                  {game.minPlayers === game.maxPlayers ? `${game.minPlayers}인` : `${game.minPlayers}~${game.maxPlayers}인`}
+                  {game.minPlayers === game.maxPlayers
+                    ? `${game.minPlayers}인`
+                    : `${game.minPlayers}~${game.maxPlayers}인`}
                 </p>
                 {game.bestPlayers && (
                   <span className="text-[9px] text-[#4834D4] font-bold">(추천 {game.bestPlayers})</span>
@@ -273,9 +277,7 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
                   </div>
                 </div>
 
-                {game.priceMeta?.source && (
-                  <p className="text-[10px] text-[#A8ABAF]">출처: {game.priceMeta.source}</p>
-                )}
+                {game.priceMeta?.source && <p className="text-[10px] text-[#A8ABAF]">출처: {game.priceMeta.source}</p>}
               </div>
             )}
 
@@ -322,4 +324,3 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
     </AnimatePresence>
   );
 };
-

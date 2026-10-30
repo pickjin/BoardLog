@@ -614,7 +614,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 3.8,
     publisher: '레더 게임즈',
-    description: '고양이 후작, 이어리 왕조, 우드랜드 동맹, 방랑자 등 완전히 다른 규칙으로 숲의 패권을 다투는 비대칭 전쟁'
+    description:
+      '고양이 후작, 이어리 왕조, 우드랜드 동맹, 방랑자 등 완전히 다른 규칙으로 숲의 패권을 다투는 비대칭 전쟁'
   },
   {
     id: 'seed-42',
@@ -3734,7 +3735,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 200,
     weight: 3.63,
     publisher: '별빛바다',
-    description: '우주 문명을 이끌며 새로운 성계를 탐험하고, 기술을 연구하며 우주 함대를 이끌어 패권을 다투는 서사적인 4X 게임입니다.'
+    description:
+      '우주 문명을 이끌며 새로운 성계를 탐험하고, 기술을 연구하며 우주 함대를 이끌어 패권을 다투는 서사적인 4X 게임입니다.'
   },
   {
     id: 'seed-250',
@@ -3749,7 +3751,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 240,
     weight: 3.75,
     publisher: '코리아보드게임즈',
-    description: '은하 제국과 반란 연합으로 나뉘어 스타워즈 은하계를 무대로 숨막히는 술래잡기와 대규모 전쟁을 펼치는 게임입니다.'
+    description:
+      '은하 제국과 반란 연합으로 나뉘어 스타워즈 은하계를 무대로 숨막히는 술래잡기와 대규모 전쟁을 펼치는 게임입니다.'
   },
   {
     id: 'seed-251',
@@ -3777,9 +3780,10 @@ export const SEED_GAMES: SeedGame[] = [
     bestPlayers: '2-3인',
     recommendedAge: 14,
     playTime: 180,
-    weight: 2.70,
+    weight: 2.7,
     publisher: '코리아보드게임즈',
-    description: '전용 앱과 연동하여 크툴루 신화 속의 기괴한 저택을 탐험하고 미스터리를 풀어내는 앱 구동형 협력 게임입니다.'
+    description:
+      '전용 앱과 연동하여 크툴루 신화 속의 기괴한 저택을 탐험하고 미스터리를 풀어내는 앱 구동형 협력 게임입니다.'
   },
   {
     id: 'seed-253',
@@ -3792,9 +3796,10 @@ export const SEED_GAMES: SeedGame[] = [
     bestPlayers: '3인',
     recommendedAge: 12,
     playTime: 150,
-    weight: 3.90,
+    weight: 3.9,
     publisher: '로터스프로그게임즈',
-    description: '17세기 카리브해를 항해하며 교역과 탐험을 통해 영향력을 넓히고 부를 축적하는 론델 방식의 유로 게임입니다.'
+    description:
+      '17세기 카리브해를 항해하며 교역과 탐험을 통해 영향력을 넓히고 부를 축적하는 론델 방식의 유로 게임입니다.'
   },
   {
     id: 'seed-254',
@@ -3809,7 +3814,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.76,
     publisher: '별빛바다',
-    description: '주사위를 일꾼으로 사용하여 고대 문명의 피라미드를 건설하고 기술을 발전시키며 신들의 영광을 얻는 게임입니다.'
+    description:
+      '주사위를 일꾼으로 사용하여 고대 문명의 피라미드를 건설하고 기술을 발전시키며 신들의 영광을 얻는 게임입니다.'
   },
   {
     id: 'seed-255',
@@ -3824,7 +3830,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.84,
     publisher: '로터스프로그게임즈',
-    description: '19세기 아프가니스탄의 부족장이 되어 외세 제국들의 세력 다툼 속에서 줄타기를 하며 권력을 쥐어야 하는 게임입니다.'
+    description:
+      '19세기 아프가니스탄의 부족장이 되어 외세 제국들의 세력 다툼 속에서 줄타기를 하며 권력을 쥐어야 하는 게임입니다.'
   },
   {
     id: 'seed-256',
@@ -3839,7 +3846,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 2.27,
     publisher: '더 판도라 샵',
-    description: '게임 마스터의 진행 하에 죽은 플레이어도 계속 게임에 참여할 수 있는 발전된 형태의 소셜 디덕션 게임입니다.'
+    description:
+      '게임 마스터의 진행 하에 죽은 플레이어도 계속 게임에 참여할 수 있는 발전된 형태의 소셜 디덕션 게임입니다.'
   },
   {
     id: 'seed-257',
@@ -3869,7 +3877,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 75,
     weight: 2.39,
     publisher: '코리아보드게임즈',
-    description: '앱이 제공하는 천문학적 단서를 모아 태양계 외곽에 숨겨진 플래닛 X의 위치를 가장 먼저 알아내는 논리 추론 게임입니다.'
+    description:
+      '앱이 제공하는 천문학적 단서를 모아 태양계 외곽에 숨겨진 플래닛 X의 위치를 가장 먼저 알아내는 논리 추론 게임입니다.'
   },
   {
     id: 'seed-259',
@@ -3884,7 +3893,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 2.89,
     publisher: '보드엠팩토리',
-    description: '켈트 신화를 배경으로 드래프트한 카드를 활용해 영토를 지배하고 고대 아일랜드의 왕이 되는 영향력 게임입니다.'
+    description:
+      '켈트 신화를 배경으로 드래프트한 카드를 활용해 영토를 지배하고 고대 아일랜드의 왕이 되는 영향력 게임입니다.'
   },
   {
     id: 'seed-260',
@@ -3899,7 +3909,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 3.14,
     publisher: '하비게임몰',
-    description: '빅토리아 시대 영국의 몰락한 가문이 되어 저택을 복구하고 귀족들을 초청하여 가문의 명예를 되찾는 게임입니다.'
+    description:
+      '빅토리아 시대 영국의 몰락한 가문이 되어 저택을 복구하고 귀족들을 초청하여 가문의 명예를 되찾는 게임입니다.'
   },
   {
     id: 'seed-261',
@@ -3914,7 +3925,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 80,
     weight: 2.76,
     publisher: '코리아보드게임즈',
-    description: '일꾼을 여러 명 배치하여 자원을 모으되, 상대방의 일꾼을 포획해 이득을 취할 수 있는 독특한 일꾼 놓기 게임입니다.'
+    description:
+      '일꾼을 여러 명 배치하여 자원을 모으되, 상대방의 일꾼을 포획해 이득을 취할 수 있는 독특한 일꾼 놓기 게임입니다.'
   },
   {
     id: 'seed-262',
@@ -3929,7 +3941,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.72,
     publisher: '코리아보드게임즈',
-    description: '매 라운드 성기사를 고용하여 특수한 능력의 일꾼들을 받고, 신앙과 국방을 강화하여 왕국을 방어하는 게임입니다.'
+    description:
+      '매 라운드 성기사를 고용하여 특수한 능력의 일꾼들을 받고, 신앙과 국방을 강화하여 왕국을 방어하는 게임입니다.'
   },
   {
     id: 'seed-263',
@@ -3959,7 +3972,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 3.29,
     publisher: '별빛바다',
-    description: '메이지 시대 요코하마의 상인이 되어 사장을 이동시키고 상점과 교역소를 건설하며 명성을 얻는 유로 게임입니다.'
+    description:
+      '메이지 시대 요코하마의 상인이 되어 사장을 이동시키고 상점과 교역소를 건설하며 명성을 얻는 유로 게임입니다.'
   },
   {
     id: 'seed-265',
@@ -3974,7 +3988,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 60,
     weight: 2.35,
     publisher: '코리아보드게임즈',
-    description: '사하라 사막의 투아레그 족장이 되어 카드 그리드 외곽에 일꾼을 배치해 교차점의 혜택을 얻는 2인 전용 수작입니다.'
+    description:
+      '사하라 사막의 투아레그 족장이 되어 카드 그리드 외곽에 일꾼을 배치해 교차점의 혜택을 얻는 2인 전용 수작입니다.'
   },
   {
     id: 'seed-266',
@@ -3989,7 +4004,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 2.11,
     publisher: '코리아보드게임즈',
-    description: '스마트폰 앱과 QR 코드를 활용해 증거를 수집하고 용의자를 심문하며 런던의 범죄 사건을 해결하는 게임입니다.'
+    description:
+      '스마트폰 앱과 QR 코드를 활용해 증거를 수집하고 용의자를 심문하며 런던의 범죄 사건을 해결하는 게임입니다.'
   },
   {
     id: 'seed-267',
@@ -4004,7 +4020,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 2.68,
     publisher: '코리아보드게임즈',
-    description: '신문 기사와 런던 지도를 단서로 삼아 홈즈보다 먼저 미스터리한 살인 사건을 풀어나가는 스토리텔링 추리 게임입니다.'
+    description:
+      '신문 기사와 런던 지도를 단서로 삼아 홈즈보다 먼저 미스터리한 살인 사건을 풀어나가는 스토리텔링 추리 게임입니다.'
   },
   {
     id: 'seed-268',
@@ -4019,7 +4036,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 2.42,
     publisher: '라이엇게임즈',
-    description: '리그 오브 레전드 세계관에서 요들들이 메크를 조종하여 쏟아지는 미니언들을 막아내는 액션 프로그래밍 게임입니다.'
+    description:
+      '리그 오브 레전드 세계관에서 요들들이 메크를 조종하여 쏟아지는 미니언들을 막아내는 액션 프로그래밍 게임입니다.'
   },
   {
     id: 'seed-269',
@@ -4034,7 +4052,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 60,
     weight: 2.13,
     publisher: '보드엠팩토리',
-    description: '자신의 턴뿐만 아니라 상대방의 턴에도 주사위 결과에 따라 자원을 얻어 우주 정거장을 업그레이드하는 게임입니다.'
+    description:
+      '자신의 턴뿐만 아니라 상대방의 턴에도 주사위 결과에 따라 자원을 얻어 우주 정거장을 업그레이드하는 게임입니다.'
   },
   {
     id: 'seed-270',
@@ -4049,7 +4068,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 3.12,
     publisher: '코리아보드게임즈',
-    description: '중세 독일의 한자 동맹을 배경으로 도시와 도시 사이의 교역로를 장악하여 자신의 상권 능력을 해금하는 게임입니다.'
+    description:
+      '중세 독일의 한자 동맹을 배경으로 도시와 도시 사이의 교역로를 장악하여 자신의 상권 능력을 해금하는 게임입니다.'
   },
   {
     id: 'seed-271',
@@ -4064,7 +4084,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 4.34,
     publisher: '보드엠팩토리',
-    description: '깐깐한 매니저 산드라의 감시를 피해 전기자동차 공장의 부서들을 오가며 효율적으로 생산 라인을 관리하는 게임입니다.'
+    description:
+      '깐깐한 매니저 산드라의 감시를 피해 전기자동차 공장의 부서들을 오가며 효율적으로 생산 라인을 관리하는 게임입니다.'
   },
   {
     id: 'seed-272',
@@ -4079,7 +4100,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 150,
     weight: 4.28,
     publisher: '별빛바다',
-    description: '미술관 관장이 되어 무명 작가를 발굴하고 작품을 전시, 매매하여 갤러리의 명성과 부를 높이는 고전략 유로 게임입니다.'
+    description:
+      '미술관 관장이 되어 무명 작가를 발굴하고 작품을 전시, 매매하여 갤러리의 명성과 부를 높이는 고전략 유로 게임입니다.'
   },
   {
     id: 'seed-273',
@@ -4094,7 +4116,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 135,
     weight: 4.07,
     publisher: '별빛바다',
-    description: '포르투갈의 와인 생산자가 되어 포도밭을 가꾸고 품질 좋은 와인을 만들어 품평회와 수출을 통해 수익을 내는 게임입니다.'
+    description:
+      '포르투갈의 와인 생산자가 되어 포도밭을 가꾸고 품질 좋은 와인을 만들어 품평회와 수출을 통해 수익을 내는 게임입니다.'
   },
   {
     id: 'seed-274',
@@ -4109,7 +4132,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 4.58,
     publisher: '별빛바다',
-    description: '1755년 대지진으로 파괴된 리스본을 왕실과 주요 귀족들의 힘을 빌려 재건해 나가는 복합적인 전략 게임입니다.'
+    description:
+      '1755년 대지진으로 파괴된 리스본을 왕실과 주요 귀족들의 힘을 빌려 재건해 나가는 복합적인 전략 게임입니다.'
   },
   {
     id: 'seed-275',
@@ -4124,7 +4148,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 150,
     weight: 4.67,
     publisher: '코리아보드게임즈',
-    description: '우주 정거장과 화성 표면을 오가며 인류의 첫 화성 식민지 개척을 성공적으로 이끌어야 하는 초고난이도 전략 게임입니다.'
+    description:
+      '우주 정거장과 화성 표면을 오가며 인류의 첫 화성 식민지 개척을 성공적으로 이끌어야 하는 초고난이도 전략 게임입니다.'
   },
   {
     id: 'seed-276',
@@ -4139,7 +4164,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.66,
     publisher: '보드엠팩토리',
-    description: '은행을 털고 흩어졌던 도둑들이 되어, 포위망이 좁혀오는 도시 곳곳에 숨겨둔 돈을 챙겨 경찰을 피해 탈출하는 게임입니다.'
+    description:
+      '은행을 털고 흩어졌던 도둑들이 되어, 포위망이 좁혀오는 도시 곳곳에 숨겨둔 돈을 챙겨 경찰을 피해 탈출하는 게임입니다.'
   },
   {
     id: 'seed-277',
@@ -4154,7 +4180,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.91,
     publisher: '코리아보드게임즈',
-    description: '스마트폰 앱으로 재료를 섞어 물약을 만들고 그 조합의 원리를 추론하여 논문을 발표해 명성을 다투는 게임입니다.'
+    description:
+      '스마트폰 앱으로 재료를 섞어 물약을 만들고 그 조합의 원리를 추론하여 논문을 발표해 명성을 다투는 게임입니다.'
   },
   {
     id: 'seed-278',
@@ -4167,14 +4194,15 @@ export const SEED_GAMES: SeedGame[] = [
     bestPlayers: '3-4인',
     recommendedAge: 14,
     playTime: 240,
-    weight: 4.20,
+    weight: 4.2,
     publisher: '스플로터 스펠른',
-    description: '1950년대 패스트푸드 체인점의 CEO가 되어 직원을 고용하고 공격적인 마케팅으로 상권을 장악하는 무자비한 경제 게임입니다.'
+    description:
+      '1950년대 패스트푸드 체인점의 CEO가 되어 직원을 고용하고 공격적인 마케팅으로 상권을 장악하는 무자비한 경제 게임입니다.'
   },
   {
     id: 'seed-279',
     title: '킹스 딜레마',
-    titleEn: 'The King\'s Dilemma',
+    titleEn: "The King's Dilemma",
     imageUrl: '',
     genre: ['테마', '정치', '레거시'],
     minPlayers: 3,
@@ -4184,7 +4212,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 60,
     weight: 2.21,
     publisher: '코리아보드게임즈',
-    description: '왕국의 고위 관료들이 되어 매 턴 닥쳐오는 국가적 안건에 투표하며 자신들 가문의 이익을 챙기는 레거시 정치 게임입니다.'
+    description:
+      '왕국의 고위 관료들이 되어 매 턴 닥쳐오는 국가적 안건에 투표하며 자신들 가문의 이익을 챙기는 레거시 정치 게임입니다.'
   },
   {
     id: 'seed-280',
@@ -4199,7 +4228,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 180,
     weight: 2.76,
     publisher: '별빛바다',
-    description: '실제 인터넷 검색과 전용 데이터베이스 앱을 넘나들며 현대 범죄 사건의 실마리를 찾아 수사하는 현실적인 추리 게임입니다.'
+    description:
+      '실제 인터넷 검색과 전용 데이터베이스 앱을 넘나들며 현대 범죄 사건의 실마리를 찾아 수사하는 현실적인 추리 게임입니다.'
   },
   {
     id: 'seed-281',
@@ -4214,7 +4244,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 50,
     weight: 2.16,
     publisher: '팝콘에듀',
-    description: '각자 가지고 있는 미확인 생명체 서식지에 대한 단편적인 단서들을 조합해 육각 타일 지도에서 그 정확한 위치를 찾아내는 게임입니다.'
+    description:
+      '각자 가지고 있는 미확인 생명체 서식지에 대한 단편적인 단서들을 조합해 육각 타일 지도에서 그 정확한 위치를 찾아내는 게임입니다.'
   },
   {
     id: 'seed-282',
@@ -4229,7 +4260,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 40,
     weight: 1.54,
     publisher: '만두게임즈',
-    description: '경주차를 경매로 낙찰받고, 카드를 통해 자동차들을 움직이며 가장 빨리 결승선을 통과할 차에 베팅하여 돈을 버는 게임입니다.'
+    description:
+      '경주차를 경매로 낙찰받고, 카드를 통해 자동차들을 움직이며 가장 빨리 결승선을 통과할 차에 베팅하여 돈을 버는 게임입니다.'
   },
   {
     id: 'seed-283',
@@ -4244,7 +4276,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 2.82,
     publisher: '아스모디',
-    description: '고대 그리스 신들의 축복을 경매로 쟁취하여 군대와 함대를 양성하고, 몬스터들을 소환해 키클라데스 제도를 정복하는 게임입니다.'
+    description:
+      '고대 그리스 신들의 축복을 경매로 쟁취하여 군대와 함대를 양성하고, 몬스터들을 소환해 키클라데스 제도를 정복하는 게임입니다.'
   },
   {
     id: 'seed-284',
@@ -4259,7 +4292,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 20,
     weight: 1.14,
     publisher: '아미고',
-    description: '벌점 카드를 먹지 않기 위해 칩을 내거나, 칩을 모으기 위해 과감하게 벌점 카드를 가져와야 하는 심리 카드 게임입니다.'
+    description:
+      '벌점 카드를 먹지 않기 위해 칩을 내거나, 칩을 모으기 위해 과감하게 벌점 카드를 가져와야 하는 심리 카드 게임입니다.'
   },
   {
     id: 'seed-285',
@@ -4272,9 +4306,10 @@ export const SEED_GAMES: SeedGame[] = [
     bestPlayers: '4인',
     recommendedAge: 8,
     playTime: 60,
-    weight: 1.70,
+    weight: 1.7,
     publisher: '보드엠팩토리',
-    description: '가라앉는 섬 아틀란티스에서 내 미플들을 바다 괴물과 상어의 위협을 피해 안전한 육지로 대피시켜야 하는 우정 파괴 게임입니다.'
+    description:
+      '가라앉는 섬 아틀란티스에서 내 미플들을 바다 괴물과 상어의 위협을 피해 안전한 육지로 대피시켜야 하는 우정 파괴 게임입니다.'
   },
   {
     id: 'seed-286',
@@ -4289,7 +4324,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 60,
     weight: 2.17,
     publisher: '코리아보드게임즈',
-    description: '과열 카드를 관리하며 기어를 변속하고 슬립스트림을 이용해 코너를 완벽하게 공략하는 1960년대 모터스포츠 레이싱 게임입니다.'
+    description:
+      '과열 카드를 관리하며 기어를 변속하고 슬립스트림을 이용해 코너를 완벽하게 공략하는 1960년대 모터스포츠 레이싱 게임입니다.'
   },
   {
     id: 'seed-287',
@@ -4304,7 +4340,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 2.58,
     publisher: '팝콘에듀',
-    description: '거대하고 기믹이 가득한 전동 타워와 앱을 중심에 두고 타락한 왕국을 정화하며 최후의 악당을 물리치는 협력 모험 게임입니다.'
+    description:
+      '거대하고 기믹이 가득한 전동 타워와 앱을 중심에 두고 타락한 왕국을 정화하며 최후의 악당을 물리치는 협력 모험 게임입니다.'
   },
   {
     id: 'seed-288',
@@ -4319,7 +4356,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 30,
     weight: 2.04,
     publisher: '코리아보드게임즈',
-    description: '매 에피소드마다 규칙이 진화하고 보드판에 스티커가 붙는 폴리오미노 타일 배치 기반의 경쟁 도시 건설 레거시 게임입니다.'
+    description:
+      '매 에피소드마다 규칙이 진화하고 보드판에 스티커가 붙는 폴리오미노 타일 배치 기반의 경쟁 도시 건설 레거시 게임입니다.'
   },
   {
     id: 'seed-289',
@@ -4334,7 +4372,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 45,
     weight: 1.13,
     publisher: '코리아보드게임즈',
-    description: '거대한 한 장의 흑백 도시 지도 속에서 캐릭터들의 시간적 동선을 따라가며 숨겨진 범죄 사건을 해결하는 숨은그림찾기 수사 게임입니다.'
+    description:
+      '거대한 한 장의 흑백 도시 지도 속에서 캐릭터들의 시간적 동선을 따라가며 숨겨진 범죄 사건을 해결하는 숨은그림찾기 수사 게임입니다.'
   },
   {
     id: 'seed-290',
@@ -4349,7 +4388,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 60,
     weight: 2.68,
     publisher: '코리아보드게임즈',
-    description: '덱에서 손님과 직원을 뽑아 선술집을 운영하고, 주사위를 드래프트하여 맥주를 팔거나 시설을 업그레이드하는 게임입니다.'
+    description:
+      '덱에서 손님과 직원을 뽑아 선술집을 운영하고, 주사위를 드래프트하여 맥주를 팔거나 시설을 업그레이드하는 게임입니다.'
   },
   {
     id: 'seed-291',
@@ -4364,7 +4404,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 3.07,
     publisher: '코리아보드게임즈',
-    description: '마을에서의 활동으로 가문의 일꾼들이 시간을 소비하고, 죽음을 맞이하여 연대기에 기록되며 점수를 내는 독특한 시스템의 게임입니다.'
+    description:
+      '마을에서의 활동으로 가문의 일꾼들이 시간을 소비하고, 죽음을 맞이하여 연대기에 기록되며 점수를 내는 독특한 시스템의 게임입니다.'
   },
   {
     id: 'seed-292',
@@ -4379,7 +4420,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 2.91,
     publisher: '별빛바다',
-    description: '태블릿 타일을 겹치는 프로그래밍 방식으로 스마트폰 생산량을 조절하고 전 세계 시장에 폰을 판매하는 기업 경영 게임입니다.'
+    description:
+      '태블릿 타일을 겹치는 프로그래밍 방식으로 스마트폰 생산량을 조절하고 전 세계 시장에 폰을 판매하는 기업 경영 게임입니다.'
   },
   {
     id: 'seed-293',
@@ -4394,7 +4436,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.61,
     publisher: '별빛바다',
-    description: '행동 칸의 색상과 플레이하는 카드의 색상을 맞춰 시너지를 내며 심해에 인류의 해저 도시들을 건설하고 발전시키는 게임입니다.'
+    description:
+      '행동 칸의 색상과 플레이하는 카드의 색상을 맞춰 시너지를 내며 심해에 인류의 해저 도시들을 건설하고 발전시키는 게임입니다.'
   },
   {
     id: 'seed-294',
@@ -4409,7 +4452,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 150,
     weight: 3.63,
     publisher: '별빛바다',
-    description: '중세 프라하의 부유한 시민이 되어, 톱니바퀴 론델 시스템을 통해 행동을 선택하며 대성당과 다리를 건축해 왕의 총애를 받는 게임입니다.'
+    description:
+      '중세 프라하의 부유한 시민이 되어, 톱니바퀴 론델 시스템을 통해 행동을 선택하며 대성당과 다리를 건축해 왕의 총애를 받는 게임입니다.'
   },
   {
     id: 'seed-295',
@@ -4424,7 +4468,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 120,
     weight: 3.84,
     publisher: '팝콘에듀',
-    description: '숲 속의 목수가 되어 나무 역할을 하는 주사위를 쪼개고, 자르고, 접합하여 고객의 의뢰에 맞는 가구를 제작하는 게임입니다.'
+    description:
+      '숲 속의 목수가 되어 나무 역할을 하는 주사위를 쪼개고, 자르고, 접합하여 고객의 의뢰에 맞는 가구를 제작하는 게임입니다.'
   },
   {
     id: 'seed-296',
@@ -4439,7 +4484,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 90,
     weight: 3.39,
     publisher: '별빛바다',
-    description: '18세기 유럽의 젊은 학자가 되어 유럽 각지를 여행하고 책을 연구하며 역사적인 과학적 발견을 이룩하는 핸드 관리 유로 게임입니다.'
+    description:
+      '18세기 유럽의 젊은 학자가 되어 유럽 각지를 여행하고 책을 연구하며 역사적인 과학적 발견을 이룩하는 핸드 관리 유로 게임입니다.'
   },
   {
     id: 'seed-297',
@@ -4452,9 +4498,10 @@ export const SEED_GAMES: SeedGame[] = [
     bestPlayers: '4인',
     recommendedAge: 12,
     playTime: 120,
-    weight: 3.30,
+    weight: 3.3,
     publisher: '코리아보드게임즈',
-    description: '공용 주사위에 의해 일꾼들의 가치가 매겨지며, 가문의 일원들을 탑에 배치하여 카드를 얻고 신앙과 자원을 관리하는 르네상스 배경의 게임입니다.'
+    description:
+      '공용 주사위에 의해 일꾼들의 가치가 매겨지며, 가문의 일원들을 탑에 배치하여 카드를 얻고 신앙과 자원을 관리하는 르네상스 배경의 게임입니다.'
   },
   {
     id: 'seed-298',
@@ -4469,7 +4516,8 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 45,
     weight: 2.0,
     publisher: '코스모스',
-    description: '섬에 정착촌과 길을 늘려가며 영역을 넓히는, 초반 정착과 후반 확장 두 단계로 나뉜 크니지아의 가족용 전략 게임'
+    description:
+      '섬에 정착촌과 길을 늘려가며 영역을 넓히는, 초반 정착과 후반 확장 두 단계로 나뉜 크니지아의 가족용 전략 게임'
   },
   {
     id: 'seed-299',
@@ -4499,6 +4547,7 @@ export const SEED_GAMES: SeedGame[] = [
     playTime: 30,
     weight: 1.3,
     publisher: '아바쿠스슈필레',
-    description: '카드를 마차에 쌓거나 가져가며 같은 색을 모으되, 색이 너무 많아지면 오히려 손해를 보는 크니지아의 간결한 수집 카드게임'
+    description:
+      '카드를 마차에 쌓거나 가져가며 같은 색을 모으되, 색이 너무 많아지면 오히려 손해를 보는 크니지아의 간결한 수집 카드게임'
   }
 ];

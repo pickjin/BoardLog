@@ -194,9 +194,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
         <div className="p-3.5 bg-white rounded-[24px] border border-[#E9ECEF] shadow-sm text-center">
           <span className="text-[10px] text-[#A8ABAF] font-bold block mb-0.5">총 시간</span>
-          <span className="text-xs font-black italic text-[#1E272E] block mt-1.5">
-            {formatDuration(totalMinutes)}
-          </span>
+          <span className="text-xs font-black italic text-[#1E272E] block mt-1.5">{formatDuration(totalMinutes)}</span>
         </div>
       </div>
 
@@ -286,4 +284,3 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     </div>
   );
 };
-

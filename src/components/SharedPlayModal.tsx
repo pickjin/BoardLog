@@ -53,7 +53,11 @@ export const SharedPlayModal: React.FC<SharedPlayModalProps> = ({ shared, onClos
                 </p>
                 <h3 className="mt-0.5 text-lg font-black italic text-[#1E272E]">{shared.gameTitle}</h3>
                 <p className="mt-0.5 text-xs text-[#636E72]">
-                  {[shared.date, shared.location, shared.durationMinutes > 0 ? formatDuration(shared.durationMinutes) : '']
+                  {[
+                    shared.date,
+                    shared.location,
+                    shared.durationMinutes > 0 ? formatDuration(shared.durationMinutes) : ''
+                  ]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>

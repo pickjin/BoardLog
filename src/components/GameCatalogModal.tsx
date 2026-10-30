@@ -39,12 +39,7 @@ interface GameCatalogModalProps {
 type CatalogViewMode = 'table' | 'cards' | 'index';
 type SortOption = 'title' | 'location' | 'playCount' | 'weight' | 'recent';
 
-export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
-  isOpen,
-  games,
-  ownerName,
-  onClose
-}) => {
+export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, games, ownerName, onClose }) => {
   const { showToast } = useToast();
 
   // Settings
@@ -63,8 +58,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
   // Filter and sort games
   const processedGames = useMemo(() => {
     let list = games.filter((g) => {
-      const matchesStatus =
-        statusFilter === '전체' || g.ownershipStatus === statusFilter;
+      const matchesStatus = statusFilter === '전체' || g.ownershipStatus === statusFilter;
       const matchesQuery =
         !searchQuery.trim() ||
         g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -110,9 +104,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
   const stats = useMemo(() => {
     const total = processedGames.length;
     const totalPlays = processedGames.reduce((acc, g) => acc + (g.playCount || 0), 0);
-    const locations = Array.from(
-      new Set(processedGames.map((g) => g.storageLocation).filter(Boolean))
-    );
+    const locations = Array.from(new Set(processedGames.map((g) => g.storageLocation).filter(Boolean)));
     const genreMap: Record<string, number> = {};
     processedGames.forEach((g) => {
       g.genre.forEach((gen) => {
@@ -145,7 +137,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
-        windowWidth: 1024,
+        windowWidth: 1024
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -195,7 +187,18 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
 
   // Copy as Text / TSV table for spreadsheet
   const handleCopyText = () => {
-    const headers = ['색인번호', '게임명', '영문명', '인원', '시간(분)', '난이도', '장르', '보관위치', '상태', '플레이횟수'];
+    const headers = [
+      '색인번호',
+      '게임명',
+      '영문명',
+      '인원',
+      '시간(분)',
+      '난이도',
+      '장르',
+      '보관위치',
+      '상태',
+      '플레이횟수'
+    ];
     const rows = processedGames.map((g, idx) => [
       `#${String(idx + 1).padStart(3, '0')}`,
       g.title,
@@ -276,11 +279,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                 onClick={handleSavePdf}
                 className="inline-flex items-center gap-2 px-4.5 py-2 bg-[#4834D4] hover:bg-[#3c2ab9] text-white text-xs font-bold rounded-full shadow-[0_4px_12px_rgba(72,52,212,0.3)] transition-colors active:scale-95 disabled:opacity-60"
               >
-                {isGeneratingPdf ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Download className="w-4 h-4" />
-                )}
+                {isGeneratingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                 <span>{isGeneratingPdf ? 'PDF 생성 중...' : 'PDF로 저장'}</span>
               </button>
 
@@ -304,9 +303,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                   type="button"
                   onClick={() => setViewMode('table')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-colors ${
-                    viewMode === 'table'
-                      ? 'bg-[#4834D4] text-white shadow-xs'
-                      : 'text-[#636E72] hover:text-[#1E272E]'
+                    viewMode === 'table' ? 'bg-[#4834D4] text-white shadow-xs' : 'text-[#636E72] hover:text-[#1E272E]'
                   }`}
                 >
                   <List className="w-3.5 h-3.5" />
@@ -316,9 +313,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                   type="button"
                   onClick={() => setViewMode('cards')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-colors ${
-                    viewMode === 'cards'
-                      ? 'bg-[#4834D4] text-white shadow-xs'
-                      : 'text-[#636E72] hover:text-[#1E272E]'
+                    viewMode === 'cards' ? 'bg-[#4834D4] text-white shadow-xs' : 'text-[#636E72] hover:text-[#1E272E]'
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
@@ -328,9 +323,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                   type="button"
                   onClick={() => setViewMode('index')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-colors ${
-                    viewMode === 'index'
-                      ? 'bg-[#4834D4] text-white shadow-xs'
-                      : 'text-[#636E72] hover:text-[#1E272E]'
+                    viewMode === 'index' ? 'bg-[#4834D4] text-white shadow-xs' : 'text-[#636E72] hover:text-[#1E272E]'
                   }`}
                 >
                   <BookOpen className="w-3.5 h-3.5" />
@@ -450,11 +443,18 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                   </div>
 
                   <div className="text-right text-xs text-[#636E72] shrink-0">
-                    <p className="font-bold text-[#1E272E]">
-                      발행일: {formatDate()}
-                    </p>
+                    <p className="font-bold text-[#1E272E]">발행일: {formatDate()}</p>
                     <p className="text-[11px] text-[#A8ABAF]">
-                      정렬: {sortOption === 'title' ? '가나다순' : sortOption === 'location' ? '보관위치순' : sortOption === 'playCount' ? '플레이순' : sortOption === 'weight' ? '난이도순' : '등록순'}
+                      정렬:{' '}
+                      {sortOption === 'title'
+                        ? '가나다순'
+                        : sortOption === 'location'
+                          ? '보관위치순'
+                          : sortOption === 'playCount'
+                            ? '플레이순'
+                            : sortOption === 'weight'
+                              ? '난이도순'
+                              : '등록순'}
                     </p>
                   </div>
                 </div>
@@ -516,10 +516,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                     </thead>
                     <tbody className="divide-y divide-[#E9ECEF]">
                       {processedGames.map((game, idx) => (
-                        <tr
-                          key={game.id}
-                          className="print-avoid-break hover:bg-[#F8F9FA] transition-colors"
-                        >
+                        <tr key={game.id} className="print-avoid-break hover:bg-[#F8F9FA] transition-colors">
                           <td className="p-2.5 text-center font-bold text-[#A8ABAF] text-[11px]">
                             {String(idx + 1).padStart(2, '0')}
                           </td>
@@ -539,13 +536,9 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                           )}
 
                           <td className="p-2.5">
-                            <div className="font-black text-[#1E272E] text-xs">
-                              {game.title}
-                            </div>
+                            <div className="font-black text-[#1E272E] text-xs">{game.title}</div>
                             {game.titleEn && (
-                              <div className="text-[10px] text-[#A8ABAF] font-medium">
-                                {game.titleEn}
-                              </div>
+                              <div className="text-[10px] text-[#A8ABAF] font-medium">{game.titleEn}</div>
                             )}
                           </td>
 
@@ -555,9 +548,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                               : `${game.minPlayers}~${game.maxPlayers}인`}
                           </td>
 
-                          <td className="p-2.5 text-center font-semibold text-[11px]">
-                            {game.playTime}분
-                          </td>
+                          <td className="p-2.5 text-center font-semibold text-[11px]">{game.playTime}분</td>
 
                           <td className="p-2.5 text-center">
                             <span className="inline-block px-1.5 py-0.5 rounded-md bg-[#F1F3F5] font-black text-[10px] text-[#1E272E]">
@@ -601,8 +592,8 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                                 game.ownershipStatus === '보유중'
                                   ? 'bg-[#27AE60]/10 text-[#27AE60]'
                                   : game.ownershipStatus === '빌려줌'
-                                  ? 'bg-[#E67E22]/10 text-[#E67E22]'
-                                  : 'bg-[#F1F3F5] text-[#636E72]'
+                                    ? 'bg-[#E67E22]/10 text-[#E67E22]'
+                                    : 'bg-[#F1F3F5] text-[#636E72]'
                               }`}
                             >
                               {game.ownershipStatus}
@@ -660,13 +651,9 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                         )}
                       </div>
 
-                      <h3 className="text-sm font-black text-[#1E272E] leading-snug">
-                        {game.title}
-                      </h3>
+                      <h3 className="text-sm font-black text-[#1E272E] leading-snug">{game.title}</h3>
                       {game.titleEn && (
-                        <p className="text-[10px] text-[#A8ABAF] font-medium truncate mb-2">
-                          {game.titleEn}
-                        </p>
+                        <p className="text-[10px] text-[#A8ABAF] font-medium truncate mb-2">{game.titleEn}</p>
                       )}
 
                       {/* Specs */}
@@ -738,11 +725,11 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                             className="p-3 bg-[#F8F9FA] rounded-xl border border-[#E9ECEF] flex items-center justify-between gap-2 text-xs"
                           >
                             <div className="min-w-0">
-                              <div className="font-bold text-[#1E272E] truncate">
-                                {game.title}
-                              </div>
+                              <div className="font-bold text-[#1E272E] truncate">{game.title}</div>
                               <div className="text-[10px] text-[#636E72] flex items-center gap-2 mt-0.5">
-                                <span>{game.minPlayers}~{game.maxPlayers}인</span>
+                                <span>
+                                  {game.minPlayers}~{game.maxPlayers}인
+                                </span>
                                 <span>•</span>
                                 <span>{game.playTime}분</span>
                                 {game.storageLocation && (
@@ -768,9 +755,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
 
             {/* Document Bottom Footer */}
             <div className="print-avoid-break pt-6 border-t border-[#E9ECEF] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#A8ABAF]">
-              <div>
-                보드로그 (BoardLog) • {ownerName}의 보드게임 서가 도록 색인부
-              </div>
+              <div>보드로그 (BoardLog) • {ownerName}의 보드게임 서가 도록 색인부</div>
               <div className="mt-1 sm:mt-0 font-medium">
                 출력 일시: {formatDate()} • 총 {processedGames.length}종 수록
               </div>
@@ -782,7 +767,8 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
             <div className="flex items-center gap-2 text-xs text-[#636E72]">
               <Info className="w-4 h-4 text-[#4834D4] shrink-0" />
               <span>
-                <strong>'PDF로 저장'</strong>을 누르면 즉시 도록이 PDF 파일로 저장되며, <strong>'인쇄'</strong> 버튼으로 실물 출력이 가능합니다.
+                <strong>'PDF로 저장'</strong>을 누르면 즉시 도록이 PDF 파일로 저장되며, <strong>'인쇄'</strong> 버튼으로
+                실물 출력이 가능합니다.
               </span>
             </div>
 
@@ -809,11 +795,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({
                 onClick={handleSavePdf}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4834D4] hover:bg-[#3c2ab9] text-white text-xs font-bold rounded-full shadow-[0_4px_12px_rgba(72,52,212,0.3)] transition-colors disabled:opacity-60"
               >
-                {isGeneratingPdf ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Download className="w-4 h-4" />
-                )}
+                {isGeneratingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                 <span>{isGeneratingPdf ? 'PDF 생성 중...' : 'PDF로 저장'}</span>
               </button>
             </div>

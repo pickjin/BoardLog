@@ -1,11 +1,4 @@
-export type GameOwnershipStatus =
-  | '보유중'
-  | '빌려줌'
-  | '빌림'
-  | '판매예정'
-  | '판매완료'
-  | '분실'
-  | '처분';
+export type GameOwnershipStatus = '보유중' | '빌려줌' | '빌림' | '판매예정' | '판매완료' | '분실' | '처분';
 
 export type GameCondition = '미개봉' | '최상' | '상' | '중' | '하';
 

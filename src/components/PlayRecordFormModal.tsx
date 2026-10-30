@@ -27,21 +27,9 @@ import {
   Flame,
   Dices
 } from 'lucide-react';
-import {
-  PlayRecord,
-  PlayParticipant,
-  PlayPhoto,
-  UserGame,
-  MyGameResult,
-  SeedGame
-} from '../types';
+import { PlayRecord, PlayParticipant, PlayPhoto, UserGame, MyGameResult, SeedGame } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
-import {
-  formatDate,
-  formatCurrentTime,
-  calculateDurationMinutes,
-  formatDuration
-} from '../utils/formatters';
+import { formatDate, formatCurrentTime, calculateDurationMinutes, formatDuration } from '../utils/formatters';
 import { compressImage, rotateDataUrl } from '../utils/imageCompressor';
 import { applyImageFallback } from '../utils/imageFallback';
 
@@ -88,12 +76,30 @@ const LOCATION_PRESETS = [
 ];
 
 const PRESET_GAME_IMAGES = [
-  { label: '보석/전략', url: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80' },
-  { label: '주사위', url: 'https://images.unsplash.com/photo-1577741314755-048d8525d31e?auto=format&fit=crop&w=600&q=80' },
-  { label: '카드/타일', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80' },
-  { label: '개척/지도', url: 'https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=600&q=80' },
-  { label: 'SF/우주', url: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=600&q=80' },
-  { label: '자연/동물', url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80' }
+  {
+    label: '보석/전략',
+    url: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    label: '주사위',
+    url: 'https://images.unsplash.com/photo-1577741314755-048d8525d31e?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    label: '카드/타일',
+    url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    label: '개척/지도',
+    url: 'https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    label: 'SF/우주',
+    url: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    label: '자연/동물',
+    url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80'
+  }
 ];
 
 export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
@@ -293,9 +299,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
       .map(([name]) => name);
   }, [pastPlays]);
 
-  const companionSuggestions = frequentCompanions.filter(
-    (name) => !participants.some((p) => p.name.trim() === name)
-  );
+  const companionSuggestions = frequentCompanions.filter((name) => !participants.some((p) => p.name.trim() === name));
 
   const addCompanion = (name: string) => {
     const slot = participants.findIndex((p) => !isMe(p) && isPlaceholderName(p.name));
@@ -515,7 +519,9 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
       await onSave({
         gameId,
         gameTitle: gameTitle.trim(),
-        gameImageUrl: gameImageUrl || 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
+        gameImageUrl:
+          gameImageUrl ||
+          'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
         date: playDate || formatDate(),
         startTime: startTime || '19:00',
         endTime: endTime || '20:00',
@@ -645,9 +651,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                           </span>
                         )}
                       </div>
-                      {gameTitleEn && (
-                        <p className="text-[11px] text-[#A8ABAF] truncate font-medium">{gameTitleEn}</p>
-                      )}
+                      {gameTitleEn && <p className="text-[11px] text-[#A8ABAF] truncate font-medium">{gameTitleEn}</p>}
                     </div>
                   </div>
 
@@ -773,9 +777,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                             />
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-black text-[#1E272E] truncate">
-                                  {game.title}
-                                </span>
+                                <span className="text-xs font-black text-[#1E272E] truncate">{game.title}</span>
                                 {game.recentRank !== null && (
                                   <span className="text-[9px] px-1.5 py-0.2 rounded-md bg-amber-100 text-amber-700 font-bold shrink-0">
                                     최근
@@ -894,11 +896,13 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                     <Clock className="w-3 h-3 text-[#4834D4]" />
                     <span>시작 / 종료 시간</span>
                   </label>
-                  
+
                   {/* Total Duration Highlight Pill */}
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#4834D4]/10 border border-[#4834D4]/20 rounded-full text-xs font-black text-[#4834D4]">
                     <span className="text-[10px] font-bold text-[#636E72]">총 플레이:</span>
-                    <span>{formatDuration(durationMinutes)} ({durationMinutes}분)</span>
+                    <span>
+                      {formatDuration(durationMinutes)} ({durationMinutes}분)
+                    </span>
                   </div>
                 </div>
 
@@ -971,9 +975,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                     onClick={() => {
                       setMyResult(res);
                       // sync with participant '나'
-                      setParticipants((prev) =>
-                        prev.map((p) => (isMe(p) ? { ...p, isWinner: res === '승리' } : p))
-                      );
+                      setParticipants((prev) => prev.map((p) => (isMe(p) ? { ...p, isWinner: res === '승리' } : p)));
                     }}
                     className={`py-2 rounded-full text-xs font-bold border transition-all text-center ${
                       myResult === res
@@ -1107,9 +1109,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                   <Camera className="w-3.5 h-3.5 text-[#A8ABAF]" />
                   <span>플레이 현장 사진 (최대 6장)</span>
                 </label>
-                <span className="text-[11px] font-bold text-[#636E72]">
-                  {photos.length} / 6장
-                </span>
+                <span className="text-[11px] font-bold text-[#636E72]">{photos.length} / 6장</span>
               </div>
 
               <input
@@ -1175,9 +1175,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                     className="flex flex-col items-center justify-center p-3 rounded-2xl border border-dashed border-[#CED6E0] hover:border-[#4834D4] bg-[#F8F9FA] hover:bg-[#4834D4]/5 aspect-square transition-all text-[#636E72] hover:text-[#4834D4]"
                   >
                     <Camera className="w-5 h-5 mb-1 text-[#A8ABAF]" />
-                    <span className="text-[10px] font-bold">
-                      {isUploadingPhoto ? '압축 중...' : '사진 추가'}
-                    </span>
+                    <span className="text-[10px] font-bold">{isUploadingPhoto ? '압축 중...' : '사진 추가'}</span>
                   </button>
                 )}
               </div>
@@ -1196,9 +1194,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
                       className="p-1 text-[#E9ECEF] hover:text-[#F5CD79] transition-colors"
                     >
                       <Star
-                        className={`w-6 h-6 ${
-                          starVal <= rating ? 'text-[#F5CD79] fill-[#F5CD79]' : 'text-[#E9ECEF]'
-                        }`}
+                        className={`w-6 h-6 ${starVal <= rating ? 'text-[#F5CD79] fill-[#F5CD79]' : 'text-[#E9ECEF]'}`}
                       />
                     </button>
                   ))}
@@ -1207,9 +1203,7 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#1E272E] mb-1">
-                  플레이 후기 & 전략 메모
-                </label>
+                <label className="block text-xs font-bold text-[#1E272E] mb-1">플레이 후기 & 전략 메모</label>
                 <textarea
                   id="play-input-review"
                   rows={3}
@@ -1249,4 +1243,3 @@ export const PlayRecordFormModal: React.FC<PlayRecordFormModalProps> = ({
     </AnimatePresence>
   );
 };
-

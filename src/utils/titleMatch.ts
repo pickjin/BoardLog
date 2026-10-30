@@ -24,11 +24,7 @@ function levenshtein(a: string, b: string): number {
   for (let i = 0; i < a.length; i += 1) {
     const curr: number[] = [i + 1];
     for (let j = 0; j < b.length; j += 1) {
-      curr[j + 1] = Math.min(
-        prev[j + 1] + 1,
-        curr[j] + 1,
-        prev[j] + (a[i] === b[j] ? 0 : 1)
-      );
+      curr[j + 1] = Math.min(prev[j + 1] + 1, curr[j] + 1, prev[j] + (a[i] === b[j] ? 0 : 1));
     }
     prev = curr;
   }

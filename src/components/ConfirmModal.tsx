@@ -27,7 +27,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div id="confirm-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+      <div
+        id="confirm-modal-overlay"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -54,9 +57,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             </button>
           </div>
 
-          <p className="text-xs text-[#636E72] mb-6 leading-relaxed whitespace-pre-line pl-12.5">
-            {message}
-          </p>
+          <p className="text-xs text-[#636E72] mb-6 leading-relaxed whitespace-pre-line pl-12.5">{message}</p>
 
           <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#E9ECEF]">
             <button
@@ -85,4 +86,3 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     </AnimatePresence>
   );
 };
-

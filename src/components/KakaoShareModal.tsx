@@ -39,12 +39,7 @@ interface KakaoShareModalProps {
 type PlayerPreset = 'all' | 'under4' | 'twoPlayers' | 'party5Plus';
 type WeightPreset = 'all' | 'easy' | 'medium' | 'heavy';
 
-export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
-  isOpen,
-  games,
-  ownerName,
-  onClose
-}) => {
+export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({ isOpen, games, ownerName, onClose }) => {
   const { showToast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -201,12 +196,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
         ? `📦 전체 소장 컬렉션 (${gamesToShare.length}종)`
         : `✨ 추천/선택 보드게임 (${gamesToShare.length}종)`;
 
-    const lines = [
-      titleHeader,
-      subDesc,
-      customMessage ? `💬 "${customMessage}"` : '',
-      '──────────────────'
-    ].filter(Boolean);
+    const lines = [titleHeader, subDesc, customMessage ? `💬 "${customMessage}"` : '', '──────────────────'].filter(
+      Boolean
+    );
 
     if (gamesToShare.length === 0) {
       lines.push('(선택된 게임이 없습니다)');
@@ -239,16 +231,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
     lines.push(`🎲 보드게임 로그 & 룸: ${window.location.origin}`);
 
     return lines.join('\n');
-  }, [
-    ownerName,
-    gamesToShare,
-    shareMode,
-    customMessage,
-    includePlayers,
-    includePlaytime,
-    includeWeight,
-    includeGenre
-  ]);
+  }, [ownerName, gamesToShare, shareMode, customMessage, includePlayers, includePlaytime, includeWeight, includeGenre]);
 
   // Copy to Clipboard
   const handleCopyText = async () => {
@@ -265,7 +248,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
   // Direct Kakao Share / Web Share API
   const handleNativeOrKakaoShare = async () => {
     const shareTitle = `${ownerName || '보드게이머'}님의 보드게임 목록 (${gamesToShare.length}종)`;
-    
+
     // 1. Try Web Share API (Natively opens KakaoTalk app on mobile/desktop!)
     if (navigator.share) {
       try {
@@ -291,7 +274,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
     const kakaoWebSharerUrl = `https://sharer.kakao.com/talk/friends/picker/link?app_key=boardgame&shortKey=${encodeURIComponent(
       window.location.href
     )}`;
-    
+
     // Check if on mobile
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile) {
@@ -655,7 +638,9 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                                     </span>
                                   </div>
                                   <div className="text-[10px] text-[#636E72] flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                    <span>👥 {game.minPlayers}~{game.maxPlayers}인</span>
+                                    <span>
+                                      👥 {game.minPlayers}~{game.maxPlayers}인
+                                    </span>
                                     {game.playTime && <span>• ⏱ {game.playTime}분</span>}
                                     {game.weight && <span>• ⭐ {game.weight.toFixed(1)}</span>}
                                     {game.genre && game.genre.length > 0 && (
@@ -801,7 +786,11 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                               <div className="min-w-0 flex-1">
                                 <div className="text-xs font-black text-[#191919] truncate">{g.title}</div>
                                 <div className="text-[10px] text-[#555] flex items-center gap-1 flex-wrap">
-                                  {includePlayers && <span>👥 {g.minPlayers}~{g.maxPlayers}인</span>}
+                                  {includePlayers && (
+                                    <span>
+                                      👥 {g.minPlayers}~{g.maxPlayers}인
+                                    </span>
+                                  )}
                                   {includePlaytime && g.playTime && <span>• ⏱ {g.playTime}분</span>}
                                   {includeWeight && g.weight && <span>• ⭐ {g.weight.toFixed(1)}</span>}
                                   {includeGenre && g.genre.length > 0 && <span>• 🏷 {g.genre[0]}</span>}
@@ -810,9 +799,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
                             </div>
                           ))
                         ) : (
-                          <div className="p-3 text-center text-xs text-[#666]">
-                            선택된 게임이 없습니다.
-                          </div>
+                          <div className="p-3 text-center text-xs text-[#666]">선택된 게임이 없습니다.</div>
                         )}
                       </div>
 

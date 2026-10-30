@@ -8,11 +8,7 @@ interface BottomNavProps {
   onQuickAddPlay: () => void;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({
-  currentTab,
-  onTabChange,
-  onQuickAddPlay
-}) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange, onQuickAddPlay }) => {
   return (
     <nav
       id="bottom-navigation-bar"

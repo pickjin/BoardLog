@@ -10,10 +10,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
   const { user } = useAuth();
 
   return (
-    <header
-      id="top-app-header"
-      className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#E9ECEF]"
-    >
+    <header id="top-app-header" className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#E9ECEF]">
       <div className="max-w-xl mx-auto px-4 h-15 flex items-center justify-between">
         {/* Brand Logo & Title */}
         <div className="flex items-center gap-2.5">
@@ -63,4 +60,3 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
     </header>
   );
 };
-
