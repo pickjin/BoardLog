@@ -97,6 +97,34 @@
 
 오류 원문·스택·기록 내용은 보내지 않는다. 분류 값만 보낸다(FR-MEAS-03). 원문은 브라우저 콘솔과 서버 로그에만 남긴다.
 
-## 7. 비밀값 관리
+## 7. 비밀값 관리 (Proposed, P7-Q06)
 
-미정.
+### 7.1 보관 위치
+
+| 비밀값 | 위치 | 환경 | 접근 |
+|---|---|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Vercel 환경변수(Sensitive 유형) | Production만 | `api/delete-account.ts`만 |
+| Supabase DB 비밀번호 | 운영자 비밀번호 관리자 | — | `supabase db push`/`dump` 시 운영자 |
+| Supabase CLI 접근 토큰 | 운영자 PC | — | 운영자 |
+| 카카오 REST API 키·Client Secret | Supabase 대시보드 Auth 설정 | — | 저장소·Vercel에 두지 않음 |
+| `GEMINI_API_KEY` | Vercel 환경변수 | 기존: 3개 환경 모두 | `api/scan-games.ts`만 |
+| GitHub Actions | **비밀값 없음**(D-033) | — | — |
+
+공개 가능 값(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GA_MEASUREMENT_ID`)은 브라우저에 노출되는 것이 정상이며, 보호는 RLS가 맡는다.
+
+### 7.2 규칙
+
+- 비밀값은 코드·문서·커밋·PR·이슈·채팅에 쓰지 않는다. `.env*`는 이미 `.gitignore` 대상(`.env.example`만 예외, 값 없이 이름만)
+- `VITE_` 접두어 변수에 비밀값을 넣지 않는다(빌드 결과에 그대로 포함됨). CI에서 빌드 결과물에 `service_role` 문자열이 있으면 실패
+- 저장소 비밀 탐지(GitHub secret scanning·push protection)는 저장소 요금제에서 가능하면 켠다(TBD-015)
+
+### 7.3 유출 의심 시 절차
+
+1. 해당 키를 공급자에서 즉시 재발급(이전 키 폐기)
+2. Vercel 환경변수 교체 → 재배포
+3. 서비스 역할 키였다면 Supabase 대시보드에서 비정상 삭제·조회 흔적 확인, 필요 시 D-035 복구 절차
+4. decision-log에 사건 기록(날짜, 원인, 조치)
+
+### 7.4 구현 시 정리 대상
+
+- `.env.example`이 AI Studio 시절 내용(`APP_URL`, AI Studio 설명)으로 남아 있음 → 04 §8 변수 목록 기준으로 이름만 다시 작성
