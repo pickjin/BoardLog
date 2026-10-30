@@ -82,7 +82,7 @@ CI: <통과 | 실패 단계>
 | 화면 디자인 | 스크린샷(모바일 폭 기준) PR 첨부 + **소유자 확인 필요** 명시 |
 | 문서만 | 링크·결정 ID 일관성 확인 |
 
-테스트 도구 도입 전에는 `docs/design/qa-evidence/` 방식 Playwright 스크립트로 대체한다.
+도구는 도입됨(M0 PR4·PR5): 단위는 `npm test`, 화면은 `npm run test:e2e`(`e2e/*.spec.ts`). 이전의 `docs/design/qa-evidence/` 임시 스크립트는 이전 후 삭제했다(이력은 git에서 확인).
 
 ### 3.3 보고 형식 (PR "검증" 절, 채팅 완료 보고)
 

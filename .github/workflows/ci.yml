@@ -1,5 +1,5 @@
 # Required check for merging to main (D-033). Steps are added one M0 PR at a time (D-042):
-# PR2 strict typecheck, PR3 Biome, PR4 Vitest (npm test), PR5 Playwright, M2 local Supabase.
+# PR2 strict typecheck, PR3 Biome, PR4 Vitest (npm test), PR5 Playwright (e2e), M2 local Supabase.
 name: CI
 
 on:
@@ -29,3 +29,18 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run check:secrets
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      # The build above is what the browser tests run against (`vite preview` serves dist/).
+      - run: npx playwright test
+      - name: Upload E2E output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: test-results/
+          retention-days: 7

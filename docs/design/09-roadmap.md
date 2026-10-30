@@ -41,7 +41,7 @@ M0 기반 정비 ──▶ M1 측정 (+ TBD-006 아이폰 실기기 확인 병�
 | PR2 | M0-3 | `npm run typecheck`(strict) | 이후 PR은 strict 타입 검사를 통과해야 병합 |
 | PR3 | M0-5. 커밋 ① 설정 ② 전체 포맷(기계적) ③ 오류 정리. 범위는 코드 파일만, 예외 62건(TBD-018) | `biome check --error-on-warnings`(`npm run lint`에 포함) | |
 | PR4 | M0-6. 순수 함수 6개 테스트(`sharedPlay`·`backupImport` 분기 100% 차단, `formatters`·`titleMatch`·`playShareText`·`koreanIndex` 포함). `storage.ts` 다계정 격리 단위 테스트는 가짜 IndexedDB 선정이 필요해 PR5 이후로 | `npm test` + 커버리지 기준(D-030) | |
-| PR5 | M0-7 | `npm run test:e2e` | qa-evidence 스크립트 보관 사유 소멸 → README에 이전 완료 표시 |
+| PR5 | M0-7. 검증 스크립트 4개를 `e2e/*.spec.ts`로 이전(97 → 100 검사), 임시 스크립트 삭제 | `npx playwright test`(Chromium 설치·캐시 포함) | M0 완료. M1 시작 |
 
 - 완료 기준: main 브랜치 보호에서 `ci`가 필수 검사로 동작, `npm run lint`(strict 포함)·`test`·`test:e2e` 통과
 
