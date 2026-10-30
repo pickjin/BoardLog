@@ -374,6 +374,7 @@
 | TBD-014 | ~~GitHub `main` 브랜치 보호~~ **해결 2026-10-30:** 저장소 ruleset `main-protection`(active, 기본 브랜치). 삭제 금지, 강제 푸시 금지, PR 필수(승인 0), 필수 검사 `ci`(GitHub Actions). 공개 API `/rules/branches/main`로 확인 | — |
 | TBD-015 | ~~저장소 공개 여부, Actions 한도~~ **해결 2026-10-30:** 저장소는 Public. 브랜치 규칙 무료 적용 확인. Actions 표준 러너 한도는 공개 저장소 기준 무료(2026-06 지식, 요금 페이지 미확인). 코드·설계 문서가 공개 상태임을 소유자가 인지 | — |
 | TBD-016 | Vercel Preview 환경에서 `GEMINI_API_KEY` 제거(D-037). 대상은 프로덕션 프로젝트 `board-log`(TBD-017) | 소유자 작업(Vercel 프로젝트 설정) |
+| TBD-019 | **한 글자 시드 게임 제목 인식 불가**: 사진 인식 결과의 제목이 정규화 후 2글자 미만이면 시드 목록 매칭을 건너뜀(`findSeedMatch`의 `query.length < 2` 가드). 시드 300개 중 "뱅!", "라" 2개가 해당. 영문 제목(BANG!)으로 읽히면 매칭됨. M0 PR4 테스트가 발견, `it.fails`로 표시 | 동작 변경이라 M0 범위 밖. 사용자 영향이 작아 M1 이후 |
 | TBD-018 | **접근성 정리 54건**: 입력과 연결되지 않은 label 36, 키보드 처리 없는 클릭 요소 16(`useKeyWithClickEvents` 8 + `noStaticElementInteractions` 8), `role="radio"` 버튼 1(`useSemanticElements`), autoFocus 1. M0 PR3에서 Biome 오류로 드러났고, UI 동작을 바꾸는 수정이라 위치별 `biome-ignore`(사유 `TBD-018`)로 표시만 함. `grep -rn "TBD-018" src`로 위치 확인 | M0 이후. 우선순위는 사용자 영향 데이터 후(M1 이후) 결정 |
 | TBD-017 | 같은 저장소에 Vercel 프로젝트 2개 연결: 실제 서비스는 `board-log`(계정 `pickjin1`, `board-log.vercel.app`, 소유자 확인 2026-10-30). `boardlog`(팀 `wlstkden-6327s-projects`, `boardlog-blush.vercel.app`)는 미사용인데 푸시마다 빌드되고 `GEMINI_API_KEY`를 가질 수 있음 → 연결 해제 또는 삭제 여부 | 소유자 작업(Vercel 설정) |
 | TBD-006 | 최신 iOS 사파리의 7일 저장 제한, 홈 화면 앱 예외, `navigator.storage.persist()` 효과, GA4 쿠키 유효기간 제한 | 실제 아이폰으로 확인. **M1 기간 소유자 작업, 관문 지표(D-041)** |

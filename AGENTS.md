@@ -16,7 +16,8 @@ same PR.
 | `npm run lint` | now | `npm run typecheck` + `biome check --error-on-warnings` (code files only; Markdown and CSS are not formatted) |
 | `npm run check:secrets` | now | Scan `dist/` for server secrets after `build` (D-037) |
 | `npm run format` | now | `biome format --write` |
-| `npm test`, `npm run test:e2e`, `npm run test:db` | planned (D-029, D-031) | Vitest; Playwright Test; local Supabase policy tests |
+| `npm test` | now | Vitest unit tests with coverage; 100% branch coverage required for `sharedPlay.ts` and `backupImport.ts` (D-030) |
+| `npm run test:e2e`, `npm run test:db` | planned (D-029, D-031) | Playwright Test; local Supabase policy tests |
 
 Run every check that exists before saying work is done. Report failures with their output.
 
