@@ -1,9 +1,12 @@
 import { defineConfig } from '@playwright/test';
 
-const PORT = 4173;
+const APP_PORT = 4173;
+const GA_PORT = 4174;
 
-// Runs against the production build served by `vite preview`, so what is tested is what ships.
-// `npm run test:e2e` builds first; CI builds in an earlier step.
+// Runs against production builds served by `vite preview`, so what is tested is what ships.
+// `npm run test:e2e` builds first; CI builds in earlier steps.
+//  - dist/     the normal build, no measurement id: nothing may reach an analytics service
+//  - dist-ga/  the same app built with a fake GA4 id (`npm run build:ga`): checks what GA4 would receive
 export default defineConfig({
   testDir: 'e2e',
   timeout: 60_000,
@@ -13,7 +16,6 @@ export default defineConfig({
   reporter: [['list']],
   outputDir: 'test-results',
   use: {
-    baseURL: `http://localhost:${PORT}`,
     viewport: { width: 420, height: 900 },
     launchOptions: {
       // Lets a machine with a pre-installed Chromium skip `playwright install`.
@@ -22,9 +24,20 @@ export default defineConfig({
       args: process.getuid?.() === 0 ? ['--no-sandbox'] : []
     }
   },
-  webServer: {
-    command: `npx vite preview --port ${PORT} --strictPort`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI
-  }
+  projects: [
+    { name: 'app', testIgnore: /analytics-on\.spec\.ts/, use: { baseURL: `http://localhost:${APP_PORT}` } },
+    { name: 'analytics-build', testMatch: /analytics-on\.spec\.ts/, use: { baseURL: `http://localhost:${GA_PORT}` } }
+  ],
+  webServer: [
+    {
+      command: `npx vite preview --port ${APP_PORT} --strictPort`,
+      url: `http://localhost:${APP_PORT}`,
+      reuseExistingServer: !process.env.CI
+    },
+    {
+      command: `npx vite preview --outDir dist-ga --port ${GA_PORT} --strictPort`,
+      url: `http://localhost:${GA_PORT}`,
+      reuseExistingServer: !process.env.CI
+    }
+  ]
 });

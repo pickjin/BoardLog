@@ -121,7 +121,7 @@ RLS 정책:
 | `src/services/cloud/client.ts` | supabase-js 지연 로딩과 클라이언트 생성. Supabase 변수가 없으면 비활성(D-032) | 동적 `import()` |
 | `src/services/cloud/backup.ts` | 받기·올리기·버전 재시도·축소본 업로드, 상태(완료·대기 중·실패) | `storage.ts` 경유로만 기기 데이터 접근 |
 | `src/services/cloud/auth.ts` | 카카오·매직링크 로그인, 로그아웃, 계정 삭제 호출 | |
-| `src/services/analytics.ts` | GA4·Vercel 이벤트 전송, 매개변수 허용 목록 검사(FR-MEAS-03). `backup_upload_result`, `app_error` 포함(D-036) | ID 없으면 무동작 |
+| `src/services/analytics.ts` | GA4 불러오기와 이벤트 전송(`initAnalytics`, `track`). 허용 목록 검사는 `src/utils/analyticsEvents.ts`(순수 함수, 분기 100% 게이트). `backup_upload_result`, `app_error`는 해당 기능을 만들 때 추가(D-036) | ID 없으면 무동작 |
 | `src/utils/thumbnail.ts` | 400px 축소본 생성 | 기존 `imageCompressor` 재사용 |
 | `api/delete-account.ts` | 계정 삭제(관리자 권한) | 서비스 역할 키 보유 유일 지점 |
 

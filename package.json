@@ -16,11 +16,13 @@
     "check:secrets": "node scripts/check-build-secrets.mjs",
     "format": "biome format --write .",
     "test": "vitest run --coverage",
-    "test:e2e": "npm run build && playwright test"
+    "test:e2e": "npm run build && npm run build:ga && playwright test",
+    "build:ga": "vite build --mode analytics-test --outDir dist-ga"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@tailwindcss/vite": "^4.1.14",
+    "@vercel/analytics": "2.0.1",
     "@vitejs/plugin-react": "^5.0.4",
     "canvas-confetti": "^1.9.4",
     "html2canvas": "^1.4.1",

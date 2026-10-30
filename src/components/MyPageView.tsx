@@ -3,9 +3,11 @@ import { useRef, useState } from 'react';
 import { Database, Download, LogOut, CheckCircle2, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { track } from '../services/analytics';
 import { storage, type ImportPlan } from '../services/storage';
 import { parseBackup, MAX_BACKUP_BYTES } from '../utils/backupImport';
 import { ConfirmModal } from './ConfirmModal';
+import { PrivacyNoticeModal } from './PrivacyNoticeModal';
 
 interface MyPageViewProps {
   onOpenAuth: () => void;
@@ -22,6 +24,7 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [pendingImport, setPendingImport] = useState<ImportPlan | null>(null);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleBackupChosen = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +58,7 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
     setIsImporting(true);
     try {
       await storage.commitImport(user.uid, plan);
+      track('backup_restored');
       showToast(`게임 ${plan.newGames.length}개, 플레이 기록 ${plan.newPlays.length}개를 복원했습니다.`, 'success');
       onDataImported?.();
     } catch (err) {
@@ -102,6 +106,7 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      track('backup_exported');
       showToast('데이터 백업 파일이 다운로드되었습니다.', 'success');
     } catch {
       showToast('데이터 내보내기 중 오류가 발생했습니다.', 'error');
@@ -252,6 +257,16 @@ export const MyPageView: React.FC<MyPageViewProps> = ({ onOpenAuth, onOpenCatalo
         onConfirm={handleConfirmImport}
         onCancel={() => setPendingImport(null)}
       />
+
+      <button
+        id="mypage-privacy-btn"
+        type="button"
+        onClick={() => setIsPrivacyOpen(true)}
+        className="w-full py-2 text-[11px] font-bold text-[#A8ABAF] hover:text-[#636E72] underline underline-offset-2 transition-colors"
+      >
+        개인정보·이용 통계 안내
+      </button>
+      <PrivacyNoticeModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
 
       {/* Sign out */}
       <div className="pt-2">

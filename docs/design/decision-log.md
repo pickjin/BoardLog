@@ -58,6 +58,7 @@
 | D-041 | P9-Q01 | C. M0 기반 정비 → M1 측정(+TBD-006 실기기 확인) → 4주 관문 → M2 결정 | Accepted | 2026-10-30 |
 | D-042 | P9-Q02 | B. M0는 CI를 맨 앞에 둔 PR 5개, PR마다 검사 추가 | Accepted | 2026-10-30 |
 | D-043 | P9-Q03 | C. 설계 종료, 작업 브랜치(문서 + 미배포 기능 3종) PR 병합 후 M0 PR1, 소유자는 TBD-006 시험 즉시 시작 | Accepted | 2026-10-30 |
+| D-044 | (M1 구현) | 측정 구현 세부 기준(질문 없이 구현, 모두 되돌릴 수 있음) | Implemented, 소유자 사후 검토 | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -355,14 +356,24 @@
 - **Irreversible note:** 공유 링크(`#play=`) 형식은 배포 후 보낸 링크를 계속 읽어야 하는 호환 약속이 됨
 - **Alternatives:** A 병합 후 PR1(소유자 작업 병행 없음), B 문서만 먼저, D 설계 계속
 
+### D-044 M1 측정 구현 세부
+- **성격:** 소유자에게 묻지 않고 구현 중 정한 세부 사항. 모두 되돌릴 수 있고 소유자가 사후에 바꿀 수 있음
+- **범위:** FR-MEAS-02의 이벤트 중 지금 있는 기능 10개(`play_saved`, `share_sheet_opened`, `share_link_opened`, `share_link_added`, `game_added`, `catalog_exported`, `kakao_list_shared`, `backup_exported`, `backup_restored`, `play_photo_added`). `game_hub_viewed`, 클라우드 관련 `backup_*`, `app_error`는 기능이 생길 때
+- **집계 기준:** `play_saved`는 **새 기록 저장만**(수정 제외), 성공한 뒤에만 보냄. `game_added`는 게임 1개당 1회(사진 일괄 등록이면 게임 수만큼, method `scan`). `play_photo_added`는 새 기록에 사진이 있을 때 장수(1~6). `catalog_exported`는 PDF 저장과 표 복사, `kakao_list_shared`는 복사·기기 공유·이미지 저장 성공 시
+- **개인정보:** 허용 목록 밖의 이벤트·매개변수·값은 전송 전에 버림(`validateEvent`). 페이지 주소는 `#` 조각을 떼고 보냄: 공유 링크에 친구 이름·점수가 들어 있고, 떼지 않으면 첫 `page_view`가 그 기록 전체를 GA로 보냄(E2E 변이 검사로 재현 확인). GA4 자동 page_view를 끄고 직접 전송, `allow_google_signals`·`allow_ad_personalization_signals` 끔
+- **Vercel Web Analytics:** `@vercel/analytics/react`. 로컬 서버(localhost)에서는 주입하지 않음(스크립트가 없어 404가 남). 전송 주소도 `#` 제거
+- **테스트용 빌드:** `.env.analytics-test`(가짜 ID `G-TEST123456`, 비밀 아님)로 `dist-ga`를 따로 빌드해 GA로 가는 데이터를 E2E로 검증. 구글 서버에는 연결하지 않음
+- **고지 화면:** 마이페이지 하단 "개인정보·이용 통계 안내". Google Analytics 문단은 측정 ID가 빌드에 있을 때만 표시. **문의처는 넣지 않음**(소유자가 정할 연락처가 없음, TBD-020)
+- **Alternatives:** 개인정보 고지 없이 측정만(D-005 위반), 소유자 동의 화면(쿠키 동의 배너, 이번엔 안 함. 법적 필요성은 TBD-005)
+
 ## 미결 항목 (TBD)
 
 | ID | 내용 | 해결 조건 / 담당 |
 |---|---|---|
 | TBD-001 | 이름 표기가 달라 갈라진 게임 허브를 합치는 기능 | 실제 문제 보고 시 결정 |
-| TBD-002 | Vercel 현재 요금제의 사용자 정의 이벤트 가능 여부·한도 | 소유자가 Vercel 대시보드 Analytics 탭 확인 (우선순위 낮음) |
+| TBD-002 | Vercel 현재 요금제의 사용자 정의 이벤트 가능 여부·한도. 현재 앱은 Vercel로 **방문만** 보내고(사용자 정의 이벤트는 GA4), 프로젝트 `board-log`에서 Web Analytics를 켜야 방문이 집계됨(07 §6.1.1) | 소유자가 Vercel 대시보드 Analytics 탭 확인 (우선순위 낮음) |
 | TBD-003 | Vercel Web Analytics 방문자 식별값 유지 기간 | 문서 확인 (우선순위 낮음) |
-| TBD-004 | GA4 속성 생성, 측정 ID 발급 | 소유자 구글 계정으로 직접 |
+| TBD-004 | GA4 속성 생성, 측정 ID 발급, 프로덕션 환경변수 설정(07 §6.1.1). **이 값을 넣는 날이 4주 관문 시작일** | 소유자 구글 계정으로 직접 |
 | TBD-005 | 개인정보 고지 문구의 법적 충분성. D-010 이후 서버 저장(제3자 이름 포함)에 따른 처리방침·보관 기간·삭제 절차까지 확대. 운영 덤프 최대 7일 보관(D-035) 포함 | 확인 전까지 가정으로 표기 |
 | TBD-007 | 카카오 개발자 앱 등록·검수, 회원 식별만 받을 때 사업자 인증 필요 여부 | 소유자 작업 + PHASE 3 확인 |
 | TBD-008 | 매직링크 메일 발신 도메인·발송 서비스 | PHASE 3 |
@@ -375,6 +386,7 @@
 | TBD-015 | ~~저장소 공개 여부, Actions 한도~~ **해결 2026-10-30:** 저장소는 Public. 브랜치 규칙 무료 적용 확인. Actions 표준 러너 한도는 공개 저장소 기준 무료(2026-06 지식, 요금 페이지 미확인). 코드·설계 문서가 공개 상태임을 소유자가 인지 | — |
 | TBD-016 | Vercel Preview 환경에서 `GEMINI_API_KEY` 제거(D-037). 대상은 프로덕션 프로젝트 `board-log`(TBD-017) | 소유자 작업(Vercel 프로젝트 설정) |
 | TBD-019 | **한 글자 시드 게임 제목 인식 불가**: 사진 인식 결과의 제목이 정규화 후 2글자 미만이면 시드 목록 매칭을 건너뜀(`findSeedMatch`의 `query.length < 2` 가드). 시드 300개 중 "뱅!", "라" 2개가 해당. 영문 제목(BANG!)으로 읽히면 매칭됨. M0 PR4 테스트가 발견, `it.fails`로 표시 | 동작 변경이라 M0 범위 밖. 사용자 영향이 작아 M1 이후 |
+| TBD-020 | 개인정보·이용 통계 안내 화면의 **문의처**(FR-PRIV-01)와 제3자 삭제 요청 창구(TBD-011). 소유자가 공개해도 되는 연락처를 정해야 함. 정해지기 전까지 화면에 문의처가 없음 | 소유자 결정 |
 | TBD-018 | **접근성 정리 54건**: 입력과 연결되지 않은 label 36, 키보드 처리 없는 클릭 요소 16(`useKeyWithClickEvents` 8 + `noStaticElementInteractions` 8), `role="radio"` 버튼 1(`useSemanticElements`), autoFocus 1. M0 PR3에서 Biome 오류로 드러났고, UI 동작을 바꾸는 수정이라 위치별 `biome-ignore`(사유 `TBD-018`)로 표시만 함. `grep -rn "TBD-018" src`로 위치 확인 | M0 이후. 우선순위는 사용자 영향 데이터 후(M1 이후) 결정 |
 | TBD-017 | 같은 저장소에 Vercel 프로젝트 2개 연결: 실제 서비스는 `board-log`(계정 `pickjin1`, `board-log.vercel.app`, 소유자 확인 2026-10-30). `boardlog`(팀 `wlstkden-6327s-projects`, `boardlog-blush.vercel.app`)는 미사용인데 푸시마다 빌드되고 `GEMINI_API_KEY`를 가질 수 있음 → 연결 해제 또는 삭제 여부 | 소유자 작업(Vercel 설정) |
 | TBD-006 | 최신 iOS 사파리의 7일 저장 제한, 홈 화면 앱 예외, `navigator.storage.persist()` 효과, GA4 쿠키 유효기간 제한 | 실제 아이폰으로 확인. **M1 기간 소유자 작업, 관문 지표(D-041)** |

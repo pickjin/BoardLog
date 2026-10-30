@@ -5,6 +5,7 @@ import { Copy, Check, Users, Search, X, MessageCircle, Sparkles, Tag, Dices, Ima
 import html2canvas from 'html2canvas';
 import type { UserGame } from '../types';
 import { useToast } from '../context/ToastContext';
+import { track } from '../services/analytics';
 import { applyImageFallback } from '../utils/imageFallback';
 
 interface KakaoShareModalProps {
@@ -223,6 +224,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({ isOpen, games,
   const handleCopyText = async () => {
     try {
       await navigator.clipboard.writeText(kakaoFormattedText);
+      track('kakao_list_shared');
       setIsCopied(true);
       showToast('카카오톡 공유 문구가 클립보드에 복사되었습니다! 카톡 채팅방에 붙여넣기(Ctrl+V)하세요.', 'success');
       setTimeout(() => setIsCopied(false), 2500);
@@ -243,6 +245,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({ isOpen, games,
           text: kakaoFormattedText,
           url: window.location.href
         });
+        track('kakao_list_shared');
         showToast('카카오톡 또는 원하는 앱으로 공유를 시작했습니다.', 'success');
         return;
       } catch (err) {
@@ -288,6 +291,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({ isOpen, games,
       link.download = `boardgames_${ownerName || 'collection'}_${Date.now()}.png`;
       link.click();
 
+      track('kakao_list_shared');
       showToast('카카오톡 공유용 이미지 카드가 저장되었습니다.', 'success');
     } catch {
       showToast('이미지 카드 생성에 실패했습니다.', 'error');

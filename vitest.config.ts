@@ -13,7 +13,8 @@ export default defineConfig({
       exclude: ['src/**/*.test.ts'],
       thresholds: {
         'src/utils/sharedPlay.ts': { branches: 100 },
-        'src/utils/backupImport.ts': { branches: 100 }
+        'src/utils/backupImport.ts': { branches: 100 },
+        'src/utils/analyticsEvents.ts': { branches: 100 }
       }
     }
   }

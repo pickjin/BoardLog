@@ -48,7 +48,8 @@ M0 기반 정비 ──▶ M1 측정 (+ TBD-006 아이폰 실기기 확인 병�
 ### M1 측정
 
 - 목적: 관문 판단 데이터 확보
-- 작업: `src/services/analytics.ts`(허용 목록, ID 없으면 무동작), FR-MEAS-02 이벤트, Vercel Web Analytics
+- 작업: `src/services/analytics.ts`(ID 없으면 무동작), `src/utils/analyticsEvents.ts`(허용 목록), FR-MEAS-02 이벤트 중 **지금 있는 기능의 10개**, Vercel Web Analytics, 개인정보·이용 통계 안내 화면(FR-PRIV-01). `game_hub_viewed`·`backup_*`(클라우드)·`app_error`는 해당 기능을 만들 때 추가
+- 구현 결과(D-044): 측정 코드 병합 후에도 **측정 ID를 프로덕션에 넣기 전에는 데이터가 쌓이지 않음**. 4주 관문 시작일 = ID를 넣은 날(07 §6.1.1)
 - 소유자: TBD-004(GA4 속성·측정 ID), TBD-006(실제 아이폰, 홈 화면 앱과 사파리 각각 7일 이상 미사용 후 데이터 남는지), TBD-005 고지 문구(측정 범위)
 - 완료 기준: 프로덕션에서 `play_saved` 수신 확인, 요청에 이름·게임명 없음(FR-MEAS-03 완료 기준)
 

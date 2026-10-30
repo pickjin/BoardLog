@@ -4,6 +4,7 @@ import { Search, Plus, LayoutGrid, List, Download, MessageCircle } from 'lucide-
 import type { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult, TabType } from './types';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { track } from './services/analytics';
 import { storage } from './services/storage';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
@@ -107,7 +108,10 @@ const MainApp: React.FC = () => {
   }, [loadData]);
 
   // --- Handlers: Game CRUD ---
-  const handleSaveGame = async (gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSaveGame = async (
+    gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>,
+    source: { fromSeed: boolean }
+  ) => {
     if (!user) return;
     if (editingGame) {
       // Update
@@ -122,6 +126,7 @@ const MainApp: React.FC = () => {
     } else {
       // Create
       const newGame = await storage.addUserGame(user.uid, gameData);
+      track('game_added', { method: source.fromSeed ? 'seed' : 'manual' });
       setGames((prev) => [newGame, ...prev]);
       showToast(`'${newGame.title}'이(가) 내 게임에 추가되었습니다!`, 'success');
     }
@@ -135,6 +140,7 @@ const MainApp: React.FC = () => {
     try {
       for (const game of scanned) {
         created.push(await storage.addUserGame(user.uid, game));
+        track('game_added', { method: 'scan' });
       }
     } finally {
       // Whatever was written before a failure is already saved, so reflect it either way.
@@ -174,6 +180,7 @@ const MainApp: React.FC = () => {
       window.history.replaceState(null, '', pathname + search);
       const shared = decodeSharedPlay(hash);
       if (shared) {
+        track('share_link_opened');
         setIncomingShare(shared);
       } else {
         showToast('공유 링크가 손상되어 기록을 열 수 없습니다.', 'error');
@@ -198,6 +205,7 @@ const MainApp: React.FC = () => {
         showToast('이미 내 기록에 있는 게임이에요.', 'info');
       } else {
         await storage.commitImport(user.uid, plan);
+        track('share_link_added');
         await loadData();
         showToast('내 기록에 추가했어요.', 'success');
       }
@@ -237,11 +245,14 @@ const MainApp: React.FC = () => {
     } else {
       // Create
       const newPlay = await storage.addPlayRecord(user.uid, playData);
+      track('play_saved');
+      if (playData.photos.length > 0) track('play_photo_added', { count: playData.photos.length });
       setPlays((prev) => [newPlay, ...prev]);
       // Refresh games to update playCount
       const updatedGames = await storage.getUserGames(user.uid);
       setGames(updatedGames);
       showToast('새 플레이 기록이 저장되었습니다! 🎲', 'success');
+      track('share_sheet_opened');
       setSharingPlay(newPlay);
     }
     setEditingPlay(null);

@@ -14,7 +14,7 @@
 
 | 계층 | 기준 |
 |---|---|
-| 순수 함수 `src/utils/hubKey.ts`, `syncMerge.ts`, `sharedPlay.ts`, `backupImport.ts` | 분기 커버리지 100% |
+| 순수 함수 `src/utils/hubKey.ts`, `syncMerge.ts`, `sharedPlay.ts`, `backupImport.ts`, `analyticsEvents.ts` | 분기 커버리지 100% |
 | `storage.ts` id 접근 경로 | 경로마다 다계정 격리 테스트 1개 이상 |
 | 클라우드 모듈 + Supabase RLS | 다른 사용자의 행·파일 읽기·쓰기 거부 테스트 |
 | 화면 | 시나리오 S-01~S-06 E2E 통과 |
@@ -60,6 +60,8 @@
 | S-05 새 기기 복원 | 신규. 브라우저 컨텍스트 2개 + 로컬 Supabase |
 | S-06 계정 삭제 | 신규 |
 | 공통 | 예시 데이터 정리·PWA: `e2e/sample-data-and-pwa.spec.ts` (이전 완료) |
+| 측정(FR-MEAS-01) | `e2e/analytics-off.spec.ts`: 측정 ID가 없으면 분석 서비스로 나가는 요청 0건 |
+| 측정(FR-MEAS-03) | `e2e/analytics-on.spec.ts`: 가짜 ID로 만든 `dist-ga` 빌드에서 허용된 이벤트만, 이름·게임명·`#` 없이 |
 
 ## 5. 자동 실행 (세부는 07 CI)
 

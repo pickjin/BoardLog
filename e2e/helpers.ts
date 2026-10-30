@@ -38,6 +38,8 @@ export const visible = (name: string, locator: Locator, timeout = 5_000) =>
 
 export const hidden = (name: string, locator: Locator) => expect.soft(locator, name).toBeHidden();
 
+export const hasText = (name: string, locator: Locator, text: string) => expect.soft(locator, name).toContainText(text);
+
 export const activeUid = (page: Page) =>
   page.evaluate(() => JSON.parse(localStorage.getItem('boardlog_active_user') ?? 'null')?.uid as string | undefined);
 

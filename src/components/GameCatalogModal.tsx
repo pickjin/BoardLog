@@ -21,6 +21,7 @@ import type { UserGame, GameOwnershipStatus } from '../types';
 import { formatDate } from '../utils/formatters';
 import { getGameIndexKey, KOREAN_INDEX_KEYS } from '../utils/koreanIndex';
 import { useToast } from '../context/ToastContext';
+import { track } from '../services/analytics';
 
 interface GameCatalogModalProps {
   isOpen: boolean;
@@ -160,6 +161,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
       const dateStr = new Date().toISOString().slice(0, 10);
       const fileName = `${ownerName || '보드게임'}_서가_수록_목록_${dateStr}.pdf`;
       pdf.save(fileName);
+      track('catalog_exported');
 
       showToast(`"${fileName}" PDF 저장이 완료되었습니다!`, 'success');
     } catch (error) {
@@ -208,6 +210,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
 
     const tsvContent = [headers.join('\t'), ...rows.map((r) => r.join('\t'))].join('\n');
     navigator.clipboard.writeText(tsvContent);
+    track('catalog_exported');
     showToast('엑셀/스프레드시트에 붙여넣을 수 있는 표 데이터가 복사되었습니다.', 'success');
   };
 
