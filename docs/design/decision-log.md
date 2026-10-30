@@ -46,6 +46,7 @@
 | D-029 | P6-Q01 | A. Vitest(단위·통합) + Playwright Test(E2E), PR마다 실행 | Accepted | 2026-10-30 |
 | D-030 | P6-Q02 | B. 위험도별 커버리지 기준(순수 함수 분기 100%, 다계정·RLS 테스트, 시나리오 E2E) | Accepted | 2026-10-30 |
 | D-031 | P6-Q03 | A. 로컬 Supabase(CLI + Docker)로 서버 테스트, 스키마는 마이그레이션 SQL | Accepted | 2026-10-30 |
+| D-032 | P7-Q01 | B. Supabase는 프로덕션 1개, 미리보기 배포는 클라우드 기능 꺼짐 + 공개 스위치 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -243,6 +244,14 @@
 - **Commit rules:** `종류: 설명`, 기계적 변경 분리
 - **Owner task:** TBD-014
 - **Alternatives:** A main 직접, B 현행(PR 없음), D +릴리스 태그
+
+### D-032 미리보기 배포와 Supabase 분리
+- **Question:** P7-Q01 미리보기 배포가 연결할 Supabase
+- **Selected:** B. Supabase 프로젝트는 프로덕션 1개. Preview·Development 환경에는 Supabase 변수를 넣지 않아 클라우드 기능이 꺼진 채 배포
+- **Rationale:** 검증 안 된 코드가 실사용자 백업에 쓰는 것은 되돌릴 수 없음(C 배제). 매출 0에서 운영 대상 2배(A)·유료 기능(D)은 근거 없는 지출. RLS·합치기·계정 삭제는 로컬 Supabase(D-031)가 PR마다 검증
+- **Consequences:** 공개 스위치 `VITE_CLOUD_PUBLIC`(빌드 시 주입, 변경 시 재배포). 스위치 꺼진 프로덕션에서 운영자가 카카오·매직링크 확인 후 공개. 리디렉션 URL은 프로덕션 도메인만
+- **Revisit:** PR이 잦아져 프로덕션 확인이 병목이 되면 A로 전환(가역)
+- **Alternatives:** A 프로젝트 2개, C 미리보기도 프로덕션 연결, D Supabase 브랜칭
 
 ## 미결 항목 (TBD)
 

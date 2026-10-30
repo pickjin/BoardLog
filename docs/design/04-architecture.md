@@ -118,7 +118,7 @@ RLS 정책:
 | `src/services/storage.ts` | 기기 저장소 경계(기존). `syncId`·`updatedAtMs`·삭제 표시 관리 추가 | 기존 원칙 유지 |
 | `src/utils/hubKey.ts` | 게임 허브 키 정규화(FR-HUB-01). 중복 판정에서도 사용 | 순수 함수 |
 | `src/utils/syncMerge.ts` | 합치기 규칙(ADR-002 §2) | 순수 함수, 단위 테스트 대상 |
-| `src/services/cloud/client.ts` | supabase-js 지연 로딩과 클라이언트 생성 | 동적 `import()` |
+| `src/services/cloud/client.ts` | supabase-js 지연 로딩과 클라이언트 생성. Supabase 변수가 없으면 비활성(D-032) | 동적 `import()` |
 | `src/services/cloud/backup.ts` | 받기·올리기·버전 재시도·축소본 업로드, 상태(완료·대기 중·실패) | `storage.ts` 경유로만 기기 데이터 접근 |
 | `src/services/cloud/auth.ts` | 카카오·매직링크 로그인, 로그아웃, 계정 삭제 호출 | |
 | `src/services/analytics.ts` | GA4·Vercel 이벤트 전송, 매개변수 허용 목록 검사(FR-MEAS-03) | ID 없으면 무동작 |
@@ -134,6 +134,19 @@ RLS 정책:
 | `SUPABASE_SERVICE_ROLE_KEY` | Vercel 서버 전용 | `api/delete-account.ts`만 사용 |
 | `SUPABASE_URL` | Vercel 서버 | 위 함수용 |
 | `GEMINI_API_KEY`, `GEMINI_MODEL` | Vercel 서버(기존) | 사진 인식 |
+| `VITE_CLOUD_PUBLIC` | 클라이언트 | `true`일 때만 클라우드 기능을 모든 사용자에게 표시(D-032) |
+
+### 8.1 환경별 배치 (D-032)
+
+| 변수 | Production | Preview | Development(로컬) |
+|---|---|---|---|
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | 프로덕션 프로젝트 | **없음** | 로컬 Supabase(`supabase start` 출력값) |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | 프로덕션 프로젝트 | **없음** | 로컬 Supabase |
+| `VITE_CLOUD_PUBLIC` | 점검 전 `false`, 점검 후 `true` | 없음 | 선택 |
+| `VITE_GA_MEASUREMENT_ID` | 있음 | 없음(미리보기 방문이 지표를 오염시키지 않도록) | 없음 |
+| `GEMINI_API_KEY` | 있음 | 있음(기존) | 있음(기존) |
+
+Supabase 변수가 없으면 클라우드 모듈은 로드되지 않고, 클라우드 관련 메뉴도 표시하지 않는다. 기기 기록 기능은 그대로 동작한다.
 
 ## 9. 미결
 
