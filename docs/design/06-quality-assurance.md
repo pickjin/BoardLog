@@ -53,13 +53,13 @@
 
 | 시나리오 | 출처 |
 |---|---|
-| S-01 기록·공유 | qa-evidence `verify-play-form`, `verify-share-import` 이전 |
-| S-02 링크로 친구 추가 | qa-evidence `verify-share-link` 이전 |
+| S-01 기록·공유 | `e2e/play-form.spec.ts`, `e2e/share-and-backup.spec.ts` (이전 완료) |
+| S-02 링크로 친구 추가 | `e2e/share-link.spec.ts` (이전 완료) |
 | S-03 사진 등록 → 허브 | 신규. 사진 인식 API는 E2E에서 가짜 응답 사용(외부 서비스) |
 | S-04 아이폰 사파리 게스트 → 로그인 권유 | 신규. 사용자 에이전트로 환경 흉내 |
 | S-05 새 기기 복원 | 신규. 브라우저 컨텍스트 2개 + 로컬 Supabase |
 | S-06 계정 삭제 | 신규 |
-| 공통 | 예시 데이터 정리·PWA(`verify-sample-pwa` 이전) |
+| 공통 | 예시 데이터 정리·PWA: `e2e/sample-data-and-pwa.spec.ts` (이전 완료) |
 
 ## 5. 자동 실행 (세부는 07 CI)
 

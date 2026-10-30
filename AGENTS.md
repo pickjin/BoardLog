@@ -17,7 +17,8 @@ same PR.
 | `npm run check:secrets` | now | Scan `dist/` for server secrets after `build` (D-037) |
 | `npm run format` | now | `biome format --write` |
 | `npm test` | now | Vitest unit tests with coverage; 100% branch coverage required for `sharedPlay.ts` and `backupImport.ts` (D-030) |
-| `npm run test:e2e`, `npm run test:db` | planned (D-029, D-031) | Playwright Test; local Supabase policy tests |
+| `npm run test:e2e` | now | Builds, then runs Playwright Test against `vite preview` (`e2e/*.spec.ts`). Needs Chromium: `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH` |
+| `npm run test:db` | planned (D-031) | Local Supabase policy tests |
 
 Run every check that exists before saying work is done. Report failures with their output.
 
@@ -90,7 +91,7 @@ Must not (stop and tell the owner what is needed instead):
    - `storage.ts` by-id path → multi-account isolation test
    - external input (backup file, share link, server response) → corrupt / over-limit / extra-field tests
    - pure function → 100% branch coverage
-   - UI behavior → E2E for the affected scenario
+   - UI behavior → a Playwright spec in `e2e/` for the affected scenario (S-01..S-06)
    - bug fix → a test that fails before the fix and passes after
    - visual design → mobile-width screenshot, and say the owner must review it
 3. Report in two lists, `Verified:` (check → result) and `Not verified:` (item → why: real device,

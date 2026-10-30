@@ -34,8 +34,8 @@ Order (D-041): **M0 foundation → M1 measurement → 4-week gate → M2**. Deta
 | M0 PR1: npm lockfile, dependency cleanup, scripts, `.env.example`, minimal CI (`.github/workflows/ci.yml`) | Merged 2026-10-30 (4bb53e6) |
 | M0 PR2: React types + `strict`, fix the 4 type errors (no behavior change; not real bugs as first thought) | Merged 2026-10-30 (2c9a400) |
 | M0 PR3: Biome (config / full format / fixes as 3 commits), 62 per-location exceptions (TBD-018) | Merged 2026-10-30 (1f5983e) |
-| M0 PR4: Vitest + tests for existing pure functions (125 tests; `npm test` added to CI) | In review |
-| M0 PR5: Playwright Test, migrate qa-evidence scripts | — |
+| M0 PR4: Vitest + tests for existing pure functions (125 tests; `npm test` added to CI) | Merged 2026-10-30 (089398b) |
+| M0 PR5: Playwright Test; the four ad-hoc browser scripts became `e2e/*.spec.ts` (100 checks) and were deleted | In review |
 | M1: `analytics.ts` + FR-MEAS-02 events, Vercel Web Analytics | — |
 | Gate (4 weeks after M1): ≥30 users with `play_saved` AND ≥30% iOS Safari AND 7-day wipe confirmed → M2 = cloud backup; else hub or share-link growth | — |
 
@@ -50,8 +50,8 @@ Preview in `board-log`.
 - No backend in code yet. A Supabase cloud backup is designed (D-010, 04-architecture, ADR-002).
   ADR-001 (platform) stays Proposed until TBD-013 (Supabase facts) is verified; supabase.com may be
   blocked by the session network policy.
-- Remaining M0 work: Biome with a separate format commit (D-026), Vitest (D-029/D-030), migrating
-  `docs/design/qa-evidence/*.mjs` to Playwright Test (D-029).
+- Remaining after M0: `storage.ts` multi-account unit tests (needs a fake IndexedDB, D-030); the
+  browser specs cover account isolation until then.
 - `main` branch protection is on (TBD-014). Merges need a PR with green `ci`; AGENTS.md merge rules
   still apply on top (explicit owner instruction, pre-merge report).
 - The Gemini photo scan shows intermittent provider-side instability (success / 503 / "not found"
