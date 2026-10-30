@@ -111,3 +111,4 @@ Must not (stop and tell the owner what is needed instead):
 | [06](docs/design/06-quality-assurance.md) | Tests, merge gates, manual checks |
 | [07](docs/design/07-deployment-operations.md) | Deploy, CI, migrations, backup, monitoring, secrets |
 | [08](docs/design/08-ai-governance.md) | AI governance (this file's rationale) |
+| [09](docs/design/09-roadmap.md) | Milestones: M0 foundation → M1 measurement → 4-week gate → M2 |
