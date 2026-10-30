@@ -53,6 +53,7 @@
 | D-036 | P7-Q05 | A. GA4로 백업 결과·오류 종류 집계, 주 1회 확인 + 연속 3회 실패 시 사용자에게 내보내기 권유 | Accepted | 2026-10-30 |
 | D-037 | P7-Q06 | A. 비밀값 관리 초안 승인, `GEMINI_API_KEY`는 Preview에서 제거 | Accepted | 2026-10-30 |
 | D-038 | P8-Q01 | B. AI는 명시적 지시가 있을 때만 PR·CI를 거쳐 병합, 되돌릴 수 없는 운영 작업은 사람만 | Accepted | 2026-10-30 |
+| D-039 | P8-Q02 | B. `AGENTS.md`를 규칙 원본(150줄 이하), `CLAUDE.md`는 `@AGENTS.md` + Claude 전용 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -308,6 +309,15 @@
 - **Known violation (이전):** 이 세션 초반 "main에 머지해서 배포해줘"에 따라 `main`에 직접 푸시함. 이 결정 이후 금지
 - **Weakness:** TBD-014 전까지는 규칙으로만 강제. 소유자가 PR을 읽지 않으면 사람 검토가 없음 → 3줄 보고로 완화
 - **Alternatives:** A 병합은 항상 소유자, C 설정·마이그레이션까지 AI, D 제안만
+
+### D-039 AI 규칙 파일 구조
+- **Question:** P8-Q02 AI 규칙을 둘 파일
+- **Selected:** B. 루트 `AGENTS.md`가 원본(명령, 불변 규칙, 권한 경계, 결정 변경 규칙, 설계 문서 링크). `CLAUDE.md`는 `@AGENTS.md` 가져오기 + Claude 전용(로컬 함수 실행, Vercel 정보, 현재 상태)
+- **Rationale:** 금지 목록(D-038)이 도구와 무관하게 적용돼야 함. TBD-014 전에는 이 파일이 유일한 강제 수단. 원본 1개로 어긋남 방지
+- **Limit:** `AGENTS.md` 150줄 이하(시작값, 근거 없음). 근거는 설계 문서 링크로
+- **Update rule:** 규칙에 영향 주는 결정은 같은 PR에서 `AGENTS.md` 수정
+- **Done at decision time:** 기존 CLAUDE.md 내용을 이전하며 Known state를 D-039 기준으로 갱신
+- **Alternatives:** A CLAUDE.md만, C 두 파일 복사, D 링크만
 
 ## 미결 항목 (TBD)
 
