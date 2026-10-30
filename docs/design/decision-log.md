@@ -54,6 +54,7 @@
 | D-037 | P7-Q06 | A. 비밀값 관리 초안 승인, `GEMINI_API_KEY`는 Preview에서 제거 | Accepted | 2026-10-30 |
 | D-038 | P8-Q01 | B. AI는 명시적 지시가 있을 때만 PR·CI를 거쳐 병합, 되돌릴 수 없는 운영 작업은 사람만 | Accepted | 2026-10-30 |
 | D-039 | P8-Q02 | B. `AGENTS.md`를 규칙 원본(150줄 이하), `CLAUDE.md`는 `@AGENTS.md` + Claude 전용 | Accepted | 2026-10-30 |
+| D-040 | P8-Q03 | A. 변경 종류별 완료 증거, 증거 없으면 "미검증" 보고, 디자인 변경은 소유자 확인 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -318,6 +319,14 @@
 - **Update rule:** 규칙에 영향 주는 결정은 같은 PR에서 `AGENTS.md` 수정
 - **Done at decision time:** 기존 CLAUDE.md 내용을 이전하며 Known state를 D-039 기준으로 갱신
 - **Alternatives:** A CLAUDE.md만, C 두 파일 복사, D 링크만
+
+### D-040 AI 작업 완료 증거
+- **Question:** P8-Q03 AI가 "완료"라고 보고하기 위한 증거
+- **Selected:** A. 존재하는 검사 전부 통과 + 변경 종류별 증거(08 §3). 증거를 만들 수 없는 항목은 "미검증"으로 명시. 화면 디자인 변경은 스크린샷 + 소유자 확인
+- **Rationale:** 이 세션에서 검사 통과가 결함을 숨긴 사례(D-025, 버그 4건)와 종류별 Playwright 검증이 실제 결함을 잡은 사례(공유 링크 hashchange, 예시 데이터 배너)가 있음. 디자인은 테스트로 판정 불가(재디자인 되돌림 사례)
+- **Interim:** Vitest·Playwright Test 도입 전에는 `docs/design/qa-evidence/` 방식 스크립트로 증거 대체
+- **Cost (추정):** 작업당 +20~40% 시간
+- **Alternatives:** B CI 통과만, C PR마다 소유자 미리보기 확인, D 규칙 없음
 
 ## 미결 항목 (TBD)
 

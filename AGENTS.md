@@ -77,6 +77,20 @@ Must not (stop and tell the owner what is needed instead):
 - Build features or backend pieces that the design docs have not decided, or write application code
   during a design session before the owner says implementation has started.
 
+## Definition of done (D-040)
+
+1. Every existing check passes (see Commands). If one fails, report the output; do not say "done".
+2. Add the evidence for the kind of change ([08 §3](docs/design/08-ai-governance.md)):
+   - `storage.ts` by-id path → multi-account isolation test
+   - external input (backup file, share link, server response) → corrupt / over-limit / extra-field tests
+   - pure function → 100% branch coverage
+   - UI behavior → E2E for the affected scenario
+   - bug fix → a test that fails before the fix and passes after
+   - visual design → mobile-width screenshot, and say the owner must review it
+3. Report in two lists, `Verified:` (check → result) and `Not verified:` (item → why: real device,
+   external service, owner review). If `Not verified` is non-empty, say "implemented, n items
+   unverified", not "done".
+
 ## Making and changing decisions
 
 - Decisions live in [decision-log](docs/design/decision-log.md) (`D-xxx`), open questions as `TBD-xxx`.
