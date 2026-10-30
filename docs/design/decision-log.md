@@ -370,7 +370,8 @@
 | TBD-011 | 기록 속 제3자(친구)의 삭제 요청 절차 | 고지에 문의처 표기, 절차는 추후 |
 | TBD-012 | ~~클라우드 자동 백업 시점~~ 해결: D-017 | — |
 | TBD-013 | Supabase 카카오 로그인 지원·요건, 무료 플랜 일시정지·한도, 유료 요금, 계정 삭제에 관리자 권한 필요 여부 (ADR-001, D-020) | 세션 네트워크에서 supabase.com 허용 또는 소유자 확인 |
-| TBD-014 | GitHub `main` 브랜치 보호 설정(PR 필수, 필수 검사 = CI 작업 `ci`(D-033) 통과, 직접 푸시 금지). **우선순위 높음**: 켜기 전까지 D-038은 규칙으로만 강제됨 | 소유자 작업(저장소 설정 권한 필요), CI 워크플로 첫 실행 후 |
-| TBD-015 | 저장소 공개 여부, GitHub Actions 현재 무료 한도 | 소유자가 저장소 설정·결제 페이지 확인 |
-| TBD-016 | Vercel Preview 환경에서 `GEMINI_API_KEY` 제거(D-037) | 소유자 작업(Vercel 프로젝트 설정) |
+| TBD-014 | ~~GitHub `main` 브랜치 보호~~ **해결 2026-10-30:** 저장소 ruleset `main-protection`(active, 기본 브랜치). 삭제 금지, 강제 푸시 금지, PR 필수(승인 0), 필수 검사 `ci`(GitHub Actions). 공개 API `/rules/branches/main`로 확인 | — |
+| TBD-015 | ~~저장소 공개 여부, Actions 한도~~ **해결 2026-10-30:** 저장소는 Public. 브랜치 규칙 무료 적용 확인. Actions 표준 러너 한도는 공개 저장소 기준 무료(2026-06 지식, 요금 페이지 미확인). 코드·설계 문서가 공개 상태임을 소유자가 인지 | — |
+| TBD-016 | Vercel Preview 환경에서 `GEMINI_API_KEY` 제거(D-037). 대상은 프로덕션 프로젝트 `board-log`(TBD-017) | 소유자 작업(Vercel 프로젝트 설정) |
+| TBD-017 | 같은 저장소에 Vercel 프로젝트 2개 연결: 실제 서비스는 `board-log`(계정 `pickjin1`, `board-log.vercel.app`, 소유자 확인 2026-10-30). `boardlog`(팀 `wlstkden-6327s-projects`, `boardlog-blush.vercel.app`)는 미사용인데 푸시마다 빌드되고 `GEMINI_API_KEY`를 가질 수 있음 → 연결 해제 또는 삭제 여부 | 소유자 작업(Vercel 설정) |
 | TBD-006 | 최신 iOS 사파리의 7일 저장 제한, 홈 화면 앱 예외, `navigator.storage.persist()` 효과, GA4 쿠키 유효기간 제한 | 실제 아이폰으로 확인. **M1 기간 소유자 작업, 관문 지표(D-041)** |
