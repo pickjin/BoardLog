@@ -39,6 +39,9 @@
 | D-022 | P4-Q01 | C. 백업 묶음 + 올리기 전 합치기 + 삭제 표시 ([ADR-002](./adr/ADR-002-cross-device-merge.md)) | Accepted | 2026-10-30 |
 | D-023 | P4-Q02 | A. 기록 단위 나중 수정 우선, 삭제·수정 겹침은 나중 시각 | Accepted | 2026-10-30 |
 | D-024 | P4-Q03 | A. 아키텍처 초안(04-architecture.md)과 ADR-002 제안 항목 승인 | Accepted | 2026-10-30 |
+| D-025 | P5-Q01 | C. React 타입 정의 + 엄격 모드, 검사 우회 금지 | Accepted | 2026-10-30 |
+| D-026 | P5-Q02 | B. Biome(린트 + 포맷) | Accepted | 2026-10-30 |
+| D-027 | P5-Q03 | C. PR + 자동 검사 필수 + main 보호, 커밋 메시지 규칙 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -220,6 +223,23 @@
 - **Monitoring:** `backup_merge_conflict` 이벤트, 잦으면 칸 단위 합치기 재검토
 - **Alternatives:** B 칸 단위, C 둘 다 보존, D 서버 우선
 
+### D-025 타입 검사
+- **Selected:** C. `@types/react`, `@types/react-dom` 추가 + `strict: true`. 검사 우회 주석 금지
+- **Measured:** React 타입이 없어 화면 코드가 사실상 미검사 상태였음. 추가 시 엄격 모드 오류 4건(전부 실제 버그), 타입 없이 엄격 모드 2,495건
+- **Alternatives:** A 현 상태, B 타입만, D 일부 엄격 옵션
+
+### D-026 린트·포맷
+- **Selected:** B. Biome 2.6.4
+- **Measured:** 오류 74, 경고 117, 정보 4. 훅 의존성 누락 3건, 쓰지 않는 코드 18건
+- **Rules:** 현재 스타일에 맞춘 포맷 설정, 전체 포맷 별도 커밋, 위반 시 실패, 예외는 위치별 + 사유
+- **Alternatives:** A ESLint + Prettier, C 포매터만, D 도입 안 함
+
+### D-027 Git 정책
+- **Selected:** C. 작업 브랜치 → PR → 자동 검사 통과 필수 → main 병합, main 브랜치 보호
+- **Commit rules:** `종류: 설명`, 기계적 변경 분리
+- **Owner task:** TBD-014
+- **Alternatives:** A main 직접, B 현행(PR 없음), D +릴리스 태그
+
 ## 미결 항목 (TBD)
 
 | ID | 내용 | 해결 조건 / 담당 |
@@ -236,4 +256,5 @@
 | TBD-011 | 기록 속 제3자(친구)의 삭제 요청 절차 | 고지에 문의처 표기, 절차는 추후 |
 | TBD-012 | ~~클라우드 자동 백업 시점~~ 해결: D-017 | — |
 | TBD-013 | Supabase 카카오 로그인 지원·요건, 무료 플랜 일시정지·한도, 유료 요금, 계정 삭제에 관리자 권한 필요 여부 (ADR-001, D-020) | 세션 네트워크에서 supabase.com 허용 또는 소유자 확인 |
+| TBD-014 | GitHub `main` 브랜치 보호 설정(PR 필수, 검사 통과 필수, 직접 푸시 금지) | 소유자 작업(저장소 설정 권한 필요) |
 | TBD-006 | 최신 iOS 사파리의 7일 저장 제한, 홈 화면 앱 예외, `navigator.storage.persist()` 효과, GA4 쿠키 유효기간 제한 | 실제 아이폰으로 확인 |
