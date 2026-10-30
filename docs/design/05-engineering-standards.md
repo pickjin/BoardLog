@@ -92,5 +92,5 @@
 | `lint` | `npm run typecheck && biome check --error-on-warnings .` (M0 PR3 완료) |
 | `check:secrets` | 신규: 빌드 결과물 비밀값 검사(D-037, M0 PR1 완료) |
 | `format` | 신규: `biome format --write .` (M0 PR3 완료) |
-| `test` | 신규(PHASE 6에서 확정) |
+| `test` | 신규: `vitest run --coverage`. 순수 함수 분기 100%는 `sharedPlay`, `backupImport`만 차단(D-030, M0 PR4 완료) |
 | `clean` | `rm -rf dist server.js`는 윈도우 기본 명령창에서 동작하지 않고, `server.js`는 존재하지 않는다 → Node 한 줄 명령으로 `dist`만 삭제하도록 교체 (M0 PR1 완료) |

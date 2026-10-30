@@ -33,8 +33,8 @@ Order (D-041): **M0 foundation → M1 measurement → 4-week gate → M2**. Deta
 | PR #1: design docs + unshipped features (empty start / sample removal, PWA, share link) | Merged 2026-10-30 (c9b0b0e), one-time D-038 exception |
 | M0 PR1: npm lockfile, dependency cleanup, scripts, `.env.example`, minimal CI (`.github/workflows/ci.yml`) | Merged 2026-10-30 (4bb53e6) |
 | M0 PR2: React types + `strict`, fix the 4 type errors (no behavior change; not real bugs as first thought) | Merged 2026-10-30 (2c9a400) |
-| M0 PR3: Biome (config / full format / fixes as 3 commits), 62 per-location exceptions (TBD-018) | In review |
-| M0 PR4: Vitest + tests for existing pure functions | — |
+| M0 PR3: Biome (config / full format / fixes as 3 commits), 62 per-location exceptions (TBD-018) | Merged 2026-10-30 (1f5983e) |
+| M0 PR4: Vitest + tests for existing pure functions (125 tests; `npm test` added to CI) | In review |
 | M0 PR5: Playwright Test, migrate qa-evidence scripts | — |
 | M1: `analytics.ts` + FR-MEAS-02 events, Vercel Web Analytics | — |
 | Gate (4 weeks after M1): ≥30 users with `play_saved` AND ≥30% iOS Safari AND 7-day wipe confirmed → M2 = cloud backup; else hub or share-link growth | — |
