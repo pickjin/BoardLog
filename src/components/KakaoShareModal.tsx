@@ -36,7 +36,7 @@ interface KakaoShareModalProps {
   onClose: () => void;
 }
 
-type PlayerPreset = 'all' | 'under4' | 'twoPlayers' | 'threeFour' | 'party5Plus';
+type PlayerPreset = 'all' | 'under4' | 'twoPlayers' | 'party5Plus';
 type WeightPreset = 'all' | 'easy' | 'medium' | 'heavy';
 
 export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
@@ -103,8 +103,6 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
         if (g.minPlayers > 4) return false;
       } else if (playerPreset === 'twoPlayers') {
         if (g.minPlayers > 2 || g.maxPlayers < 2) return false;
-      } else if (playerPreset === 'threeFour') {
-        if (g.maxPlayers < 3 || g.minPlayers > 4) return false;
       } else if (playerPreset === 'party5Plus') {
         if (g.maxPlayers < 5) return false;
       }
@@ -157,7 +155,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({
   };
 
   // Quick Preset Click Handler
-  const applyPresetFilter = (type: 'under4' | 'twoPlayers' | 'party5Plus' | 'all', genre?: string) => {
+  const applyPresetFilter = (type: PlayerPreset, genre?: string) => {
     setShareMode('selective');
     if (type) setPlayerPreset(type);
     if (genre !== undefined) setSelectedGenre(genre);

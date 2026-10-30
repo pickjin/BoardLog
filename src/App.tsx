@@ -19,7 +19,7 @@ import {
   MessageCircle,
   Share2
 } from 'lucide-react';
-import { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult } from './types';
+import { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult, TabType } from './types';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { storage } from './services/storage';
@@ -63,7 +63,7 @@ const MainApp: React.FC = () => {
   const { showToast } = useToast();
 
   // Navigation Tab
-  const [activeTab, setActiveTab] = useState<'home' | 'games' | 'plays' | 'mypage'>('home');
+  const [activeTab, setActiveTab] = useState<TabType>('home');
 
   // Main Data States
   const [games, setGames] = useState<UserGame[]>([]);
@@ -752,7 +752,7 @@ const MainApp: React.FC = () => {
         title="보드게임 삭제"
         message={`'${deletingGame?.title}' 게임을 내 목록에서 삭제하시겠습니까? 기록된 플레이 내역은 유지됩니다.`}
         confirmText="삭제하기"
-        confirmVariant="danger"
+        isDestructive
         onConfirm={handleConfirmDeleteGame}
         onCancel={() => setDeletingGame(null)}
       />
@@ -763,7 +763,7 @@ const MainApp: React.FC = () => {
         title="플레이 기록 삭제"
         message={`'${deletingPlay?.gameTitle}' (${deletingPlay?.date}) 기록을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.`}
         confirmText="삭제하기"
-        confirmVariant="danger"
+        isDestructive
         onConfirm={handleConfirmDeletePlay}
         onCancel={() => setDeletingPlay(null)}
       />
