@@ -36,6 +36,8 @@
 | D-019 | P3-Q01 | A. 백엔드 플랫폼 Supabase ([ADR-001](./adr/ADR-001-backend-platform.md)) | Proposed | 2026-10-30 |
 | D-020 | P3-Q02 | C. 일반 백업은 브라우저 직접(RLS), 관리자 작업만 Vercel 함수. ORM 없음 | Accepted | 2026-10-30 |
 | D-021 | P3-Q03 | B. npm 통일, package-lock 커밋, npm ci, engines.node 24.x | Accepted | 2026-10-30 |
+| D-022 | P4-Q01 | C. 백업 묶음 + 올리기 전 합치기 + 삭제 표시 ([ADR-002](./adr/ADR-002-cross-device-merge.md)) | Accepted | 2026-10-30 |
+| D-023 | P4-Q02 | A. 기록 단위 나중 수정 우선, 삭제·수정 겹침은 나중 시각 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -204,6 +206,18 @@
 - **Rationale:** 로컬 작업 도구(npm)와 배포 설치 도구를 일치시켜 버전 차이 제거
 - **Timing:** 잠금 파일 전환은 구현 단계 첫 작업
 - **Alternatives:** A bun, C pnpm, D 현 상태 유지
+
+### D-022 기기 간 백업 충돌 방지
+- **Question:** P4-Q01 두 기기의 백업이 서로 덮어쓰는 문제
+- **Selected:** C. 백업 묶음 + 올리기 전 합치기 + 삭제 표시. 상세는 ADR-002
+- **Required structure change (기존 "저장 구조 무변경" 원칙의 첫 예외):** 게임·기록에 `syncId`(UUID), `updatedAtMs` 추가, 삭제 표시 저장소 신설, 서버 버전 확인
+- **Alternatives:** A 마지막 백업 우선, B 백업 기기 한 대 규칙(AI 권장안), D 기록 단위 서버 저장
+
+### D-023 같은 기록 동시 수정
+- **Question:** P4-Q02 두 기기에서 같은 기록을 고쳤을 때
+- **Selected:** A. `updatedAtMs`가 큰 쪽 우선. 삭제와 수정이 겹치면 나중 시각을 따름
+- **Monitoring:** `backup_merge_conflict` 이벤트, 잦으면 칸 단위 합치기 재검토
+- **Alternatives:** B 칸 단위, C 둘 다 보존, D 서버 우선
 
 ## 미결 항목 (TBD)
 
