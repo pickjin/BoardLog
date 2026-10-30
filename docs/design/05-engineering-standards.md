@@ -5,10 +5,10 @@
 ## 1. 타입 검사 (D-025)
 
 - `@types/react`, `@types/react-dom`을 devDependencies에 추가하고 `tsconfig.json`에 `"strict": true`를 켠다.
-- 실측(2026-10-30): React 타입 추가 시 엄격 모드 오류 4건, 모두 실제 버그
-  - `App.tsx:755`, `766`: 삭제 확인창에 존재하지 않는 `confirmVariant` 전달 → 위험 동작 스타일 미적용
-  - `App.tsx:647`: 탭 타입에 처리하지 않는 `'add_play'` 포함
-  - `KakaoShareModal.tsx:533`: 인원 필터 값 타입 불일치
+- 실측(2026-10-30): React 타입 추가 시 엄격 모드 오류 4건. M0 PR2에서 수정. **정정:** 설계 당시 "모두 실제 버그"로 적었으나, 코드 확인 결과 4건 모두 타입 불일치였고 사용자에게 보이는 동작 차이는 없었다
+  - `App.tsx` 삭제 확인창 2곳: 존재하지 않는 prop `confirmVariant="danger"` 전달. `ConfirmModal`의 `isDestructive` 기본값이 `true`라 빨간 스타일은 이미 적용되고 있었음 → `isDestructive`로 명시
+  - `App.tsx` 탭 상태: `TabType`에 어떤 화면도 쓰지 않는 `'add_play'` 포함 → 제거하고 탭 상태를 `TabType` 하나로 통일
+  - `KakaoShareModal.tsx`: 화면에서 고를 수 없는 인원 필터 `'threeFour'` → 제거하고 `applyPresetFilter` 인자를 `PlayerPreset`으로 통일
 - **검사 우회 금지:** `@ts-ignore`, `@ts-nocheck`, `@ts-expect-error`(사유 없는 것), `as any`로 오류 숨기기 금지. 정말 필요하면 사유 주석과 함께 PR에서 승인받는다.
 - 타입 검사 명령: `npm run typecheck` (`tsc --noEmit`)
 

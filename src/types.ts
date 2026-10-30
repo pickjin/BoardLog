@@ -110,4 +110,4 @@ export interface SeedGame {
   description?: string;
 }
 
-export type TabType = 'home' | 'games' | 'add_play' | 'plays' | 'mypage';
+export type TabType = 'home' | 'games' | 'plays' | 'mypage';

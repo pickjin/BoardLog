@@ -241,7 +241,7 @@
 
 ### D-025 타입 검사
 - **Selected:** C. `@types/react`, `@types/react-dom` 추가 + `strict: true`. 검사 우회 주석 금지
-- **Measured:** React 타입이 없어 화면 코드가 사실상 미검사 상태였음. 추가 시 엄격 모드 오류 4건(전부 실제 버그), 타입 없이 엄격 모드 2,495건
+- **Measured:** React 타입이 없어 화면 코드가 사실상 미검사 상태였음. 추가 시 엄격 모드 오류 4건, 타입 없이 엄격 모드 2,495건. **정정(2026-10-30, M0 PR2):** 4건은 "전부 실제 버그"로 기록했으나 수정 시 확인해 보니 동작 차이 없는 타입 불일치(존재하지 않는 prop, 도달 불가능한 값)였음. 결정 자체(React 타입 + strict)는 유효: 이후 실제 버그를 막는 장치
 - **Alternatives:** A 현 상태, B 타입만, D 일부 엄격 옵션
 
 ### D-026 린트·포맷
@@ -326,7 +326,7 @@
 ### D-040 AI 작업 완료 증거
 - **Question:** P8-Q03 AI가 "완료"라고 보고하기 위한 증거
 - **Selected:** A. 존재하는 검사 전부 통과 + 변경 종류별 증거(08 §3). 증거를 만들 수 없는 항목은 "미검증"으로 명시. 화면 디자인 변경은 스크린샷 + 소유자 확인
-- **Rationale:** 이 세션에서 검사 통과가 결함을 숨긴 사례(D-025, 버그 4건)와 종류별 Playwright 검증이 실제 결함을 잡은 사례(공유 링크 hashchange, 예시 데이터 배너)가 있음. 디자인은 테스트로 판정 불가(재디자인 되돌림 사례)
+- **Rationale:** 이 세션에서 검사 통과가 화면 코드를 사실상 검사하지 않던 사례(D-025. 드러난 4건은 나중에 동작 영향 없는 타입 불일치로 정정)와 종류별 Playwright 검증이 실제 결함을 잡은 사례(공유 링크 hashchange, 예시 데이터 배너)가 있음. 디자인은 테스트로 판정 불가(재디자인 되돌림 사례)
 - **Interim:** Vitest·Playwright Test 도입 전에는 `docs/design/qa-evidence/` 방식 스크립트로 증거 대체
 - **Cost (추정):** 작업당 +20~40% 시간
 - **Alternatives:** B CI 통과만, C PR마다 소유자 미리보기 확인, D 규칙 없음
@@ -342,7 +342,7 @@
 
 ### D-042 M0 순서와 PR 단위
 - **Question:** P9-Q02 M0 작업 9개의 순서·PR 단위
-- **Selected:** B. PR1(잠금 파일·의존성·스크립트·`.env.example`·최소 CI) → PR2(React 타입·strict·버그 4건) → PR3(Biome: 설정 / 전체 포맷 / 오류 정리 3커밋) → PR4(Vitest) → PR5(Playwright Test). PR마다 해당 검사를 CI에 추가
+- **Selected:** B. PR1(잠금 파일·의존성·스크립트·`.env.example`·최소 CI) → PR2(React 타입·strict·타입 오류 4건) → PR3(Biome: 설정 / 전체 포맷 / 오류 정리 3커밋) → PR4(Vitest) → PR5(Playwright Test). PR마다 해당 검사를 CI에 추가
 - **Rationale:** 검사 없이 병합되는 PR 0개(PR1 제외). PR1 직후 TBD-014로 D-038 기술적 강제. 사용자 영향 있는 버그 수정을 앞에. 포맷을 테스트 추가 전에 해 충돌 방지
 - **Constraint:** M0 기간에는 다른 기능 작업 병행 안 함(PR3 전체 포맷 충돌)
 - **Alternatives:** A PR 1개, C CI 마지막, D 작업별 PR 9개

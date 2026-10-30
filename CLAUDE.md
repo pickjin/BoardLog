@@ -32,7 +32,7 @@ Order (D-041): **M0 foundation → M1 measurement → 4-week gate → M2**. Deta
 | Design session (D-001..D-043, TBD-001..016) | Done |
 | PR #1: design docs + unshipped features (empty start / sample removal, PWA, share link) | Merged 2026-10-30 (c9b0b0e), one-time D-038 exception |
 | M0 PR1: npm lockfile, dependency cleanup, scripts, `.env.example`, minimal CI (`.github/workflows/ci.yml`) | Merged 2026-10-30 (4bb53e6) |
-| M0 PR2: React types + `strict`, fix the 4 bugs | — |
+| M0 PR2: React types + `strict`, fix the 4 type errors (no behavior change; not real bugs as first thought) | In review |
 | M0 PR3: Biome (config / full format / fixes as 3 commits) | — |
 | M0 PR4: Vitest + tests for existing pure functions | — |
 | M0 PR5: Playwright Test, migrate qa-evidence scripts | — |
@@ -50,10 +50,8 @@ Preview in `board-log`.
 - No backend in code yet. A Supabase cloud backup is designed (D-010, 04-architecture, ADR-002).
   ADR-001 (platform) stays Proposed until TBD-013 (Supabase facts) is verified; supabase.com may be
   blocked by the session network policy.
-- First implementation tasks already decided: npm lockfile (D-021), React types + `strict` and the 4
-  bugs it exposes (D-025), Biome with a separate format commit (D-026), unused dependency removal and
-  `clean` script fix (D-028), migrating `docs/design/qa-evidence/*.mjs` to Playwright Test (D-029),
-  rewriting the stale AI Studio `.env.example` (07 §7.4).
+- Remaining M0 work: Biome with a separate format commit (D-026), Vitest (D-029/D-030), migrating
+  `docs/design/qa-evidence/*.mjs` to Playwright Test (D-029).
 - `main` branch protection is on (TBD-014). Merges need a PR with green `ci`; AGENTS.md merge rules
   still apply on top (explicit owner instruction, pre-merge report).
 - The Gemini photo scan shows intermittent provider-side instability (success / 503 / "not found"
