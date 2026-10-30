@@ -83,9 +83,11 @@ infinite request loop (~500 req/s) in production once already.
 
 ## Known state / open issues
 
-- No backend, by design, pending validation: the plan is to add one only after real users show
-  second-visit retention (see conversation history / commit messages for the reasoning). Don't treat
-  "add a backend" as the next obvious step without checking whether that validation has happened.
+- No backend yet in code. The earlier "add one only after retention is validated" rule was
+  superseded by design decision D-010 (2026-10-30, `docs/design/decision-log.md`): a backend will be
+  added to stop browser-storage loss (iOS Safari's 7-day storage cap, not yet verified on a current
+  device: TBD-006). Its scope is still being decided in the design docs; don't start building it
+  ahead of those decisions.
 - The Gemini photo-scan feature has shown intermittent provider-side instability in testing
   (alternating between a clean success, a 503 overload, and a "not found" response for a model the
   account's own listing confirms exists). This is external to the app; retries and error
