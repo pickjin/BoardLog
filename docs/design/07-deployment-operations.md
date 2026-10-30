@@ -21,9 +21,19 @@
 
 점검 경로의 형태는 구현 시 결정한다.
 
-## 3. CI
+## 3. CI (D-033)
 
-미정(P7-Q02).
+| 항목 | 내용 |
+|---|---|
+| 위치 | GitHub Actions, `.github/workflows/ci.yml` |
+| 실행 시점 | PR 생성·갱신, `main` 푸시 |
+| 작업 | 단일 작업 `ci`. 이 이름을 main 브랜치 보호의 필수 검사로 지정(TBD-014) |
+| 단계 | ① `npm ci` ② `npm run typecheck` ③ `biome check` ④ `npm test`(단위·통합, 커버리지 기준 D-030) ⑤ `supabase start` → `npm run test:db` ⑥ `npm run build` ⑦ `npm run test:e2e` |
+| 실패 | 어느 단계든 실패하면 병합 불가. 검사를 끄거나 건너뛰는 방식으로 통과시키지 않음(D-025, D-027) |
+| 캐시 | npm 캐시, Playwright 브라우저, Supabase Docker 이미지 |
+| 중복 실행 | 같은 PR에 새 푸시가 오면 이전 실행 취소(`concurrency`) |
+| 비밀값 | 없음. 로컬 Supabase는 실행마다 생성되는 키 사용. 프로덕션 키를 CI에 두지 않음 |
+| 측정 | 구현 직후 1회 실행 시간, 매월 사용 시간 확인. 무료 한도 70% 초과 시 경로별 실행으로 축소 검토 |
 
 ## 4. 비밀값·로그·모니터링·백업 복구
 
