@@ -48,6 +48,7 @@
 | D-031 | P6-Q03 | A. 로컬 Supabase(CLI + Docker)로 서버 테스트, 스키마는 마이그레이션 SQL | Accepted | 2026-10-30 |
 | D-032 | P7-Q01 | B. Supabase는 프로덕션 1개, 미리보기 배포는 클라우드 기능 꺼짐 + 공개 스위치 | Accepted | 2026-10-30 |
 | D-033 | P7-Q02 | A. GitHub Actions에서 PR마다 검사 6단계 전부 실행, 필수 검사 지정 | Accepted | 2026-10-30 |
+| D-034 | P7-Q03 | A. 운영자가 병합 전 `supabase db push`로 수동 적용, 추가만 하는 변경으로 제한 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -261,6 +262,14 @@
 - **Cost control:** 의존성·Docker 이미지 캐시, 같은 PR 새 푸시 시 이전 실행 취소
 - **Revisit:** 월 사용 시간이 무료 한도의 70% 초과 시 B 전환(가역). 실행 시간·월 사용량은 구현 시 실측
 - **Alternatives:** B 경로별 선택 실행, C Vercel 빌드 안에서, D 로컬 hook만
+
+### D-034 프로덕션 DB 스키마 변경 절차
+- **Question:** P7-Q03 마이그레이션을 프로덕션에 적용하는 방법
+- **Selected:** A. 운영자가 PR 병합 **전에** `supabase db push`로 직접 적용. 추가만 하는 변경(컬럼·테이블·정책·인덱스 추가)만 허용
+- **Rationale:** 삭제·이름 변경은 사용자 백업 손실로 이어질 수 있음(비가역). 추가만 하면 옛 앱과 새 앱이 모두 동작해 배포 순서 문제가 없어짐. 프로덕션 DB 권한을 GitHub에 두지 않음(D-033 원칙). 변경 빈도는 연 수 회 이하로 추정
+- **Safeguards:** CI가 마이그레이션의 `DROP`, `RENAME`, `ALTER ... TYPE` 구문을 차단. PR 템플릿 점검 항목. 삭제가 필요하면 2단계(앱에서 사용 중단 배포 → 다음 PR에서 삭제, 해당 PR에서만 사유와 함께 차단 해제)
+- **Residual risk:** 적용을 잊고 병합하면 새 앱의 백업이 실패. FR-CLOUD-09에 따라 기기 기록은 유지되고 백업은 "대기 중"
+- **Alternatives:** B 병합 시 Actions 자동 적용, C Supabase GitHub 연동(TBD-013), D 대시보드 SQL 편집기
 
 ## 미결 항목 (TBD)
 
