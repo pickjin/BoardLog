@@ -21,8 +21,8 @@ All agent rules live in AGENTS.md (D-039). This file only adds Claude Code speci
 
 ## Known state (2026-10-30)
 
-- **Design session D-001..D-039 is done through PHASE 8; implementation has not started.** Do not
-  write application code until the owner explicitly starts implementation.
+- **Design session is closed (D-001..D-043). Implementation started with milestone M0**
+  ([09-roadmap](docs/design/09-roadmap.md)): five PRs, CI first (D-042). No other feature work during M0.
 - No backend in code yet. A Supabase cloud backup is designed (D-010, 04-architecture, ADR-002).
   ADR-001 (platform) stays Proposed until TBD-013 (Supabase facts) is verified; supabase.com may be
   blocked by the session network policy.
