@@ -1,31 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import type React from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Printer,
-  FileText,
   BookOpen,
   LayoutGrid,
   List,
-  SlidersHorizontal,
   X,
-  Sparkles,
   MapPin,
-  Users,
-  Clock,
   Dices,
-  Layers,
-  Check,
   Copy,
   Info,
   Download,
   Search,
-  Filter,
   Loader2
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { UserGame, GameOwnershipStatus } from '../types';
-import { formatWon, formatDate } from '../utils/formatters';
+import type { UserGame, GameOwnershipStatus } from '../types';
+import { formatDate } from '../utils/formatters';
 import { getGameIndexKey, KOREAN_INDEX_KEYS } from '../utils/koreanIndex';
 import { useToast } from '../context/ToastContext';
 
@@ -52,7 +45,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
   // Toggles for print elements
   const [showImages, setShowImages] = useState(true);
   const [showLocations, setShowLocations] = useState(true);
-  const [showNotes, setShowNotes] = useState(true);
+  const [showNotes] = useState(true);
   const [showStatsCover, setShowStatsCover] = useState(true);
 
   // Filter and sort games
@@ -78,7 +71,6 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
           return (b.playCount || 0) - (a.playCount || 0);
         case 'weight':
           return (b.weight || 0) - (a.weight || 0);
-        case 'recent':
         default:
           return (b.createdAt || '').localeCompare(a.createdAt || '');
       }
@@ -92,10 +84,12 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
     const map = new Map<string, UserGame[]>();
     processedGames.forEach((game) => {
       const key = getGameIndexKey(game.title);
-      if (!map.has(key)) {
-        map.set(key, []);
+      const bucket = map.get(key);
+      if (bucket) {
+        bucket.push(game);
+      } else {
+        map.set(key, [game]);
       }
-      map.get(key)!.push(game);
     });
     return map;
   }, [processedGames]);
@@ -346,7 +340,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
 
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  onChange={(e) => setStatusFilter(e.target.value as GameOwnershipStatus | '전체')}
                   className="px-2.5 py-1.5 bg-white border border-[#E9ECEF] rounded-full text-xs font-bold text-[#1E272E] focus:outline-hidden focus:border-[#4834D4]"
                 >
                   <option value="전체">전체 상태</option>
@@ -560,6 +554,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
                             <div className="flex flex-wrap gap-1">
                               {game.genre.map((gen, gIdx) => (
                                 <span
+                                  // biome-ignore lint/suspicious/noArrayIndexKey: static, never reordered list; no stable id exists
                                   key={gIdx}
                                   className="text-[9px] px-1.5 py-0.5 rounded-md bg-[#F1F3F5] text-[#636E72] font-semibold"
                                 >
@@ -680,6 +675,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {game.genre.map((gen, gIdx) => (
                           <span
+                            // biome-ignore lint/suspicious/noArrayIndexKey: static, never reordered list; no stable id exists
                             key={gIdx}
                             className="text-[9px] px-1.5 py-0.5 rounded-md bg-[#F1F3F5] text-[#636E72] font-semibold"
                           >

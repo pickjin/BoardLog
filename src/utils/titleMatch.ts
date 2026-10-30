@@ -1,4 +1,4 @@
-import { SeedGame } from '../types';
+import type { SeedGame } from '../types';
 
 /** Below this, a photographed title is treated as a game the seed list does not contain. */
 export const MATCH_THRESHOLD = 0.72;

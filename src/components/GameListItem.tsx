@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import { Users, Clock, Flame, CheckSquare, Trash2 } from 'lucide-react';
-import { UserGame } from '../types';
+import type { UserGame } from '../types';
 import { getOwnershipBadgeColor } from './GameCard';
 import { applyImageFallback } from '../utils/imageFallback';
 
@@ -12,6 +12,8 @@ interface GameListItemProps {
 
 export const GameListItem: React.FC<GameListItemProps> = ({ game, onClick, onDelete }) => {
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
+    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
     <div
       id={`game-list-item-${game.id}`}
       onClick={onClick}

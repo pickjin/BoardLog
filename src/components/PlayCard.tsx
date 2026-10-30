@@ -1,6 +1,6 @@
-import React from 'react';
-import { Trophy, Clock, Calendar, MapPin, Users, Star, Camera } from 'lucide-react';
-import { PlayRecord } from '../types';
+import type React from 'react';
+import { Clock, Calendar, MapPin, Users, Star, Camera } from 'lucide-react';
+import type { PlayRecord } from '../types';
 import { formatDuration } from '../utils/formatters';
 import { applyImageFallback } from '../utils/imageFallback';
 
@@ -11,6 +11,8 @@ interface PlayCardProps {
 
 export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
+    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
     <div
       id={`play-card-${play.id}`}
       onClick={onClick}
@@ -80,6 +82,7 @@ export const PlayCard: React.FC<PlayCardProps> = ({ play, onClick }) => {
           <div className="flex items-center gap-0.5 mt-1">
             {[...Array(5)].map((_, i) => (
               <Star
+                // biome-ignore lint/suspicious/noArrayIndexKey: static, never reordered list; no stable id exists
                 key={i}
                 className={`w-3 h-3 ${i < play.rating ? 'text-amber-400 fill-amber-400' : 'text-[#E9ECEF]'}`}
               />

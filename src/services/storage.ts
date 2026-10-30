@@ -1,6 +1,6 @@
-import { UserGame, PlayRecord, UserProfile } from '../types';
+import type { UserGame, PlayRecord, UserProfile } from '../types';
 import { formatDate } from '../utils/formatters';
-import { ParsedBackup, gameDedupKey, playDedupKey } from '../utils/backupImport';
+import { type ParsedBackup, gameDedupKey, playDedupKey } from '../utils/backupImport';
 
 const DB_NAME = 'board_log_db_v1';
 const DB_VERSION = 1;
@@ -302,12 +302,16 @@ class BoardLogStorage {
 
     const base = Date.now();
     const writtenGames = await this.idbWrite(STORE_GAMES, (store) => {
-      legacyGames.forEach((game, i) => store.put({ ...game, userId: uid, order: base - i }));
+      legacyGames.forEach((game, i) => {
+        store.put({ ...game, userId: uid, order: base - i });
+      });
     });
     if (!writtenGames) return false;
 
     const writtenPlays = await this.idbWrite(STORE_PLAYS, (store) => {
-      legacyPlays.forEach((play, i) => store.put({ ...play, userId: uid, order: base - i }));
+      legacyPlays.forEach((play, i) => {
+        store.put({ ...play, userId: uid, order: base - i });
+      });
     });
     if (!writtenPlays) return false;
 
@@ -407,7 +411,9 @@ class BoardLogStorage {
           stale.push(key);
         }
       }
-      stale.forEach((key) => localStorage.removeItem(key));
+      stale.forEach((key) => {
+        localStorage.removeItem(key);
+      });
     } catch (err) {
       console.warn('Guest cleanup skipped', err);
     }
@@ -771,9 +777,15 @@ class BoardLogStorage {
       const written = await this.idbWriteTx([STORE_GAMES, STORE_PLAYS], (tx) => {
         const games = tx.objectStore(STORE_GAMES);
         const plays = tx.objectStore(STORE_PLAYS);
-        plan.newGames.forEach((game, i) => games.put({ ...game, userId: uid, order: gameOrders[i] }));
-        bumped.forEach((game) => games.put(game));
-        plan.newPlays.forEach((play, i) => plays.put({ ...play, userId: uid, order: playOrders[i] }));
+        plan.newGames.forEach((game, i) => {
+          games.put({ ...game, userId: uid, order: gameOrders[i] });
+        });
+        bumped.forEach((game) => {
+          games.put(game);
+        });
+        plan.newPlays.forEach((play, i) => {
+          plays.put({ ...play, userId: uid, order: playOrders[i] });
+        });
       });
       // Reads stay on IndexedDB for this account, so a LocalStorage fallback here would be invisible.
       if (!written) throw new Error('복원 데이터를 저장하지 못했습니다. 다시 시도해주세요.');

@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import { Home, Layers, Plus, Trophy, User } from 'lucide-react';
-import { TabType } from '../types';
+import type { TabType } from '../types';
 
 interface BottomNavProps {
   currentTab: TabType;

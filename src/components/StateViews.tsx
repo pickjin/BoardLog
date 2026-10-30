@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { PackageOpen, SearchX, AlertTriangle, Loader2, Plus, RefreshCw } from 'lucide-react';
 
 interface LoadingStateProps {

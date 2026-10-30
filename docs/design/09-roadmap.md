@@ -39,7 +39,7 @@ M0 기반 정비 ──▶ M1 측정 (+ TBD-006 아이폰 실기기 확인 병�
 |---|---|---|---|
 | PR1 | M0-1, M0-2, M0-4, M0-9, M0-8(최소) | `npm ci` → `npm run lint`(현행 tsc) → `npm run build` → 비밀값 문자열 검사 | 소유자 TBD-014(필수 검사 `ci`) |
 | PR2 | M0-3 | `npm run typecheck`(strict) | 이후 PR은 strict 타입 검사를 통과해야 병합 |
-| PR3 | M0-5. 커밋 ① 설정 ② 전체 포맷(기계적) ③ 오류 정리 | `biome check` | |
+| PR3 | M0-5. 커밋 ① 설정 ② 전체 포맷(기계적) ③ 오류 정리. 범위는 코드 파일만, 예외 62건(TBD-018) | `biome check --error-on-warnings`(`npm run lint`에 포함) | |
 | PR4 | M0-6 | `npm test` + 커버리지 기준(D-030) | |
 | PR5 | M0-7 | `npm run test:e2e` | qa-evidence 스크립트 보관 사유 소멸 → README에 이전 완료 표시 |
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import type React from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -13,10 +14,9 @@ import {
   Tag,
   AlertCircle,
   Calendar,
-  DollarSign,
   Camera
 } from 'lucide-react';
-import { UserGame, SeedGame, GameOwnershipStatus, GameCondition } from '../types';
+import type { UserGame, SeedGame, GameOwnershipStatus, GameCondition } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
 import { formatDate } from '../utils/formatters';
 import { applyImageFallback } from '../utils/imageFallback';
@@ -99,6 +99,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
   const [formError, setFormError] = useState<string | null>(null);
 
   // Initialize or reset form
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `isOpen` is a trigger so reopening the modal re-initializes the form; the body does not read it
   useEffect(() => {
     if (initialGame) {
       setTitle(initialGame.title || '');
@@ -301,6 +302,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
             {/* Step 1: Seed Search Quick Fill (Only for new game) */}
             {!initialGame && (
               <div className="bg-[#4834D4]/5 border border-[#4834D4]/20 rounded-2xl p-4">
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                 <label className="block text-xs font-bold text-[#1E272E] mb-1.5 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-[#4834D4]" />
                   <span>인기 보드게임 시드 목록에서 빠른 검색</span>
@@ -379,6 +381,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
             <div className="space-y-4">
               {/* Game Title */}
               <div>
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                 <label className="block text-xs font-bold text-[#1E272E] mb-1">
                   게임명 (한글) <span className="text-[#EB4D4B]">*</span>
                 </label>
@@ -396,6 +399,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
               {/* English Title & Publisher */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-xs font-bold text-[#1E272E] mb-1">영문명</label>
                   <input
                     id="game-input-title-en"
@@ -407,6 +411,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                   />
                 </div>
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-xs font-bold text-[#1E272E] mb-1">제작사 / 유통사</label>
                   <input
                     id="game-input-publisher"
@@ -421,6 +426,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
               {/* Box Art Image URL */}
               <div>
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                 <label className="block text-xs font-bold text-[#1E272E] mb-1 flex items-center justify-between">
                   <span>박스 아트 이미지 URL</span>
                   <span className="text-[10px] text-[#A8ABAF] font-normal">웹 링크 또는 기본 이미지</span>
@@ -452,6 +458,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
               {/* Ownership Status & Condition */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-xs font-bold text-[#1E272E] mb-1">
                     보유 상태 <span className="text-[#EB4D4B]">*</span>
                   </label>
@@ -469,6 +476,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                   </select>
                 </div>
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-xs font-bold text-[#1E272E] mb-1">구성품 상태</label>
                   <select
                     id="game-select-condition"
@@ -489,6 +497,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-[#F8F9FA] rounded-2xl border border-[#E9ECEF]">
                 <div>
                   <div className="flex items-center justify-between mb-1">
+                    {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                     <label className="text-xs font-bold text-[#1E272E] flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-[#4834D4]" />
                       <span>구매 일시 (구매일자)</span>
@@ -546,6 +555,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                 </div>
 
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-xs font-bold text-[#1E272E] mb-1">보관 장소 (선택)</label>
                   <input
                     id="game-input-storage-location"
@@ -561,6 +571,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
               {/* Genre tag chips */}
               <div>
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                 <label className="block text-xs font-bold text-[#1E272E] mb-1 flex items-center gap-1">
                   <Tag className="w-3 h-3 text-[#A8ABAF]" />
                   <span>장르 선택 (다중 선택 가능)</span>
@@ -589,6 +600,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
               {/* Players, Time, Weight */}
               <div className="grid grid-cols-3 gap-2.5">
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-[11px] font-bold text-[#1E272E] mb-1">최소 인원</label>
                   <input
                     id="game-input-min-players"
@@ -601,6 +613,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                   />
                 </div>
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-[11px] font-bold text-[#1E272E] mb-1">최대 인원</label>
                   <input
                     id="game-input-max-players"
@@ -613,6 +626,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                   />
                 </div>
                 <div>
+                  {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                   <label className="block text-[11px] font-bold text-[#1E272E] mb-1">플레이타임(분)</label>
                   <input
                     id="game-input-playtime"
@@ -643,6 +657,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                   {/* Difficulty / Weight & Best Players */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
+                      {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                       <label className="block text-[11px] font-bold text-[#1E272E] mb-1">난이도 (1.0 ~ 5.0)</label>
                       <input
                         id="game-input-weight"
@@ -656,6 +671,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                       />
                     </div>
                     <div>
+                      {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                       <label className="block text-[11px] font-bold text-[#1E272E] mb-1">권장 인원</label>
                       <input
                         id="game-input-best-players"
@@ -681,6 +697,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
                     <div className="grid grid-cols-3 gap-2 pt-1">
                       <div>
+                        {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                         <label className="block text-[10px] font-bold text-[#1E272E] mb-1">구매가 (₩)</label>
                         <input
                           id="game-input-purchase-price"
@@ -692,6 +709,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                         />
                       </div>
                       <div>
+                        {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                         <label className="block text-[10px] font-bold text-[#1E272E] mb-1">정가 (₩)</label>
                         <input
                           id="game-input-original-price"
@@ -703,6 +721,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                         />
                       </div>
                       <div>
+                        {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                         <label className="block text-[10px] font-bold text-[#1E272E] mb-1">중고 시세 (₩)</label>
                         <input
                           id="game-input-market-price"
@@ -716,6 +735,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
                     </div>
 
                     <div>
+                      {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                       <label className="block text-[10px] font-bold text-[#1E272E] mb-1">가격 출처 / 확인일</label>
                       <input
                         id="game-input-price-source"
@@ -730,6 +750,7 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
 
                   {/* Notes */}
                   <div>
+                    {/* biome-ignore lint/a11y/noLabelWithoutControl: TBD-018: label is not yet associated with its input (htmlFor/id) */}
                     <label className="block text-[11px] font-bold text-[#1E272E] mb-1">메모 / 특이사항</label>
                     <textarea
                       id="game-input-notes"

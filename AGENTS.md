@@ -13,9 +13,9 @@ same PR.
 | `npm ci` | now | Install exactly from `package-lock.json` (npm only, D-021; Node 24.x) |
 | `npm run build` | now | Production build (does not type-check) |
 | `npm run typecheck` | now | `tsc --noEmit` with `strict` |
-| `npm run lint` | now | `npm run typecheck`; Biome is added in M0 PR3 |
+| `npm run lint` | now | `npm run typecheck` + `biome check --error-on-warnings` (code files only; Markdown and CSS are not formatted) |
 | `npm run check:secrets` | now | Scan `dist/` for server secrets after `build` (D-037) |
-| `npm run format` | planned (D-026) | Biome format |
+| `npm run format` | now | `biome format --write` |
 | `npm test`, `npm run test:e2e`, `npm run test:db` | planned (D-029, D-031) | Vitest; Playwright Test; local Supabase policy tests |
 
 Run every check that exists before saying work is done. Report failures with their output.
@@ -75,7 +75,9 @@ Must not (stop and tell the owner what is needed instead):
 - Change Vercel, Supabase, or GitHub settings or environment variables.
 - Delete data, deployments, or branches.
 - Bypass checks: `@ts-ignore`, `as any` to hide errors, disabling lint rules, skipping or deleting
-  tests, `--no-verify`. If a check is wrong, report it; do not silence it.
+  tests, `--no-verify`. If a check is wrong, report it; do not silence it. The only allowed exception
+  is a per-location `// biome-ignore lint/...: <reason>` with a real reason (D-026); do not add new ones to
+  get a PR green, and do not edit `biome.json` rules.
 - Read, print, or commit secrets.
 - Build features or backend pieces that the design docs have not decided, or write application code
   during a design session before the owner says implementation has started.

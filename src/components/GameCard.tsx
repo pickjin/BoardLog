@@ -1,6 +1,6 @@
-import React from 'react';
-import { Users, Clock, Flame, MapPin, CheckSquare, Trash2, Edit } from 'lucide-react';
-import { UserGame, GameOwnershipStatus } from '../types';
+import type React from 'react';
+import { Users, Clock, Flame, MapPin, CheckSquare, Trash2 } from 'lucide-react';
+import type { UserGame, GameOwnershipStatus } from '../types';
 import { applyImageFallback } from '../utils/imageFallback';
 
 export const getOwnershipBadgeColor = (status: GameOwnershipStatus): string => {
@@ -31,8 +31,10 @@ interface GameCardProps {
   onQuickRecord?: (e: React.MouseEvent) => void;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onEdit, onDelete }) => {
+export const GameCard: React.FC<GameCardProps> = ({ game, onClick, onDelete }) => {
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
+    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
     <div
       id={`game-card-${game.id}`}
       onClick={onClick}

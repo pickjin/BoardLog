@@ -1,4 +1,4 @@
-import { PlayRecord } from '../types';
+import type { PlayRecord } from '../types';
 import { formatDuration } from './formatters';
 
 /**

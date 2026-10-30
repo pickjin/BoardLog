@@ -1,20 +1,6 @@
-import React from 'react';
-import {
-  Layers,
-  Trophy,
-  History,
-  Clock,
-  Plus,
-  ArrowRight,
-  TrendingUp,
-  Sparkles,
-  Printer,
-  BookOpen,
-  Download,
-  MessageCircle,
-  Key
-} from 'lucide-react';
-import { UserGame, PlayRecord } from '../types';
+import type React from 'react';
+import { Layers, Trophy, History, Plus, ArrowRight, Sparkles, Download, MessageCircle, Key } from 'lucide-react';
+import type { UserGame, PlayRecord } from '../types';
 import { PlayCard } from './PlayCard';
 import { GameCard } from './GameCard';
 import { formatDuration } from '../utils/formatters';

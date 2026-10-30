@@ -10,7 +10,6 @@ const MODEL_CANDIDATES = (process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] 
   'gemini-3.5-flash',
   'gemini-2.5-flash'
 ]);
-const MODEL = MODEL_CANDIDATES[0];
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];

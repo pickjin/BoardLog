@@ -1,22 +1,9 @@
-import React, { useRef, useState } from 'react';
-import {
-  User,
-  Shield,
-  Database,
-  Download,
-  LogOut,
-  Sparkles,
-  Info,
-  CheckCircle2,
-  Lock,
-  Smartphone,
-  Printer,
-  BookOpen,
-  Upload
-} from 'lucide-react';
+import type React from 'react';
+import { useRef, useState } from 'react';
+import { Database, Download, LogOut, CheckCircle2, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { storage, ImportPlan } from '../services/storage';
+import { storage, type ImportPlan } from '../services/storage';
 import { parseBackup, MAX_BACKUP_BYTES } from '../utils/backupImport';
 import { ConfirmModal } from './ConfirmModal';
 

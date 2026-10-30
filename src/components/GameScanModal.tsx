@@ -1,13 +1,14 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import type React from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Camera, Loader2, AlertCircle, Check, RotateCw, ArrowDown, ArrowRight } from 'lucide-react';
-import { UserGame } from '../types';
+import type { UserGame } from '../types';
 import { formatDate } from '../utils/formatters';
 import {
   scanGamePhotos,
-  ScanCandidate,
+  type ScanCandidate,
   ScanNotConfiguredError,
-  TitleOrientation,
+  type TitleOrientation,
   MAX_SCAN_IMAGES
 } from '../services/gameScanner';
 import { normalizeTitle } from '../utils/titleMatch';

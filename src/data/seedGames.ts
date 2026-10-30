@@ -1,4 +1,4 @@
-import { SeedGame } from '../types';
+import type { SeedGame } from '../types';
 
 export const SEED_GAMES: SeedGame[] = [
   {

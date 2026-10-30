@@ -1,21 +1,8 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  X,
-  Trophy,
-  Clock,
-  Calendar,
-  MapPin,
-  Users,
-  Star,
-  Edit,
-  Trash2,
-  Image as ImageIcon,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import { PlayRecord } from '../types';
+import { X, Trophy, Clock, Calendar, MapPin, Users, Star, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import type { PlayRecord } from '../types';
 import { formatDuration } from '../utils/formatters';
 
 interface PlayDetailModalProps {
@@ -127,6 +114,7 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({ play, isOpen, 
                 <div className="flex items-center justify-center gap-0.5">
                   {[...Array(5)].map((_, i) => (
                     <Star
+                      // biome-ignore lint/suspicious/noArrayIndexKey: static, never reordered list; no stable id exists
                       key={i}
                       className={`w-3 h-3 ${i < play.rating ? 'text-[#F5CD79] fill-[#F5CD79]' : 'text-[#E9ECEF]'}`}
                     />
@@ -196,6 +184,8 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({ play, isOpen, 
 
                 <div className="grid grid-cols-3 gap-2.5">
                   {play.photos.map((photo, pIdx) => (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
                     <div
                       key={photo.id || pIdx}
                       onClick={() => setSelectedPhotoIndex(pIdx)}
@@ -242,11 +232,15 @@ export const PlayDetailModal: React.FC<PlayDetailModalProps> = ({ play, isOpen, 
 
         {/* Photo Lightbox Popup */}
         {selectedPhotoIndex !== null && play.photos[selectedPhotoIndex] && (
+          // biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet
+          // biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet
           <div
             id="photo-lightbox-modal"
             className="fixed inset-0 z-60 bg-black/90 flex flex-col items-center justify-center p-4"
             onClick={() => setSelectedPhotoIndex(null)}
           >
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: TBD-018: clickable element has no keyboard handler yet */}
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: TBD-018: clickable non-semantic element has no role yet */}
             <div
               className="relative max-w-lg w-full max-h-[85vh] flex flex-col items-center"
               onClick={(e) => e.stopPropagation()}

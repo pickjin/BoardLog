@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -13,10 +13,9 @@ import {
   PlusCircle,
   HelpCircle,
   Calendar,
-  MessageCircle,
-  Share2
+  MessageCircle
 } from 'lucide-react';
-import { UserGame } from '../types';
+import type { UserGame } from '../types';
 import { formatWon } from '../utils/formatters';
 import { getOwnershipBadgeColor } from './GameCard';
 import { useToast } from '../context/ToastContext';
@@ -53,8 +52,8 @@ export const GameDetailModal: React.FC<GameDetailModalProps> = ({
         });
         showToast('카카오톡 등으로 공유를 시작했습니다.', 'success');
         return;
-      } catch (e: any) {
-        if (e.name === 'AbortError') return;
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') return;
       }
     }
     await navigator.clipboard.writeText(text);

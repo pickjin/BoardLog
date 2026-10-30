@@ -1,7 +1,7 @@
-import { SeedGame } from '../types';
+import type { SeedGame } from '../types';
 import { SEED_GAMES } from '../data/seedGames';
 import { compressImage } from '../utils/imageCompressor';
-import { findSeedMatch, SeedMatch } from '../utils/titleMatch';
+import { findSeedMatch, type SeedMatch } from '../utils/titleMatch';
 
 export const MAX_SCAN_IMAGES = 4;
 

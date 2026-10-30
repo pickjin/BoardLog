@@ -1,25 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  Search,
-  Plus,
-  LayoutGrid,
-  List,
-  Filter,
-  Dices,
-  Trophy,
-  SlidersHorizontal,
-  ChevronDown,
-  Sparkles,
-  HelpCircle,
-  FolderPlus,
-  Printer,
-  BookOpen,
-  Download,
-  MessageCircle,
-  Share2
-} from 'lucide-react';
-import { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult, TabType } from './types';
+import type React from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Search, Plus, LayoutGrid, List, Download, MessageCircle } from 'lucide-react';
+import type { UserGame, PlayRecord, GameOwnershipStatus, MyGameResult, TabType } from './types';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { storage } from './services/storage';
@@ -40,7 +22,7 @@ import { MyPageView } from './components/MyPageView';
 import { AuthModal } from './components/AuthModal';
 import { PlayShareSheet } from './components/PlayShareSheet';
 import { SharedPlayModal } from './components/SharedPlayModal';
-import { SharedPlay, decodeSharedPlay, sharedHashPresent, toRecipientRecord } from './utils/sharedPlay';
+import { type SharedPlay, decodeSharedPlay, sharedHashPresent, toRecipientRecord } from './utils/sharedPlay';
 import { normalizePlay } from './utils/backupImport';
 import { ConfirmModal } from './components/ConfirmModal';
 import { LoadingState, EmptyState, ErrorState } from './components/StateViews';
@@ -112,7 +94,7 @@ const MainApp: React.FC = () => {
       ]);
       setGames(fetchedGames);
       setPlays(fetchedPlays);
-    } catch (err) {
+    } catch {
       setLoadError('데이터를 불러오는 중 오류가 발생했습니다.');
       showToast('데이터 불러오기 실패', 'error');
     } finally {
