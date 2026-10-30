@@ -1,6 +1,6 @@
 # 04. Technical Architecture
 
-상태: **초안(Proposed)**. 2026-10-30.
+상태: **확정(Accepted, D-024)**. 2026-10-30. Supabase 의존 부분은 TBD-013 결과에 따라 변경 가능.
 근거: D-010, D-011, D-017, D-019~D-023, [ADR-001](./adr/ADR-001-backend-platform.md), [ADR-002](./adr/ADR-002-cross-device-merge.md)
 
 ## 1. 시스템 구성
@@ -23,7 +23,7 @@
 - 서버는 사본이다(D-011). 서버가 내려가도 기록 입력·조회는 동작한다.
 - 관리자 권한 키는 `api/delete-account.ts`에만 있다(D-020, NFR-03).
 
-## 2. 서버 데이터 스키마 (Supabase, Proposed)
+## 2. 서버 데이터 스키마 (Supabase)
 
 ### 2.1 테이블 `public.backups`
 
@@ -111,7 +111,7 @@ RLS 정책:
 
 확인 화면("기기 데이터는 남습니다") → `/api/delete-account` → 로그아웃 → 기기 데이터 유지
 
-## 7. 모듈 구조 (Proposed)
+## 7. 모듈 구조
 
 | 경로 | 책임 | 비고 |
 |---|---|---|
@@ -140,4 +140,3 @@ RLS 정책:
 | ID | 내용 |
 |---|---|
 | TBD-013 | Supabase 확인 사항(ADR-001). 관리자 API 필요 여부 포함 |
-| — | ADR-002 Proposed 수치(5초, 삭제 표시 무기한, 재시도 3회) 승인 |

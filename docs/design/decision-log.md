@@ -38,6 +38,7 @@
 | D-021 | P3-Q03 | B. npm 통일, package-lock 커밋, npm ci, engines.node 24.x | Accepted | 2026-10-30 |
 | D-022 | P4-Q01 | C. 백업 묶음 + 올리기 전 합치기 + 삭제 표시 ([ADR-002](./adr/ADR-002-cross-device-merge.md)) | Accepted | 2026-10-30 |
 | D-023 | P4-Q02 | A. 기록 단위 나중 수정 우선, 삭제·수정 겹침은 나중 시각 | Accepted | 2026-10-30 |
+| D-024 | P4-Q03 | A. 아키텍처 초안(04-architecture.md)과 ADR-002 제안 항목 승인 | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
