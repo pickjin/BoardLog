@@ -36,6 +36,7 @@
 | 커밋 메시지 | `종류: 설명`. 종류 = feat, fix, docs, refactor, test, chore, design, revert |
 | 분리 | 포맷 일괄 변경, 의존성 정리, 잠금 파일 전환은 기능 변경과 다른 커밋 |
 | 되돌리기 | 이력 재작성(force push, rebase) 대신 revert 커밋 |
+| AI 병합 조건 | 소유자의 해당 세션 명시 지시 + PR + `ci` 통과 + 충돌 없음 + 병합 전 3줄 보고(D-038, 08-ai-governance.md) |
 
 ## 4. 코딩 규칙 (D-028, 현재 코드에서 지켜지고 있는 원칙을 정식화)
 
