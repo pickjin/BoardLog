@@ -32,6 +32,8 @@
 | D-015 | P2-Q08 | C. 서버 백업에 사진은 축소본(긴 변 400px)만 | Accepted | 2026-10-30 |
 | D-016 | P2-Q09 | A. 계정 삭제 시 서버 데이터 즉시 영구 삭제(기기 사본 유지) | Accepted | 2026-10-30 |
 | D-017 | P2-Q10 | D. 변경 시 묶어서 즉시 백업 + 실패 재시도 | Accepted | 2026-10-30 |
+| D-018 | P2-Q11 | A. 요구사항 문서(02-requirements.md) 전체 승인 | Accepted | 2026-10-30 |
+| D-019 | P3-Q01 | A. 백엔드 플랫폼 Supabase ([ADR-001](./adr/ADR-001-backend-platform.md)) | Proposed | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
@@ -177,6 +179,16 @@
 - **Alternatives:** A 즉시(재시도 없음), B 앱 열 때 + 하루 1회, C 수동
 - **Resolves:** TBD-012
 
+### D-018 요구사항 기준선
+- **Question:** P2-Q11 02-requirements.md 승인
+- **Selected:** A. 전체 승인(NFR-05 번들 +15% 이내, NFR-06 지원 환경, NFR-07 두 번째 기록 30초 이내 포함)
+
+### D-019 백엔드 플랫폼
+- **Question:** P3-Q01 클라우드 백업 서버(인증 + DB + 파일)
+- **Selected:** A. Supabase. 상세는 ADR-001
+- **Conditions:** SDK 지연 로딩, TBD-013 확인 후 Accepted
+- **Alternatives:** B Firebase, C Vercel 조합 + Auth.js, D 직접 서버
+
 ## 미결 항목 (TBD)
 
 | ID | 내용 | 해결 조건 / 담당 |
@@ -192,4 +204,5 @@
 | TBD-010 | 개인정보 유효기간제(1년 미이용 시 파기) 폐지 여부 | 법령 확인 후 미사용 자동 삭제 재검토 |
 | TBD-011 | 기록 속 제3자(친구)의 삭제 요청 절차 | 고지에 문의처 표기, 절차는 추후 |
 | TBD-012 | ~~클라우드 자동 백업 시점~~ 해결: D-017 | — |
+| TBD-013 | Supabase 카카오 로그인 지원·요건, 무료 플랜 일시정지·한도, 유료 요금 (ADR-001) | 세션 네트워크에서 supabase.com 허용 또는 소유자 확인 |
 | TBD-006 | 최신 iOS 사파리의 7일 저장 제한, 홈 화면 앱 예외, `navigator.storage.persist()` 효과, GA4 쿠키 유효기간 제한 | 실제 아이폰으로 확인 |
