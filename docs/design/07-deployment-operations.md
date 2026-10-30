@@ -1,6 +1,6 @@
 # 07. Deployment & Operations
 
-상태: **작성 중(Draft)**. 2026-10-30. PHASE 7 결정이 나올 때마다 채운다.
+상태: **확정(Accepted)**. 2026-10-30. D-032~D-037.
 
 ## 1. 배포 환경 (D-032)
 
@@ -97,7 +97,7 @@
 
 오류 원문·스택·기록 내용은 보내지 않는다. 분류 값만 보낸다(FR-MEAS-03). 원문은 브라우저 콘솔과 서버 로그에만 남긴다.
 
-## 7. 비밀값 관리 (Proposed, P7-Q06)
+## 7. 비밀값 관리 (D-037)
 
 ### 7.1 보관 위치
 
@@ -107,7 +107,7 @@
 | Supabase DB 비밀번호 | 운영자 비밀번호 관리자 | — | `supabase db push`/`dump` 시 운영자 |
 | Supabase CLI 접근 토큰 | 운영자 PC | — | 운영자 |
 | 카카오 REST API 키·Client Secret | Supabase 대시보드 Auth 설정 | — | 저장소·Vercel에 두지 않음 |
-| `GEMINI_API_KEY` | Vercel 환경변수 | 기존: 3개 환경 모두 | `api/scan-games.ts`만 |
+| `GEMINI_API_KEY` | Vercel 환경변수 | Production, Development만. Preview에서 제거(TBD-016) | `api/scan-games.ts`만 |
 | GitHub Actions | **비밀값 없음**(D-033) | — | — |
 
 공개 가능 값(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GA_MEASUREMENT_ID`)은 브라우저에 노출되는 것이 정상이며, 보호는 RLS가 맡는다.

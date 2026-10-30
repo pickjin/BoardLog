@@ -144,7 +144,7 @@ RLS 정책:
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | 프로덕션 프로젝트 | **없음** | 로컬 Supabase |
 | `VITE_CLOUD_PUBLIC` | 점검 전 `false`, 점검 후 `true` | 없음 | 선택 |
 | `VITE_GA_MEASUREMENT_ID` | 있음 | 없음(미리보기 방문이 지표를 오염시키지 않도록) | 없음 |
-| `GEMINI_API_KEY` | 있음 | 있음(기존) | 있음(기존) |
+| `GEMINI_API_KEY` | 있음 | **없음**(D-037, 사진 인식 꺼짐) | 있음 |
 
 Supabase 변수가 없으면 클라우드 모듈은 로드되지 않고, 클라우드 관련 메뉴도 표시하지 않는다. 기기 기록 기능은 그대로 동작한다.
 
