@@ -42,6 +42,7 @@
 | D-025 | P5-Q01 | C. React 타입 정의 + 엄격 모드, 검사 우회 금지 | Accepted | 2026-10-30 |
 | D-026 | P5-Q02 | B. Biome(린트 + 포맷) | Accepted | 2026-10-30 |
 | D-027 | P5-Q03 | C. PR + 자동 검사 필수 + main 보호, 커밋 메시지 규칙 | Accepted | 2026-10-30 |
+| D-028 | P5-Q04 | A. 코딩 규칙·스크립트 정리 승인(05-engineering-standards.md) | Accepted | 2026-10-30 |
 
 ### D-001 두 축 동등
 - **Question:** P1-Q01 보드로그가 가장 먼저 해결해야 할 사람
