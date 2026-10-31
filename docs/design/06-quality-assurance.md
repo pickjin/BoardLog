@@ -25,7 +25,7 @@
 | 위치 | 내용 |
 |---|---|
 | `src/**/*.test.ts` | 순수 함수 단위 테스트(대상 파일 옆) |
-| `src/services/storage.test.ts` | IndexedDB 통합(가짜 IndexedDB 구현 사용, 구현 시 라이브러리 선정) |
+| `src/services/storage.test.ts` | IndexedDB 통합. `fake-indexeddb` 6.2.6(정확한 버전 고정). 다계정 격리·복원 새 id·추가 새 id(D-045) |
 | `supabase/tests/*.test.ts` | 로컬 Supabase 대상 RLS·Storage 정책 테스트 |
 | `e2e/*.spec.ts` | Playwright Test. `vite preview` 빌드 결과 대상 |
 | `supabase/migrations/*.sql` | 스키마·RLS 정의(D-031) |

@@ -493,11 +493,16 @@ class BoardLogStorage {
     return games.find((g) => g.id === id) || null;
   }
 
-  async addUserGame(uid: string, game: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'> | UserGame): Promise<UserGame> {
+  async addUserGame(
+    uid: string,
+    game: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'> & { createdAt?: string }
+  ): Promise<UserGame> {
     const newGame: UserGame = {
       ...game,
-      id: 'id' in game && game.id ? game.id : randomId('game'),
-      createdAt: 'createdAt' in game && game.createdAt ? game.createdAt : formatDate(),
+      // Always a new id: the stores are shared by every account and `put` replaces by id, so a
+      // caller-supplied id could overwrite, and take over, another account's record.
+      id: randomId('game'),
+      createdAt: game.createdAt || formatDate(),
       updatedAt: formatDate()
     };
 
@@ -577,12 +582,13 @@ class BoardLogStorage {
 
   async addUserPlay(
     uid: string,
-    play: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'> | PlayRecord
+    play: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'> & { createdAt?: string }
   ): Promise<PlayRecord> {
     const newPlay: PlayRecord = {
       ...play,
-      id: 'id' in play && play.id ? play.id : randomId('play'),
-      createdAt: 'createdAt' in play && play.createdAt ? play.createdAt : formatDate(),
+      // Always a new id, for the same reason as addUserGame.
+      id: randomId('play'),
+      createdAt: play.createdAt || formatDate(),
       updatedAt: formatDate()
     };
 
@@ -609,7 +615,7 @@ class BoardLogStorage {
 
   async addPlayRecord(
     uid: string,
-    play: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'> | PlayRecord
+    play: Omit<PlayRecord, 'id' | 'createdAt' | 'updatedAt'> & { createdAt?: string }
   ): Promise<PlayRecord> {
     return this.addUserPlay(uid, play);
   }
