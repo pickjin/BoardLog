@@ -14,6 +14,7 @@ same PR.
 | `npm run build` | now | Production build (does not type-check) |
 | `npm run typecheck` | now | `tsc --noEmit` with `strict` |
 | `npm run lint` | now | `npm run typecheck` + `biome check --error-on-warnings` (code files only; Markdown and CSS are not formatted) |
+| `npm run build:ga` | now | Build into `dist-ga/` with a fake GA4 id, used by the analytics E2E spec |
 | `npm run check:secrets` | now | Scan `dist/` for server secrets after `build` (D-037) |
 | `npm run format` | now | `biome format --write` |
 | `npm test` | now | Vitest unit tests with coverage; 100% branch coverage required for `sharedPlay.ts` and `backupImport.ts` (D-030) |
@@ -50,6 +51,9 @@ fallback). A Supabase cloud backup is designed but **not built**: see
    in `api/delete-account.ts` on Vercel Production (D-037).
 8. **Rules that must be testable are pure functions in `src/utils/`** (hub key, merge, share-link
    parsing), independent of React and storage.
+9. **Usage statistics go only through `track()`** (`src/services/analytics.ts`), whose allowlist lives in
+   `src/utils/analyticsEvents.ts`. Never add a parameter carrying a name, title, place, score or photo.
+   The page address is reported without its `#fragment`, because a shared play travels there (FR-MEAS-03).
 
 Coding standards (naming, async loading/error states, comments): [05-engineering-standards](docs/design/05-engineering-standards.md).
 

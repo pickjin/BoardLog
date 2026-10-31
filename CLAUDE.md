@@ -35,13 +35,14 @@ Order (D-041): **M0 foundation → M1 measurement → 4-week gate → M2**. Deta
 | M0 PR2: React types + `strict`, fix the 4 type errors (no behavior change; not real bugs as first thought) | Merged 2026-10-30 (2c9a400) |
 | M0 PR3: Biome (config / full format / fixes as 3 commits), 62 per-location exceptions (TBD-018) | Merged 2026-10-30 (1f5983e) |
 | M0 PR4: Vitest + tests for existing pure functions (125 tests; `npm test` added to CI) | Merged 2026-10-30 (089398b) |
-| M0 PR5: Playwright Test; the four ad-hoc browser scripts became `e2e/*.spec.ts` (100 checks) and were deleted | In review |
-| M1: `analytics.ts` + FR-MEAS-02 events, Vercel Web Analytics | — |
+| M0 PR5: Playwright Test; the four ad-hoc browser scripts became `e2e/*.spec.ts` (100 checks) and were deleted | Merged 2026-10-30 (dce1c2b). **M0 done** |
+| M1: `analytics.ts` + 10 events for existing features, Vercel Web Analytics, privacy notice screen (D-044) | In review. Collects nothing until the owner sets `VITE_GA_MEASUREMENT_ID` in Vercel Production |
 | Gate (4 weeks after M1): ≥30 users with `play_saved` AND ≥30% iOS Safari AND 7-day wipe confirmed → M2 = cloud backup; else hub or share-link growth | — |
 
-Owner tasks, by priority: gate condition 3 replacement (owner has no iPhone, TBD-006) → TBD-004
-GA4 property → TBD-017 disconnect the unused Vercel project → TBD-016 remove `GEMINI_API_KEY` from
-Preview in `board-log`.
+Owner tasks, by priority: TBD-004 GA4 property + set the id in Vercel Production, enable Web Analytics
+(checklist in 07 §6.1.1; the day the id goes in starts the 4-week gate) → gate condition 3 replacement
+(owner has no iPhone, TBD-006) → TBD-020 contact for the privacy notice → TBD-017 disconnect the unused
+Vercel project → TBD-016 remove `GEMINI_API_KEY` from Preview in `board-log`.
 
 ## Known state (2026-10-30)
 

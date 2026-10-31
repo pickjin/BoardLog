@@ -35,7 +35,8 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
-      # The build above is what the browser tests run against (`vite preview` serves dist/).
+      # The browser tests run against the builds (`vite preview` serves dist/ and dist-ga/).
+      - run: npm run build:ga
       - run: npx playwright test
       - name: Upload E2E output on failure
         if: failure()

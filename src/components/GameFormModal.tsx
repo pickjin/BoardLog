@@ -24,7 +24,7 @@ import { applyImageFallback } from '../utils/imageFallback';
 interface GameFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  onSave: (gameData: Omit<UserGame, 'id' | 'createdAt' | 'updatedAt'>, source: { fromSeed: boolean }) => Promise<void>;
   initialGame?: UserGame | null;
   defaultSearchQuery?: string;
   onOpenScan?: () => void;
@@ -202,36 +202,39 @@ export const GameFormModal: React.FC<GameFormModalProps> = ({
     setFormError(null);
 
     try {
-      await onSave({
-        title: title.trim(),
-        titleEn: titleEn.trim(),
-        imageUrl:
-          imageUrl.trim() ||
-          'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
-        genre: genres.length > 0 ? genres : ['기타'],
-        minPlayers: Number(minPlayers) || 1,
-        maxPlayers: Number(maxPlayers) || 4,
-        bestPlayers: bestPlayers.trim() || `${minPlayers}~${maxPlayers}인`,
-        recommendedAge: Number(recommendedAge) || 8,
-        playTime: Number(playTime) || 30,
-        weight: Number(weight) || 2.0,
-        publisher: publisher.trim(),
-        purchaseDate: purchaseDate || formatDate(),
-        purchasePrice: Number(purchasePrice) || 0,
-        originalPrice: Number(originalPrice) || 0,
-        marketPrice: Number(marketPrice) || 0,
-        storageLocation: storageLocation.trim(),
-        condition,
-        tags: genres,
-        notes: notes.trim(),
-        ownershipStatus,
-        playCount: Number(playCount) || 0,
-        priceMeta: {
-          source: priceSource.trim() || '사용자 수동 입력',
-          verifiedDate: formatDate(),
-          isManual: true
-        }
-      });
+      await onSave(
+        {
+          title: title.trim(),
+          titleEn: titleEn.trim(),
+          imageUrl:
+            imageUrl.trim() ||
+            'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
+          genre: genres.length > 0 ? genres : ['기타'],
+          minPlayers: Number(minPlayers) || 1,
+          maxPlayers: Number(maxPlayers) || 4,
+          bestPlayers: bestPlayers.trim() || `${minPlayers}~${maxPlayers}인`,
+          recommendedAge: Number(recommendedAge) || 8,
+          playTime: Number(playTime) || 30,
+          weight: Number(weight) || 2.0,
+          publisher: publisher.trim(),
+          purchaseDate: purchaseDate || formatDate(),
+          purchasePrice: Number(purchasePrice) || 0,
+          originalPrice: Number(originalPrice) || 0,
+          marketPrice: Number(marketPrice) || 0,
+          storageLocation: storageLocation.trim(),
+          condition,
+          tags: genres,
+          notes: notes.trim(),
+          ownershipStatus,
+          playCount: Number(playCount) || 0,
+          priceMeta: {
+            source: priceSource.trim() || '사용자 수동 입력',
+            verifiedDate: formatDate(),
+            isManual: true
+          }
+        },
+        { fromSeed: selectedSeed !== null }
+      );
       onClose();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.');

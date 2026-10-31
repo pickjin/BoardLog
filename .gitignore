@@ -1,10 +1,12 @@
 node_modules/
 build/
 dist/
+dist-ga/
 coverage/
 .DS_Store
 *.log
 .env*
 !.env.example
+!.env.analytics-test
 test-results/
 playwright-report/
