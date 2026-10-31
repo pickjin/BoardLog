@@ -17,7 +17,7 @@ same PR.
 | `npm run build:ga` | now | Build into `dist-ga/` with a fake GA4 id, used by the analytics E2E spec |
 | `npm run check:secrets` | now | Scan `dist/` for server secrets after `build` (D-037) |
 | `npm run format` | now | `biome format --write` |
-| `npm test` | now | Vitest unit tests with coverage; 100% branch coverage required for `sharedPlay.ts` and `backupImport.ts` (D-030) |
+| `npm test` | now | Vitest unit tests with coverage; 100% branch coverage required for `sharedPlay.ts`, `backupImport.ts`, `analyticsEvents.ts` (D-030). `storage.ts` runs on `fake-indexeddb` |
 | `npm run test:e2e` | now | Builds, then runs Playwright Test against `vite preview` (`e2e/*.spec.ts`). Needs Chromium: `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH` |
 | `npm run test:db` | planned (D-031) | Local Supabase policy tests |
 
@@ -36,8 +36,9 @@ fallback). A Supabase cloud backup is designed but **not built**: see
 1. **All device persistence goes through `src/services/storage.ts`.** Components never touch
    IndexedDB or localStorage directly. Server access (when built) goes only through
    `src/services/cloud/`, which still reads/writes device data via `storage.ts`.
-2. **Every by-id read/update/delete checks ownership** (`record.userId === uid`, `idbReadOwned`).
-   Stores are shared across accounts. Verify with a multi-account test, never a single-user one.
+2. **Every by-id read/update/delete checks ownership** (`record.userId === uid`, `idbReadOwned`), and
+   **add always issues a new id** (D-045). Stores are shared across accounts and `put` replaces by id.
+   Verify with a multi-account test (`src/services/storage.test.ts`), never a single-user one.
 3. **Restore/import never reuses incoming ids.** Fresh ids, plays re-linked through a source-id map,
    fields whitelisted (`src/utils/backupImport.ts`), so a file cannot set `userId` or `order`.
 4. **Shared play links (`#play=`) are untrusted input.** Decode with caps, then store only via
