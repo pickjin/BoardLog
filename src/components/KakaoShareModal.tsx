@@ -2,7 +2,6 @@ import type React from 'react';
 import { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Copy, Check, Users, Search, X, MessageCircle, Sparkles, Tag, Dices, Image as ImageIcon } from 'lucide-react';
-import html2canvas from 'html2canvas';
 import type { UserGame } from '../types';
 import { useToast } from '../context/ToastContext';
 import { track } from '../services/analytics';
@@ -278,6 +277,7 @@ export const KakaoShareModal: React.FC<KakaoShareModalProps> = ({ isOpen, games,
     if (!cardRef.current) return;
     setIsExportingImage(true);
     try {
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(cardRef.current, {
         scale: 2,
         useCORS: true,
