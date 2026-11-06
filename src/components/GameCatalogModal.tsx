@@ -15,8 +15,6 @@ import {
   Search,
   Loader2
 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import type { UserGame, GameOwnershipStatus } from '../types';
 import { formatDate } from '../utils/formatters';
 import { getGameIndexKey, KOREAN_INDEX_KEYS } from '../utils/koreanIndex';
@@ -126,6 +124,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
 
     try {
       // High quality canvas capture
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(targetElement, {
         scale: 2,
         useCORS: true,
@@ -136,6 +135,7 @@ export const GameCatalogModal: React.FC<GameCatalogModalProps> = ({ isOpen, game
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const { default: jsPDF } = await import('jspdf');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
       const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
